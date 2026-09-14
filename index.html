@@ -280,6 +280,37 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 .sbrow.g2{background:linear-gradient(135deg,rgba(203,213,225,.38),rgba(255,255,255,.12))}
 .sbrow.g3{background:linear-gradient(135deg,rgba(217,119,6,.38),rgba(255,255,255,.12))}
 
+/* ---------- prank window ---------- */
+.pk-hero{text-align:center;padding:10px 0 4px}
+.pk-hero .ic{font-size:clamp(54px,14vw,92px);line-height:1;animation:wob 1.1s infinite alternate}
+@keyframes wob{from{transform:rotate(-8deg) scale(1)}to{transform:rotate(8deg) scale(1.08)}}
+.pk-hero .ttl{font-family:'Mitr';font-weight:700;font-size:clamp(24px,6.5vw,44px);
+  background:linear-gradient(90deg,#fbbf24,#f472b6,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:220% 100%;animation:shine 2.2s linear infinite}
+@keyframes shine{to{background-position:220% 0}}
+.bigcount{width:clamp(120px,30vw,180px);height:clamp(120px,30vw,180px);margin:14px auto;border-radius:50%;
+  display:grid;place-items:center;background:conic-gradient(#f472b6 var(--p,100%),rgba(255,255,255,.14) 0)}
+.bigcount span{width:84%;height:84%;border-radius:50%;background:#2e1065;display:grid;place-items:center;
+  font-family:'Mitr';font-weight:700;font-size:clamp(46px,12vw,74px)}
+.bigcount.low span{color:#fca5a5}
+.modal-count{position:sticky;top:0;z-index:5;background:rgba(0,0,0,.75);border-radius:0 0 14px 14px;
+  padding:9px 14px;text-align:center;font-family:'Mitr';font-weight:700;font-size:19px;backdrop-filter:blur(6px)}
+
+/* ---------- host game tabs ---------- */
+.htabs{display:flex;gap:8px;margin:12px 0;overflow-x:auto;padding-bottom:4px}
+.htabs button{font-size:15px;padding:10px 16px;background:rgba(255,255,255,.12);box-shadow:none;border-radius:999px;white-space:nowrap}
+.htabs button.on{background:linear-gradient(135deg,#8b5cf6,#d946ef)}
+
+/* ---------- QR fullscreen ---------- */
+#qrBox{cursor:zoom-in}
+#qrFull{position:fixed;inset:0;z-index:120;background:rgba(10,2,30,.97);display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:18px;cursor:zoom-out}
+#qrFull.on{display:flex}
+#qrFull .qbig{background:#fff;padding:18px;border-radius:20px;line-height:0}
+#qrFull .qbig img,#qrFull .qbig canvas{display:block;width:min(62vh,86vw)!important;height:min(62vh,86vw)!important}
+#qrFull .pinbig{font-family:'Mitr';font-weight:700;font-size:clamp(34px,9vw,70px);letter-spacing:.14em}
+#qrFull .urlbig{font-size:clamp(14px,3vw,20px);color:var(--muted);word-break:break-all;text-align:center}
+
 /* ---------- floating controls ---------- */
 .fixctl{position:fixed;right:12px;top:calc(10px + env(safe-area-inset-top,0px));z-index:60;display:flex;gap:8px}
 .fixctl button{font-size:18px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.42);box-shadow:none;border:1px solid rgba(255,255,255,.2)}
@@ -409,6 +440,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 <!-- ===== prank modal ===== -->
 <div id="prankModal" class="screen" style="position:fixed;inset:0;z-index:80;background:rgba(10,2,30,.93);overflow-y:auto;padding:18px;display:none">
   <div style="max-width:560px;margin:0 auto">
+    <div class="modal-count" id="pmCount" style="display:none">⏳ เหลือเวลาเลือก <span id="pmSec">10</span> วินาที</div>
     <h2 class="center">เลือกไอเทม</h2>
     <h3>⚡ ไอเทมพลังบวก — ใช้กับตัวเอง (กดแล้วใช้ทันที)</h3>
     <div class="answers two" id="selfTypes"></div>
@@ -429,6 +461,17 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   <div style="font-family:'Mitr';font-size:20px;font-weight:700" id="hexTitle">โดนแกล้ง!</div>
   <div style="font-size:14px;opacity:.95" id="hexBy">จาก —</div>
 </div>
+
+<!-- ========== PLAYER: PRANK WINDOW (ผู้ที่ไม่ได้ไอเทม) ========== -->
+<section id="scWaitPrank" class="screen">
+  <div class="pk-hero">
+    <div class="ic">😈</div>
+    <div class="ttl">ช่วงเวลาแห่งการกลั่นแกล้ง</div>
+    <p class="muted" style="margin-top:6px">เพื่อนที่ได้รับไอเทมกำลังเลือกใช้ไอเทม… ระวังตัวไว้!</p>
+  </div>
+  <div class="bigcount" id="wpRing"><span id="wpCount">10</span></div>
+  <p class="muted center" id="wpNote">ข้อถัดไปจะเริ่มพร้อมกันเมื่อหมดเวลา</p>
+</section>
 
 <!-- ========== PLAYER FINAL ========== -->
 <section id="scEnd" class="screen">
@@ -716,8 +759,8 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
         <div class="pin" id="hostPin">------</div>
       </div>
       <div class="center" style="flex:0 0 auto">
-        <div id="qrBox"></div>
-        <div class="muted" style="margin-top:8px">สแกนเพื่อเข้าเล่น</div>
+        <div id="qrBox" title="คลิกเพื่อขยายเต็มจอ"></div>
+        <div class="muted" style="margin-top:8px">สแกนเพื่อเข้าเล่น — <b>คลิกที่ QR เพื่อขยายเต็มจอ</b></div>
       </div>
     </div>
     <p class="muted center" id="lobbySetInfo" style="margin-top:10px"></p>
@@ -736,13 +779,9 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="qnum">ข้อ <b id="hQn">1</b> / <span id="hQt">15</span> &nbsp;•&nbsp; PIN <b id="hPin">-</b></div>
     <div class="timer" id="hTimer"><span>0</span></div>
   </div>
-  <div class="card" style="padding:14px">
-    <div class="prompt" id="hPrompt">—</div>
-    <div class="word-big" id="hWord">—</div>
-  </div>
-  <div class="answers" id="hAnswers" style="margin-top:12px"></div>
 
-  <div class="card" style="margin-top:12px">
+  <!-- แถบควบคุม (เห็นทุกแท็บ) -->
+  <div class="card" style="padding:12px 14px">
     <div class="row between">
       <span>ตอบแล้ว <b id="hAnsCount">0</b> / <span id="hPlayerCount">0</span> คน</span>
       <div class="row" style="gap:8px">
@@ -751,24 +790,64 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
         <button class="btn-sm btn-no" id="btnEndNow">⏹ จบเกม</button>
       </div>
     </div>
-    <div class="bars" id="hBars"></div>
-    <div class="explain hide" id="hExplain"></div>
-    <button class="btn-lg btn-ok hide" id="btnNextQ" style="margin-top:12px">ข้อถัดไป ▶</button>
   </div>
 
-  <div class="card" style="margin-top:12px">
-    <div class="row between"><h3 style="margin:0">📊 Dashboard อันดับสด</h3>
-      <button class="btn-sm btn-ghost" id="btnLbMore">ดูทั้งหมด</button>
+  <div class="htabs">
+    <button class="on" data-hg="hgQ">❓ คำถาม</button>
+    <button data-hg="hgStat">📊 สถิติ &amp; อันดับ</button>
+    <button data-hg="hgQr">📱 QR เข้าห้อง</button>
+  </div>
+
+  <!-- ---- แท็บ 1 : คำถาม ---- -->
+  <div id="hgQ" class="hgpane">
+    <div class="card" style="padding:14px">
+      <div class="prompt" id="hPrompt">—</div>
+      <div class="word-big" id="hWord">—</div>
     </div>
-    <div class="stat" style="margin-top:10px">
-      <div><b id="stAvg">0</b><small>คะแนนเฉลี่ย</small></div>
-      <div><b id="stCorrect">0%</b><small>ตอบถูกข้อนี้</small></div>
-      <div><b id="stFast">-</b><small>ตอบถูกเร็วสุด</small></div>
-      <div><b id="stStreak">-</b><small>สตรีคสูงสุด</small></div>
+    <div class="answers" id="hAnswers" style="margin-top:12px"></div>
+    <div class="card" style="margin-top:12px">
+      <div class="bars" id="hBars"></div>
+      <div class="explain hide" id="hExplain"></div>
+      <button class="btn-lg btn-ok hide" id="btnNextQ" style="margin-top:12px">ข้อถัดไป ▶</button>
     </div>
-    <div class="tbl-wrap" style="margin-top:12px;max-height:44vh">
-      <table><thead><tr><th style="width:44px">อันดับ</th><th>ผู้เล่น</th><th style="width:64px">ถูก</th><th style="width:62px">สตรีค</th><th style="width:82px">คะแนน</th></tr></thead>
-      <tbody id="hLbRows"></tbody></table>
+  </div>
+
+  <!-- ---- แท็บ 2 : สถิติและอันดับ ---- -->
+  <div id="hgStat" class="hgpane hide">
+    <div class="card">
+      <div class="row between"><h3 style="margin:0">📊 สถิติการตอบข้อนี้</h3>
+        <button class="btn-sm btn-ghost" id="btnLbMore">ดูอันดับทั้งหมด</button></div>
+      <div class="stat" style="margin-top:10px">
+        <div><b id="stAvg">0</b><small>คะแนนเฉลี่ย</small></div>
+        <div><b id="stCorrect">0%</b><small>ตอบถูกข้อนี้</small></div>
+        <div><b id="stWrong">0%</b><small>ตอบผิด/ไม่ทัน</small></div>
+        <div><b id="stFast">-</b><small>ตอบถูกเร็วสุด</small></div>
+        <div><b id="stStreak">-</b><small>สตรีคสูงสุด</small></div>
+      </div>
+      <div class="bars" id="hBars2" style="margin-top:14px"></div>
+      <button class="btn-lg btn-ok hide" id="btnNextQ3" style="margin-top:12px">ข้อถัดไป ▶</button>
+    </div>
+    <div class="card">
+      <h3>🏆 อันดับคะแนนสด</h3>
+      <div class="tbl-wrap" style="margin-top:8px;max-height:52vh">
+        <table><thead><tr><th style="width:44px">อันดับ</th><th>ผู้เล่น</th><th style="width:64px">ถูก</th><th style="width:62px">สตรีค</th><th style="width:82px">คะแนน</th></tr></thead>
+        <tbody id="hLbRows"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ---- แท็บ 3 : QR สำหรับคนหลุด ---- -->
+  <div id="hgQr" class="hgpane hide">
+    <div class="card center">
+      <h3>📱 สแกนเพื่อกลับเข้าห้อง</h3>
+      <p class="muted">นักเรียนที่หลุดระหว่างเล่น สแกน QR นี้หรือกรอก PIN แล้ว<b>พิมพ์ชื่อเดิม</b> ระบบจะพากลับเข้าเกมพร้อมคะแนนเดิม</p>
+      <div id="qrBox2" style="margin:10px auto"></div>
+      <div class="pin-box" style="margin-top:12px">
+        <div class="muted">รหัสห้อง (PIN)</div>
+        <div class="pin" id="hPin2">------</div>
+        <div class="muted" id="siteUrl2"></div>
+      </div>
+      <button class="btn-sm btn-ghost" id="btnQrBig" style="margin-top:12px">🔍 ขยายเต็มจอ</button>
     </div>
   </div>
 </section>
@@ -797,6 +876,23 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   </div>
 </section>
 
+<!-- ========== HOST: PRANK WINDOW ========== -->
+<section id="scHostPrank" class="screen">
+  <div class="pk-hero">
+    <div class="ic">😈</div>
+    <div class="ttl">ช่วงเวลาแห่งการกลั่นแกล้ง...</div>
+    <p class="muted" style="margin-top:6px">ผู้ที่ได้รับไอเทมกำลังเลือกใช้ — ข้อถัดไปจะเริ่มพร้อมกันเมื่อหมดเวลา</p>
+  </div>
+  <div class="bigcount" id="pkRing"><span id="pkCount">10</span></div>
+  <div class="card">
+    <div class="row between"><h3 style="margin:0">🎁 ผู้ได้รับไอเทมรอบนี้</h3>
+      <span class="badge ok">ใช้แล้ว <b id="pkUsed">0</b> / <span id="pkTotal">0</span></span></div>
+    <div class="players" id="pkList"></div>
+    <div class="lb" id="pkFeed"></div>
+  </div>
+  <button class="btn-lg btn-ghost" id="btnSkipPrank" style="margin-top:12px">⏭ ข้ามไปข้อถัดไปเลย</button>
+</section>
+
 <!-- ========== HOST: FINAL ========== -->
 <section id="scHostEnd" class="screen">
   <div class="brand"><div class="logo" style="font-size:clamp(26px,7vw,44px)">🏆 สรุปผลการแข่งขัน</div>
@@ -817,6 +913,12 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 
 </div><!-- /wrap -->
 </div><!-- /app -->
+<div id="qrFull">
+  <div class="qbig" id="qrFullBox"></div>
+  <div class="pinbig" id="qrFullPin">------</div>
+  <div class="urlbig" id="qrFullUrl"></div>
+  <div class="muted">คลิกที่ใดก็ได้เพื่อปิด</div>
+</div>
 <div id="flash"><div class="mark">✅</div><div class="word">ถูกต้อง!</div></div>
 <div id="confetti"></div>
 <div class="fixctl" id="fixCtl" style="display:none">
@@ -855,6 +957,7 @@ const BASE_SCORE   = 1000;        // คะแนนเต็มต่อข้�
 const STREAK_BONUS = 100;         // โบนัสต่อสตรีค (สูงสุด 5)
 const CUT_POINTS   = 300;         // คะแนนที่ถูกหักเมื่อโดนไอเทม "ตัดแต้ม"
 const DEF_TIME     = 10;          // เวลาต่อข้อเริ่มต้น (วินาที)
+const PRANK_SECS   = 10;          // ความยาว "ช่วงเวลาแห่งการกลั่นแกล้ง" (วินาที)
 
 /* ---------------- helpers ---------------- */
 const $  = s => document.querySelector(s);
@@ -884,6 +987,21 @@ function tally(el, from, to, ms=900, delay=0){
     requestAnimationFrame(step);
   };
   delay>0 ? setTimeout(run, delay) : run();
+}
+function makeQR(box, text, size){
+  if(!box) return;
+  box.innerHTML='';
+  try{ new QRCode(box, { text, width:size, height:size, correctLevel:QRCode.CorrectLevel.M }); }
+  catch(e){ box.innerHTML='<div style="color:#333;padding:20px">สร้าง QR ไม่ได้<br>ให้ใช้ PIN แทน</div>'; }
+}
+function joinUrl(pin){ return location.origin + location.pathname + '#join=' + pin; }
+function openQrFull(pin){
+  if(!pin) return;
+  const side=Math.round(Math.min(window.innerHeight*0.62, window.innerWidth*0.86));
+  makeQR($('#qrFullBox'), joinUrl(pin), Math.max(240, side));
+  $('#qrFullPin').textContent = pin.replace(/(\d{3})(\d{3})/,'$1 $2');
+  $('#qrFullUrl').textContent = (location.origin+location.pathname).replace(/^https?:\/\//,'');
+  $('#qrFull').classList.add('on');
 }
 function download(filename, text, type){
   const a=document.createElement('a');
@@ -1338,8 +1456,8 @@ const SELF_ITEMS = [
    ======================================================================= */
 const P = { pin:null, id:null, name:'', emoji:'🦊', unsubRoom:null, unsubMe:null,
             qIndex:-1, t0:0, timer:null, locked:false, limit:DEF_TIME, hexToken:0, hexUsed:0,
-            pendingHex:null, order:null, me:null, roster:[], roomStatus:'lobby',
-            shieldQ:-1, boostQ:-1, prevTotal:0 };
+            pendingHex:null, order:null, me:null, roster:[], roomStatus:'lobby', stage:'',
+            shieldQ:-1, boostQ:-1, prevTotal:0, prankT:null, prankEndAt:0 };
 
 function savedPlayer(pin){ try{ return JSON.parse(localStorage.getItem('kq_'+pin)||'null'); }catch(e){ return null; } }
 function enterGame(){
@@ -1422,7 +1540,9 @@ function listenMe(){
     $('#pScore').textContent = (d.score||0).toLocaleString();
     if(d.hex && d.hex.q !== undefined && d.hex.q > P.qIndex) P.pendingHex = d.hex;
     if(d.hexToken && d.hexToken > P.hexUsed) P.hexToken = d.hexToken;
-    if(P.lastRoom && P.lastRoom.status==='reveal' && d.last && d.last.q===P.lastRoom.qIndex && !P.fbDone){
+    // วาดหน้าเฉลยได้เฉพาะตอนที่ห้องยังอยู่ในสถานะเฉลยของข้อนั้นจริง ๆ เท่านั้น
+    // (กัน snapshot ที่มาช้าย้อนกลับมาทับ ทำให้ผู้เล่นค้างหน้าผลการตอบขณะที่คนอื่นไปข้อต่อไปแล้ว)
+    if(P.lastRoom && P.stage===('reveal:'+P.lastRoom.qIndex) && d.last && d.last.q===P.lastRoom.qIndex && !P.fbDone){
       P.fbDone=true; renderReveal(P.lastRoom);
     }
   });
@@ -1438,15 +1558,21 @@ function listenRoom(){
     P.roster = r.roster||[];
     if(r.brand && !P.brandSet){ P.brandSet=true; BRAND={...BRAND,...r.brand}; applyBrand(); }
     if(r.snd && !P.sndSet){ P.sndSet=true; SND.vol=(r.snd.vol||30)/100; SND.sfxOn=!!(+((r.snd.sfx)??1)); P.bgmUrl=r.snd.bgm||''; P.endUrl=r.snd.endm||''; }
+    P.stage = r.status + ':' + r.qIndex;
     if(r.status==='lobby'){ $('#waitCount').textContent = Math.max(r.playerCount||0, 1); show('scWait'); }
-    else if(r.status==='question'){ if(r.qIndex!==P.qIndex) renderQuestion(r); }
+    else if(r.status==='question'){
+      if(r.qIndex!==P.qIndex) renderQuestion(r);
+      else if(!$('#scPlay').classList.contains('on')) show('scPlay');
+    }
     else if(r.status==='reveal'){ P.lastRoom=r; P.fbDone=false; renderReveal(r); }
+    else if(r.status==='prank'){ renderPrankWindow(r); }
     else if(r.status==='ended'){ renderEnd(r); }
   });
 }
 
 function renderQuestion(r){
-  P.qIndex = r.qIndex; P.locked=false;
+  P.qIndex = r.qIndex; P.locked=false; P.fbDone=true;
+  closePrankUI();
   document.body.classList.remove('fbok','fbno');
   const q=r.current;
   $('#pQn').textContent=r.qIndex+1; $('#pQt').textContent=r.qTotal;
@@ -1557,7 +1683,7 @@ function lockOut(){
 }
 
 function renderReveal(r){
-  clearInterval(P.timer);
+  clearInterval(P.timer); closePrankUI();
   const last = P.me && P.me.last && P.me.last.q===r.qIndex ? P.me.last : null;
   const ok = last ? last.ok : false;
   const timeout = last ? (last.c===-1) : true;
@@ -1610,7 +1736,7 @@ function renderReveal(r){
 }
 
 function renderEnd(r){
-  clearInterval(P.timer); hideFlash(); document.body.classList.remove('fbok','fbno');
+  clearInterval(P.timer); closePrankUI(); hideFlash(); document.body.classList.remove('fbok','fbno');
   stopMusic(bgmEl());
   if(!P.endPlayed){ P.endPlayed=true; sfx('podium'); confetti(70); if(P.endUrl) playMusic(endmEl(), P.endUrl); }
   const top=r.top||[];
@@ -1630,6 +1756,52 @@ function renderEnd(r){
 /* ---------- prank UI ---------- */
 let prankPick=null;
 function itemUsed(){ return P.hexToken<=P.hexUsed; }
+
+/* ---------- ช่วงเวลาแห่งการกลั่นแกล้ง (ฝั่งผู้เล่น) ---------- */
+function closePrankUI(){
+  clearInterval(P.prankT); P.prankT=null;
+  $('#prankModal').style.display='none';
+  $('#pmCount').style.display='none';
+}
+function startPrankCountdown(end){
+  clearInterval(P.prankT);
+  P.prankEndAt=end;
+  const tick=()=>{
+    const left=Math.max(0, P.prankEndAt-Date.now());
+    const sec=Math.ceil(left/1000);
+    $('#pmSec').textContent=sec;
+    $('#wpCount').textContent=sec;
+    $('#wpRing').style.setProperty('--p',(left/(PRANK_SECS*1000)*100)+'%');
+    $('#wpRing').classList.toggle('low', sec<=3);
+    if(left<=0){
+      clearInterval(P.prankT); P.prankT=null;
+      if($('#prankModal').style.display==='block'){
+        $('#prankModal').style.display='none';
+        $('#wpNote').textContent='หมดเวลาเลือกไอเทม — สิทธิ์รอบนี้หมดลงแล้ว';
+        show('scWaitPrank');
+      }
+    }
+  };
+  tick(); P.prankT=setInterval(tick,150);
+}
+function renderPrankWindow(r){
+  clearInterval(P.timer);
+  document.body.classList.remove('fbok','fbno');
+  const nq  = (r.prankFor!==undefined && r.prankFor!==null) ? r.prankFor : (r.qIndex+1);
+  const end = r.prankEnd || (Date.now()+PRANK_SECS*1000);
+  const canUse = (P.hexToken===nq) && (P.hexUsed < P.hexToken);
+  if(canUse){
+    sfx('prank');
+    show('scWaitPrank');
+    openItemModal(true);
+  } else {
+    $('#prankModal').style.display='none';
+    $('#wpNote').textContent = (P.hexToken===nq) ? 'คุณใช้ไอเทมของรอบนี้ไปแล้ว — รอเพื่อน ๆ ให้ครบ'
+                                                 : 'ข้อถัดไปจะเริ่มพร้อมกันเมื่อหมดเวลา';
+    show('scWaitPrank');
+  }
+  startPrankCountdown(end);
+}
 async function useSelfItem(id){
   if(itemUsed()) return toast('ใช้ไอเทมของข้อนี้ไปแล้ว');
   const nq = P.qIndex+1;
@@ -1644,11 +1816,13 @@ async function useSelfItem(id){
     $('#prankDone').style.display='block';
     $('#btnPrank').disabled=true;
     $('#prankModal').style.display='none';
+    if(P.stage.startsWith('prank')){ $('#wpNote').textContent='ใช้ไอเทมแล้ว — รอเพื่อน ๆ ให้ครบ'; show('scWaitPrank'); }
     sfx('correct'); toast('ใช้ไอเทมเรียบร้อย!');
   }catch(e){ toast('ใช้ไอเทมไม่สำเร็จ: '+e.message); }
 }
-$('#btnPrank').onclick=()=>{
+function openItemModal(auto){
   prankPick=null;
+  $('#pmCount').style.display = auto ? 'block' : 'none';
   $('#selfTypes').className='answers two';
   $('#selfTypes').innerHTML = SELF_ITEMS.map((p,i)=>`<button class="ans a${i===0?3:1}" data-s="${p.id}">
     <span>${p.e} ${p.n}<small style="display:block;font-weight:400;font-size:13px">${p.d}</small></span></button>`).join('');
@@ -1663,7 +1837,9 @@ $('#btnPrank').onclick=()=>{
   });
   $('#prankSearch').value=''; renderTargets();
   $('#prankModal').style.display='block';
-};
+  $('#prankModal').scrollTop=0;
+}
+$('#btnPrank').onclick=()=>openItemModal(false);
 $('#prankClose').onclick=()=>{ $('#prankModal').style.display='none'; };
 $('#prankSearch').oninput=renderTargets;
 function renderTargets(){
@@ -1693,6 +1869,7 @@ async function sendPrank(target){
     $('#prankDone').style.display='block';
     $('#btnPrank').disabled=true;
     $('#prankModal').style.display='none';
+    if(P.stage.startsWith('prank')){ $('#wpNote').textContent='ส่งไอเทมแล้ว — รอเพื่อน ๆ ให้ครบ'; show('scWaitPrank'); }
     toast('แกล้ง '+tn+' สำเร็จ!');
   }catch(e){ toast('ส่งไม่สำเร็จ: '+e.message); }
 }
@@ -1702,7 +1879,7 @@ async function sendPrank(target){
    ======================================================================= */
 const H = { pin:null, quiz:[], qIndex:-1, timeLimit:DEF_TIME, prankOn:true, prevRank:new Map(), prevScore:new Map(), lastStat:{},
             players:new Map(), unsubPlayers:null, unsubAns:null, timer:null,
-            lastCountWrite:0, answers:new Map(), revealed:false,
+            lastCountWrite:0, answers:new Map(), revealed:false, unsubItems:null, prankT:null, prankEnd:0,
             autoPlay:false, autoDelay:6, autoT:null, autoLeft:0, setName:'' };
 
 function roomRef(){ return doc(db,'rooms',H.pin); }
@@ -1720,15 +1897,16 @@ function autoLabel(stage){
 function startAutoCountdown(stage){
   cancelAuto();
   const btn = stage==='reveal' ? $('#btnNextQ') : $('#btnNextQ2');
+  const btn3 = stage==='reveal' ? $('#btnNextQ3') : null;
   const label = autoLabel(stage);
-  btn.textContent = label;
+  btn.textContent = label; if(btn3) btn3.textContent=label;
   if(!H.autoPlay) return;
   H.autoLeft=H.autoDelay;
   const tick=()=>{
-    if(!H.autoPlay){ cancelAuto(); btn.textContent=label; return; }
-    btn.textContent = `${label}  (${H.autoLeft})`;
-    if(H.autoLeft<=0){ cancelAuto(); btn.textContent=label;
-      if(stage==='reveal') showScoreboard(); else nextQuestion();
+    if(!H.autoPlay){ cancelAuto(); btn.textContent=label; if(btn3) btn3.textContent=label; return; }
+    btn.textContent = `${label}  (${H.autoLeft})`; if(btn3) btn3.textContent=btn.textContent;
+    if(H.autoLeft<=0){ cancelAuto(); btn.textContent=label; if(btn3) btn3.textContent=label;
+      if(stage==='reveal') showScoreboard(); else goNext();
       return; }
     H.autoLeft--;
   };
@@ -1851,9 +2029,8 @@ function openLobby(){
   $('#hostPin').textContent = H.pin.replace(/(\d{3})(\d{3})/,'$1 $2');
   const base = location.origin + location.pathname;
   $('#siteUrl').textContent = base.replace(/^https?:\/\//,'');
-  $('#qrBox').innerHTML='';
-  try{ new QRCode($('#qrBox'), { text: base+'#join='+H.pin, width:200, height:200, correctLevel:QRCode.CorrectLevel.M }); }
-  catch(e){ $('#qrBox').innerHTML='<div style="color:#333;padding:20px">สร้าง QR ไม่ได้<br>ให้ใช้ PIN แทน</div>'; }
+  makeQR($('#qrBox'), joinUrl(H.pin), 200);
+  $('#qrBox2').dataset.pin='';
   H.players.clear(); renderHostPlayers();
   H.unsubPlayers && H.unsubPlayers();
   H.unsubPlayers = onSnapshot(collection(db,'rooms',H.pin,'players'), snap=>{
@@ -1900,8 +2077,11 @@ async function nextQuestion(){
   const pub = { type:q.type, prompt:q.prompt, word:q.word, choices:q.choices, time:qTime(q) };
   await updateDoc(roomRef(), { status:'question', qIndex:H.qIndex, current:pub,
     correct:null, explain:null, startAt:Date.now() });
-  cancelAuto();
+  cancelAuto(); clearInterval(H.prankT); H.prankT=null;
+  H.unsubItems && H.unsubItems(); H.unsubItems=null;
   renderHostQuestionUI(q);
+  $$('.htabs button').forEach((b,i)=>b.classList.toggle('on', i===0));
+  $$('.hgpane').forEach((x,i)=>x.classList.toggle('hide', i!==0));
   show('scHostGame'); syncAutoUI();
   sfx('q');
   if(SYS.bgm) playMusic(bgmEl(), SYS.bgm);
@@ -1928,8 +2108,9 @@ function renderHostQuestionUI(q){
   box.className='answers '+(two?'two':'four')+(q.type==='tf'?' tf':'');
   box.innerHTML=q.choices.map((c,i)=>`<div class="ans a${i}" data-i="${i}"><span class="mk"></span><span>${esc(c.t)}</span></div>`).join('');
   $('#hAnsCount').textContent=0; $('#hPlayerCount').textContent=H.players.size;
-  $('#hBars').innerHTML=''; $('#hExplain').classList.add('hide');
-  $('#btnNextQ').classList.add('hide'); $('#btnSkip').classList.remove('hide');
+  $('#hBars').innerHTML=''; $('#hBars2').innerHTML=''; $('#hExplain').classList.add('hide');
+  $('#btnNextQ').classList.add('hide'); $('#btnNextQ3').classList.add('hide');
+  $('#btnSkip').classList.remove('hide');
 }
 
 function startHostTimer(){
@@ -1948,7 +2129,50 @@ function startHostTimer(){
 }
 $('#btnSkip').onclick = ()=>{ if(!H.revealed) doReveal(); };
 $('#btnNextQ').onclick  = ()=>{ cancelAuto(); showScoreboard(); };
-$('#btnNextQ2').onclick = ()=>{ cancelAuto(); nextQuestion(); };
+$('#btnNextQ3').onclick = ()=>{ cancelAuto(); showScoreboard(); };
+$('#btnNextQ2').onclick = ()=>{ cancelAuto(); goNext(); };
+$('#btnSkipPrank').onclick = ()=>{ endPrankWindow(); };
+
+const itemDef = id => [...PRANKS,...SELF_ITEMS].find(x=>x.id===id) || {e:'🎁',n:'ไอเทม'};
+
+/* เปิด "ช่วงเวลาแห่งการกลั่นแกล้ง" ก่อนขึ้นข้อถัดไป */
+async function goNext(){
+  const nq=H.qIndex+1;
+  if(!H.prankOn || nq>=H.quiz.length || !(H.lastWinners||[]).length) return nextQuestion();
+  H.prankEnd = Date.now()+PRANK_SECS*1000;
+  try{ await updateDoc(roomRef(), { status:'prank', prankEnd:H.prankEnd, prankFor:nq }); }
+  catch(e){ console.warn(e); return nextQuestion(); }
+  $('#pkList').innerHTML=(H.lastWinners||[]).map(w=>`<span class="chip">${esc(w)}</span>`).join('');
+  $('#pkTotal').textContent=(H.lastWinners||[]).length;
+  $('#pkUsed').textContent='0'; $('#pkFeed').innerHTML='';
+  show('scHostPrank'); sfx('prank');
+  H.unsubItems && H.unsubItems();
+  H.unsubItems = onSnapshot(query(collection(db,'rooms',H.pin,'items'), where('q','==',nq)), s=>{
+    $('#pkUsed').textContent=s.size;
+    $('#pkFeed').innerHTML = s.docs.map(d=>{
+      const v=d.data()||{}, it=itemDef(v.t);
+      const to = (v.to && v.to!==v.from) ? ((H.players.get(v.to)||{}).name||'เพื่อน') : null;
+      return `<div class="lb-item"><div class="e">${it.e}</div>
+        <div class="nm">${esc(v.by||'ผู้เล่น')} ใช้ <b>${esc(it.n)}</b>${to?` ใส่ ${esc(to)}`:' กับตัวเอง'}</div></div>`;
+    }).join('');
+  });
+  clearInterval(H.prankT);
+  const tick=()=>{
+    const left=Math.max(0, H.prankEnd-Date.now());
+    const sec=Math.ceil(left/1000);
+    $('#pkCount').textContent=sec;
+    $('#pkRing').style.setProperty('--p',(left/(PRANK_SECS*1000)*100)+'%');
+    $('#pkRing').classList.toggle('low', sec<=3);
+    if(sec<=3 && sec>0 && sec!==H.pkSec){ H.pkSec=sec; sfx('tick'); }
+    if(left<=0) endPrankWindow();
+  };
+  tick(); H.prankT=setInterval(tick,150);
+}
+function endPrankWindow(){
+  clearInterval(H.prankT); H.prankT=null;
+  H.unsubItems && H.unsubItems(); H.unsubItems=null;
+  nextQuestion();
+}
 $('#btnBackReveal').onclick = ()=>{ cancelAuto(); show('scHostGame'); syncAutoUI(); $('#btnNextQ').textContent=autoLabel('reveal'); };
 $('#btnEndNow').onclick = ()=>{ if(confirm('จบเกมทันทีและแสดงผลสรุป?')) endGame(); };
 
@@ -2061,9 +2285,14 @@ async function doReveal(){
   $('#hExplain').innerHTML=`<b>เฉลย: ${esc(q.choices[q.correct].t)}</b>${q.explain?('<br>'+esc(q.explain)):''}`;
   $('#hExplain').classList.remove('hide');
   $('#btnNextQ').classList.remove('hide');
+  $('#btnNextQ3').classList.remove('hide');
   $('#btnNextQ').textContent = H.qIndex>=H.quiz.length-1 ? 'ดูผลสรุป 🏆' : 'ข้อถัดไป ▶';
+  $('#btnNextQ3').textContent = $('#btnNextQ').textContent;
   $('#btnSkip').classList.add('hide');
-  $('#stCorrect').textContent = Math.round(correctN/total*100)+'%';
+  const pcOk=Math.round(correctN/total*100);
+  $('#stCorrect').textContent = pcOk+'%';
+  $('#stWrong').textContent   = (100-pcOk)+'%';
+  $('#hBars2').innerHTML = $('#hBars').innerHTML;
   $('#stFast').textContent = fastest ? `${fastest.e} ${(fastest.ms/1000).toFixed(1)}s` : '-';
   H.lastStat = { correctPc: Math.round(correctN/total*100), fast: fastest?`${fastest.e} ${(fastest.ms/1000).toFixed(1)}s`:'-' };
   refreshDash();
@@ -2085,6 +2314,29 @@ function refreshDash(){
     <td>${(p.streak||0)>1?'🔥'+p.streak:(p.streak||0)}</td>
     <td style="font-family:Mitr;font-weight:700;color:#fde047">${(p.score||0).toLocaleString()}</td></tr>`).join('');
 }
+/* ---------- แท็บบนจอครูระหว่างเล่น ---------- */
+$$('.htabs button').forEach(b=> b.onclick=()=>{
+  $$('.htabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  $$('.hgpane').forEach(x=>x.classList.add('hide'));
+  $('#'+b.dataset.hg).classList.remove('hide');
+  if(b.dataset.hg==='hgQr') renderHostQr();
+  sfx('tap');
+});
+function renderHostQr(){
+  if(!H.pin) return;
+  $('#hPin2').textContent=H.pin.replace(/(\d{3})(\d{3})/,'$1 $2');
+  $('#siteUrl2').textContent=(location.origin+location.pathname).replace(/^https?:\/\//,'');
+  if($('#qrBox2').dataset.pin!==H.pin){
+    makeQR($('#qrBox2'), joinUrl(H.pin), 200);
+    $('#qrBox2').dataset.pin=H.pin;
+  }
+}
+$('#btnQrBig').onclick=()=>openQrFull(H.pin);
+$('#qrBox').onclick=()=>openQrFull(H.pin);
+$('#qrBox2').onclick=()=>openQrFull(H.pin);
+$('#qrFull').onclick=()=>$('#qrFull').classList.remove('on');
+window.addEventListener('keydown',e=>{ if(e.key==='Escape') $('#qrFull').classList.remove('on'); });
+
 $('#btnLbMore').onclick=()=>{ H.showAllLb=!H.showAllLb; $('#btnLbMore').textContent=H.showAllLb?'ย่อ':'ดูทั้งหมด'; refreshDash(); };
 
 function showScoreboard(){
@@ -2129,6 +2381,7 @@ function showScoreboard(){
 
 async function endGame(){
   clearInterval(H.timer); cancelAuto(); H.unsubAns && H.unsubAns();
+  clearInterval(H.prankT); H.prankT=null; H.unsubItems && H.unsubItems(); H.unsubItems=null;
   stopMusic(bgmEl()); sfx('podium'); confetti(80);
   if(SYS.endm) playMusic(endmEl(), SYS.endm);
   const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
