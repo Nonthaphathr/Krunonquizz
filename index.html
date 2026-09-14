@@ -280,8 +280,47 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 .sbrow.g2{background:linear-gradient(135deg,rgba(203,213,225,.38),rgba(255,255,255,.12))}
 .sbrow.g3{background:linear-gradient(135deg,rgba(217,119,6,.38),rgba(255,255,255,.12))}
 
+/* ---------- จอครูระหว่างเล่น : บีบให้พอดีหน้าจอเดียว ---------- */
+#scHostGame.on{display:flex;flex-direction:column;height:calc(100dvh - 42px);overflow:hidden}
+#scHostGame .hgpane{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:8px}
+#scHostGame .hgpane.hide{display:none !important}
+#scHostGame #hgQ>.card:first-child{flex:0 0 auto;min-height:70px;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center}
+#scHostGame .cols{height:clamp(66px,14vh,150px)}
+#scHostGame .ans{height:clamp(46px,8vh,86px);overflow:hidden}
+#scHostGame .answers.two .ans{height:clamp(60px,11vh,112px)}
+#scHostGame #revealBtns,#scHostGame #revealBtns3{flex-wrap:nowrap}
+#scHostGame #revealBtns .btn-lg,#scHostGame #revealBtns3 .btn-lg{width:auto;padding:10px 18px;font-size:16px;white-space:nowrap}
+#scHostGame #revealBtns .grow,#scHostGame #revealBtns3 .grow{flex:1 1 auto;min-width:0}
+#scHostGame #hCols,#scHostGame #hAnswers{flex:0 0 auto}
+#scHostGame #hgQ>.card:last-child{flex:0 0 auto;margin-top:0}
+#scHostGame #hgStat,#scHostGame #hgQr{overflow:auto}
+#scHostGame .word-big{margin:0}
+#scHostGame .card{padding:12px 14px}
+#scHostGame .card+.card{margin-top:8px}
+#scHostGame .qtop{margin-bottom:8px}
+#scHostGame .timer{width:52px;height:52px;font-size:22px}
+#scHostGame .timer span{width:42px;height:42px}
+#scHostGame .htabs{margin:8px 0}
+#scHostGame .htabs button{padding:7px 14px;font-size:14px}
+#scHostGame .prompt{margin-bottom:4px;font-size:clamp(13px,1.6vw,17px)}
+#scHostGame .word-big{font-size:clamp(20px,3.4vw,44px);padding:4px;line-height:1.25;overflow:hidden}
+#scHostGame .answers{gap:8px}
+#scHostGame .ans{min-height:0;padding:10px 12px;font-size:clamp(13px,1.7vw,21px);
+  box-shadow:0 4px 0 rgba(0,0,0,.26)}
+#scHostGame .ans.shown{padding-right:42px}
+#scHostGame .answers.two .ans{min-height:0}
+#scHostGame .explain{font-size:14px;max-height:9vh;overflow:auto;padding:9px 12px}
+#scHostGame #btnNextQ,#scHostGame #btnNextQ3{font-size:17px;padding:12px 18px}
+@media(orientation:landscape) and (min-width:900px){
+  #scHostGame .word-big{font-size:clamp(22px,2.8vw,40px)}
+  #scHostGame .cols{height:clamp(80px,16vh,170px)}
+  #scHostGame .ans{font-size:clamp(13px,1.45vw,19px);padding:9px 12px}
+}
+
 /* ---------- คอลัมน์สถิติแบบ Kahoot ---------- */
-.cols{display:grid;gap:10px;align-items:end;margin:4px 0 12px;height:clamp(150px,26vh,240px)}
+.cols{display:grid;gap:10px;align-items:end;margin:4px 0 10px;height:clamp(110px,22vh,220px)}
+.cols.hide{display:none !important}
 .cols.four{grid-template-columns:repeat(4,1fr)}
 .cols.two{grid-template-columns:repeat(2,1fr)}
 .col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
@@ -853,7 +892,10 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="answers" id="hAnswers"></div>
     <div class="card" style="margin-top:12px">
       <div class="explain hide" id="hExplain"></div>
-      <button class="btn-lg btn-ok hide" id="btnNextQ" style="margin-top:12px">ข้อถัดไป ▶</button>
+      <div class="row hide" id="revealBtns" style="margin-top:10px">
+        <button class="btn-lg btn-ok grow" id="btnNextQ">ดูอันดับ 📊</button>
+        <button class="btn-lg btn-ghost" id="btnSkipBoard" style="flex:0 0 auto">⏭ ข้ามตารางอันดับ</button>
+      </div>
     </div>
   </div>
 
@@ -870,7 +912,10 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
         <div><b id="stStreak">-</b><small>สตรีคสูงสุด</small></div>
       </div>
       <div class="bars" id="hBars2" style="margin-top:14px"></div>
-      <button class="btn-lg btn-ok hide" id="btnNextQ3" style="margin-top:12px">ข้อถัดไป ▶</button>
+      <div class="row hide" id="revealBtns3" style="margin-top:12px">
+        <button class="btn-lg btn-ok grow" id="btnNextQ3">ดูอันดับ 📊</button>
+        <button class="btn-lg btn-ghost" id="btnSkipBoard3" style="flex:0 0 auto">⏭ ข้ามตารางอันดับ</button>
+      </div>
     </div>
     <div class="card">
       <h3>🏆 อันดับคะแนนสด</h3>
@@ -1036,6 +1081,69 @@ function tally(el, from, to, ms=900, delay=0){
   };
   delay>0 ? setTimeout(run, delay) : run();
 }
+/* ย่อขนาดตัวอักษรอัตโนมัติให้พอดีพื้นที่ (คำถาม/ตัวเลือกยาว ๆ) */
+function shrinkToFit(el, maxH, startPx, minPx){
+  if(!el) return;
+  let hi = startPx || parseFloat(getComputedStyle(el).fontSize) || 24;
+  let lo = minPx || 11;
+  el.style.fontSize = hi+'px';
+  if(el.scrollHeight <= maxH) return;
+  for(let i=0;i<18 && hi-lo>0.5;i++){
+    const mid=(lo+hi)/2;
+    el.style.fontSize=mid+'px';
+    if(el.scrollHeight<=maxH){ lo=mid; } else { hi=mid; }
+  }
+  el.style.fontSize=lo+'px';
+  let guard=0;
+  while(el.scrollHeight>maxH && parseFloat(el.style.fontSize)>(minPx||11)+0.5 && guard++<16){
+    el.style.fontSize=(parseFloat(el.style.fontSize)-1)+'px';
+  }
+}
+/* จัดสัดส่วนพื้นที่จอครูให้พอดี 1 หน้าจอ แล้วย่อตัวอักษรลงในกล่องที่คำนวณได้ */
+function fitHostQuestion(){
+  if(!$('#scHostGame').classList.contains('on')) return;
+  const pane=$('#hgQ'); if(!pane) return;
+  const card=$('#hWord').parentElement, cols=$('#hCols'), ansBox=$('#hAnswers'), tail=pane.lastElementChild;
+  const avail=pane.clientHeight; if(avail<120) return;
+  const gap=8;
+  const tailH  = (tail && tail!==card && !tail.classList.contains('hide')) ? tail.offsetHeight : 0;
+  const colsOn = !cols.classList.contains('hide');
+  let rest = avail - tailH - gap*3;
+  const colsH = colsOn ? Math.max(60, Math.min(150, rest*0.26)) : 0;
+  rest -= colsH;
+  const rows = ansBox.classList.contains('two') ? 1 : 2;
+  const ansH = Math.max(44*rows+ (rows-1)*gap, Math.min(rest*0.52, 88*rows+(rows-1)*gap));
+  const wordH = Math.max(64, rest - ansH - gap);
+  if(colsOn) cols.style.height=Math.round(colsH)+'px';
+  const cellH = Math.round((ansH-(rows-1)*gap)/rows);
+  ansBox.querySelectorAll('.ans').forEach(a=>a.style.height=cellH+'px');
+  card.style.height=Math.round(wordH)+'px';
+  // ย่อข้อความ
+  const box=Math.max(22, cellH-22);
+  ansBox.querySelectorAll('.ans .txt').forEach(el=>
+    shrinkToFit(el, box, Math.min(21, window.innerWidth*0.017), 9));
+  const pad=(card.offsetHeight-card.clientHeight);
+  const budget=Math.max(36, wordH - pad - ($('#hPrompt').offsetHeight||0) - 16);
+  shrinkToFit($('#hWord'), budget, Math.min(46, window.innerWidth*0.036), 13);
+}
+function fitPlayerQuestion(){
+  const vh=window.innerHeight;
+  shrinkToFit($('#pWord'), Math.max(90, vh*0.26), Math.min(64, window.innerWidth*0.13), 16);
+  const maxA=Math.max(58, vh*0.16);
+  $('#pAnswers').querySelectorAll('.ans .txt').forEach(el=>
+    shrinkToFit(el, maxA, Math.min(24, window.innerWidth*0.05), 12));
+}
+let fitT;
+const refit=()=>{
+  if($('#scHostGame').classList.contains('on')) fitHostQuestion();
+  if($('#scPlay').classList.contains('on')) fitPlayerQuestion();
+};
+try{ document.fonts && document.fonts.ready.then(()=>setTimeout(refit,60)); }catch(e){}
+window.addEventListener('orientationchange', ()=>setTimeout(refit,350));
+window.addEventListener('resize', ()=>{
+  clearTimeout(fitT);
+  fitT=setTimeout(refit, 180);
+});
 function makeQR(box, text, size){
   if(!box) return;
   box.innerHTML='';
@@ -1655,9 +1763,6 @@ function renderQuestion(r){
   $('#pQn').textContent=r.qIndex+1; $('#pQt').textContent=r.qTotal;
   $('#pPrompt').textContent = q.prompt||'';
   $('#pWord').textContent = q.word;
-  $('#pWord').style.fontSize = q.word.length>60 ? 'clamp(17px,4vw,25px)'
-                             : q.word.length>26 ? 'clamp(20px,5vw,34px)'
-                             : q.word.length>12 ? 'clamp(26px,7vw,46px)' : '';
   $('#pLocked').classList.add('hide');
   const two = q.choices.length<=2;
   const box=$('#pAnswers');
@@ -1680,7 +1785,7 @@ function renderQuestion(r){
   box.innerHTML = order.map((oi,pos)=>{
     const c=q.choices[oi];
     const k = (q.type==='tf'?oi:pos);
-    return `<button class="ans a${k}" data-i="${oi}"><span class="shape">${SHAPES[k]||''}</span><span>${esc(c.t)}</span></button>`;
+    return `<button class="ans a${k}" data-i="${oi}"><span class="shape">${SHAPES[k]||''}</span><span class="txt">${esc(c.t)}</span></button>`;
   }).join('');
   box.querySelectorAll('.ans').forEach(b=> b.onclick=()=>answer(+b.dataset.i, b));
 
@@ -1689,7 +1794,8 @@ function renderQuestion(r){
   if(fog){ card.style.filter='blur(14px)'; setTimeout(()=>card.style.transition='filter .5s',50); setTimeout(()=>card.style.filter='',4000); }
   if(flip){ const sc=$('#scPlay'); sc.style.transform='rotate(180deg)'; setTimeout(()=>{sc.style.transition='transform .6s';sc.style.transform='';},5000); }
 
-  show('scPlay'); hideFlash(); sfx(hex?'hex':'q');
+  show('scPlay'); requestAnimationFrame(fitPlayerQuestion);
+  hideFlash(); sfx(hex?'hex':'q');
   if(P.bgmUrl) playMusic(bgmEl(), P.bgmUrl);
   const elapsed = r.startAt ? Math.max(0, Date.now()-r.startAt) : 0;
   startTimer(limit, elapsed);
@@ -1978,8 +2084,8 @@ function syncAutoUI(){
 }
 function cancelAuto(){ clearInterval(H.autoT); H.autoT=null; }
 function autoLabel(stage){
-  if(stage==='reveal') return 'ดูอันดับ 📊';
-  return H.qIndex>=H.quiz.length-1 ? 'ดูผลสรุป 🏆' : 'ข้อถัดไป ▶';
+  if(stage==='reveal') return isLast() ? 'ดูผลสรุป 🏆' : 'ดูอันดับ 📊';
+  return isLast() ? 'ดูผลสรุป 🏆' : 'ข้อถัดไป ▶';
 }
 function startAutoCountdown(stage){
   cancelAuto();
@@ -1993,7 +2099,7 @@ function startAutoCountdown(stage){
     if(!H.autoPlay){ cancelAuto(); btn.textContent=label; if(btn3) btn3.textContent=label; return; }
     btn.textContent = `${label}  (${H.autoLeft})`; if(btn3) btn3.textContent=btn.textContent;
     if(H.autoLeft<=0){ cancelAuto(); btn.textContent=label; if(btn3) btn3.textContent=label;
-      if(stage==='reveal') showScoreboard(); else goNext();
+      if(stage==='reveal'){ isLast() ? endGame() : showScoreboard(); } else goNext();
       return; }
     H.autoLeft--;
   };
@@ -2180,7 +2286,8 @@ async function nextQuestion(){
   H.unsubAns = onSnapshot(query(collection(db,'rooms',H.pin,'answers'), where('q','==',H.qIndex)), s=>{
     s.docChanges().forEach(c=>{ if(c.type!=='removed') H.answers.set(c.doc.data().pid, c.doc.data()); });
     $('#hAnsCount').textContent=H.answers.size;
-    if(H.answers.size>0 && H.answers.size>=H.players.size && !H.revealed) setTimeout(()=>doReveal(),600);
+    const need=Math.max(1, H.players.size);
+    if(H.answers.size>0 && H.answers.size>=need && !H.revealed) setTimeout(()=>{ if(!H.revealed) doReveal(); },400);
   });
   startHostTimer();
 }
@@ -2191,23 +2298,21 @@ function renderHostQuestionUI(q){
   $('#hTimer').title='เวลาข้อนี้ '+qTime(q)+' วินาที';
   $('#hPrompt').textContent=q.prompt||'';
   $('#hWord').textContent=q.word;
-  $('#hWord').style.fontSize = q.word.length>60 ? 'clamp(18px,3.4vw,26px)'
-                             : q.word.length>26 ? 'clamp(22px,4.4vw,36px)'
-                             : q.word.length>12 ? 'clamp(28px,6vw,50px)' : '';
   const two=q.choices.length<=2;
   const box=$('#hAnswers');
   box.className='answers '+(two?'two':'four')+(q.type==='tf'?' tf':'');
   box.innerHTML=q.choices.map((c,i)=>`<div class="ans a${i}" data-i="${i}">
-    <span class="mk"></span><span class="shape">${SHAPES[i]||''}</span><span>${esc(c.t)}</span></div>`).join('');
+    <span class="mk"></span><span class="shape">${SHAPES[i]||''}</span><span class="txt">${esc(c.t)}</span></div>`).join('');
   // โครงกราฟแท่ง (ยังไม่เผยตัวเลขจนกว่าจะเฉลย)
   const cols=$('#hCols');
-  cols.className='cols '+(two?'two':'four');
+  cols.className='cols hide '+(two?'two':'four');   // ซ่อนไว้ก่อน เผยตอนเฉลย
   cols.innerHTML=q.choices.map((c,i)=>`<div class="col" data-i="${i}">
     <div class="n">0</div><div class="bar" style="background:var(--c${i+1})"></div>
     <div class="base" style="background:var(--c${i+1})">${SHAPES[i]||''}</div></div>`).join('');
   $('#hAnsCount').textContent=0; $('#hPlayerCount').textContent=H.players.size;
   $('#hBars2').innerHTML=''; $('#hExplain').classList.add('hide');
-  $('#btnNextQ').classList.add('hide'); $('#btnNextQ3').classList.add('hide');
+  requestAnimationFrame(()=>{ fitHostQuestion(); requestAnimationFrame(fitHostQuestion); });
+  $('#revealBtns').classList.add('hide'); $('#revealBtns3').classList.add('hide');
   $('#btnSkip').classList.remove('hide');
 }
 
@@ -2226,8 +2331,12 @@ function startHostTimer(){
   tick(); H.timer=setInterval(tick,150);
 }
 $('#btnSkip').onclick = ()=>{ if(!H.revealed) doReveal(); };
-$('#btnNextQ').onclick  = ()=>{ cancelAuto(); showScoreboard(); };
-$('#btnNextQ3').onclick = ()=>{ cancelAuto(); showScoreboard(); };
+const isLast = () => H.qIndex >= H.quiz.length-1;
+const afterReveal = ()=>{ cancelAuto(); isLast() ? endGame() : showScoreboard(); };
+$('#btnNextQ').onclick  = afterReveal;
+$('#btnNextQ3').onclick = afterReveal;
+$('#btnSkipBoard').onclick  = ()=>{ cancelAuto(); goNext(); };   // ข้ามตารางอันดับ ไปช่วงไอเทม/ข้อถัดไปเลย
+$('#btnSkipBoard3').onclick = ()=>{ cancelAuto(); goNext(); };
 $('#btnNextQ2').onclick = ()=>{ cancelAuto(); goNext(); };
 $('#btnSkipPrank').onclick = ()=>{ endPrankWindow(); };
 
@@ -2248,6 +2357,12 @@ async function goNext(){
   H.unsubItems && H.unsubItems();
   H.unsubItems = onSnapshot(query(collection(db,'rooms',H.pin,'items'), where('q','==',nq)), s=>{
     $('#pkUsed').textContent=s.size;
+    const need=(H.lastWinners||[]).length;
+    if(need && s.size>=need && H.prankT){        // ใช้ครบทุกคนแล้ว ไม่ต้องรอเวลาหมด
+      clearInterval(H.prankT); H.prankT=null;
+      $('#pkCount').textContent='0';
+      setTimeout(()=>endPrankWindow(), 1400);
+    }
     $('#pkFeed').innerHTML = s.docs.map(d=>{
       const v=d.data()||{}, it=itemDef(v.t);
       const to = (v.to && v.to!==v.from) ? ((H.players.get(v.to)||{}).name||'เพื่อน') : null;
@@ -2388,6 +2503,7 @@ async function doReveal(){
   }).join('');
   // กราฟแท่งแนวตั้งบนหน้าคำถาม (สไตล์ Kahoot)
   const maxN=Math.max(1, ...counts);
+  $('#hCols').classList.remove('hide');
   $('#hCols').querySelectorAll('.col').forEach(el=>{
     const i=+el.dataset.i, v=counts[i]||0;
     el.classList.add('shown');
@@ -2398,9 +2514,12 @@ async function doReveal(){
   });
   $('#hExplain').innerHTML=`<b>เฉลย: ${esc(q.choices[q.correct].t)}</b>${q.explain?('<br>'+esc(q.explain)):''}`;
   $('#hExplain').classList.remove('hide');
-  $('#btnNextQ').classList.remove('hide');
-  $('#btnNextQ3').classList.remove('hide');
-  $('#btnNextQ').textContent = H.qIndex>=H.quiz.length-1 ? 'ดูผลสรุป 🏆' : 'ข้อถัดไป ▶';
+  $('#revealBtns').classList.remove('hide');
+  $('#revealBtns3').classList.remove('hide');
+  const lastQ = isLast();
+  $('#btnSkipBoard').classList.toggle('hide', lastQ);
+  $('#btnSkipBoard3').classList.toggle('hide', lastQ);
+  $('#btnNextQ').textContent = lastQ ? 'ดูผลสรุป 🏆' : 'ดูอันดับ 📊';
   $('#btnNextQ3').textContent = $('#btnNextQ').textContent;
   $('#btnSkip').classList.add('hide');
   const pcOk=Math.round(correctN/total*100);
@@ -2410,6 +2529,7 @@ async function doReveal(){
   $('#stFast').textContent = fastest ? `${fastest.e} ${(fastest.ms/1000).toFixed(1)}s` : '-';
   H.lastStat = { correctPc: Math.round(correctN/total*100), fast: fastest?`${fastest.e} ${(fastest.ms/1000).toFixed(1)}s`:'-' };
   refreshDash();
+  requestAnimationFrame(()=>{ fitHostQuestion(); requestAnimationFrame(fitHostQuestion); });
   startAutoCountdown('reveal');
 }
 
@@ -2434,6 +2554,7 @@ $$('.htabs button').forEach(b=> b.onclick=()=>{
   $$('.hgpane').forEach(x=>x.classList.add('hide'));
   $('#'+b.dataset.hg).classList.remove('hide');
   if(b.dataset.hg==='hgQr') renderHostQr();
+  if(b.dataset.hg==='hgQ') requestAnimationFrame(fitHostQuestion);
   sfx('tap');
 });
 function renderHostQr(){
