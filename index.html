@@ -641,6 +641,9 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
       <h3>🎵 เพลงประกอบ</h3>
       <p class="muted">วาง <b>direct link</b> ของไฟล์เสียง (.mp3 / .m4a / .ogg) เช่นลิงก์จาก GitHub raw หรือเว็บโฮสต์ไฟล์เสียงที่เปิดตรงได้<br>
         ⚠️ ลิงก์แชร์ของ Google Drive / YouTube ใช้ไม่ได้</p>
+      <div class="field"><label>เพลงห้องรอผู้เล่น (Lobby)</label>
+        <div class="row"><input class="grow" id="inLobby" placeholder="https://.../lobby.mp3">
+          <button class="btn-sm btn-ghost" id="btnTestLobby">▶ ทดสอบ</button></div></div>
       <div class="field"><label>เพลงพื้นหลังระหว่างเล่นเกม</label>
         <div class="row"><input class="grow" id="inBgm" placeholder="https://.../background.mp3">
           <button class="btn-sm btn-ghost" id="btnTestBgm">▶ ทดสอบ</button></div></div>
@@ -653,6 +656,10 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
         <div class="grow field"><label>เสียงเอฟเฟกต์ (ตอบถูก/ผิด/นับถอยหลัง)</label>
           <select id="inSfx"><option value="1" selected>เปิด</option><option value="0">ปิด</option></select></div>
       </div>
+      <div class="field"><label>เสียงเอฟเฟกต์ตอนคะแนนวิ่ง (หน้าสรุปอันดับ)</label>
+        <div class="row"><input class="grow" id="inWheel" placeholder="https://.../krunonquizzwheel.mp3">
+          <button class="btn-sm btn-ghost" id="btnTestWheel">▶ ทดสอบ</button></div>
+        <p class="muted" style="margin:6px 0 0">ค่าเริ่มต้นใช้ไฟล์ <code>krunonquizzwheel.mp3</code> ของครูนนทพัทธ์ — เว้นว่างเพื่อปิดเสียงนี้</p></div>
       <button class="btn-sm btn-no" id="btnStopTest">■ หยุดทดสอบ</button>
       <button class="btn-lg" id="btnSaveSys" style="margin-top:12px">💾 บันทึกการตั้งค่าขึ้น Firestore</button>
     </div>
@@ -926,6 +933,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 </div>
 <audio id="bgm" loop playsinline preload="none"></audio>
 <audio id="endm" loop playsinline preload="none"></audio>
+<audio id="sfxa" playsinline preload="none"></audio>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1063,13 +1071,27 @@ function playMusic(el,url){
   try{ if(el.src!==url) el.src=url; el.volume=SND.vol; el.play().catch(()=>{}); }catch(e){}
 }
 function stopMusic(el){ try{ el.pause(); }catch(e){} }
+const sfxaEl=()=>document.getElementById('sfxa');
+function playSfxUrl(url, dur){
+  if(!url || SND.muted || !SND.sfxOn) return;
+  const el=sfxaEl(); if(!el) return;
+  try{
+    if(el.src!==url) el.src=url;
+    el.currentTime=0;
+    el.volume=Math.min(1, Math.max(.4, (SND.vol||.3)*1.8));
+    el.play().catch(()=>{});
+    clearTimeout(el._t);
+    if(dur>0) el._t=setTimeout(()=>{ try{ el.pause(); }catch(e){} }, dur);
+  }catch(e){}
+}
+function stopSfxUrl(){ const el=sfxaEl(); if(!el) return; clearTimeout(el._t); try{ el.pause(); }catch(e){} }
 function updateMuteBtn(){ const b=document.getElementById('btnMute'); if(b) b.textContent = SND.muted?'🔇':'🔊'; }
 function initAudioUI(){
   const b=document.getElementById('btnMute'); if(!b) return;
   updateMuteBtn();
   b.onclick=()=>{
     SND.muted=!SND.muted; localStorage.setItem('kq_mute', SND.muted?'1':'0'); updateMuteBtn();
-    if(SND.muted){ stopMusic(bgmEl()); stopMusic(endmEl()); } else { ac(); }
+    if(SND.muted){ stopMusic(bgmEl()); stopMusic(endmEl()); stopSfxUrl(); } else { ac(); }
   };
 }
 
@@ -1101,7 +1123,8 @@ function applyBrand(){
 }
 const tfLabels = q => [ (q && q.t0) || BRAND.tfT || 'ถูก', (q && q.t1) || BRAND.tfF || 'ผิด' ];
 
-let SYS = { bgm:'', endm:'', vol:30, sfx:1 };
+const DEF_WHEEL = 'https://nonthaphathr.github.io/uploadimg/krunonquizzwheel.mp3';
+let SYS = { bgm:'', endm:'', lobby:'', wheel:DEF_WHEEL, vol:30, sfx:1 };
 async function loadSettings(){
   try{
     const [b,g] = await Promise.all([ getDoc(doc(db,'bank','brand')), getDoc(doc(db,'bank','settings')) ]);
@@ -1557,9 +1580,14 @@ function listenRoom(){
     P.limit = r.timeLimit||DEF_TIME;
     P.roster = r.roster||[];
     if(r.brand && !P.brandSet){ P.brandSet=true; BRAND={...BRAND,...r.brand}; applyBrand(); }
-    if(r.snd && !P.sndSet){ P.sndSet=true; SND.vol=(r.snd.vol||30)/100; SND.sfxOn=!!(+((r.snd.sfx)??1)); P.bgmUrl=r.snd.bgm||''; P.endUrl=r.snd.endm||''; }
+    if(r.snd && !P.sndSet){ P.sndSet=true; SND.vol=(r.snd.vol||30)/100; SND.sfxOn=!!(+((r.snd.sfx)??1));
+      P.bgmUrl=r.snd.bgm||''; P.endUrl=r.snd.endm||''; P.lobbyUrl=r.snd.lobby||''; P.wheelUrl=r.snd.wheel||''; }
     P.stage = r.status + ':' + r.qIndex;
-    if(r.status==='lobby'){ $('#waitCount').textContent = Math.max(r.playerCount||0, 1); show('scWait'); }
+    if(r.status==='lobby'){
+      $('#waitCount').textContent = Math.max(r.playerCount||0, 1);
+      if(P.lobbyUrl) playMusic(bgmEl(), P.lobbyUrl);
+      show('scWait');
+    }
     else if(r.status==='question'){
       if(r.qIndex!==P.qIndex) renderQuestion(r);
       else if(!$('#scPlay').classList.contains('on')) show('scPlay');
@@ -1703,6 +1731,7 @@ function renderReveal(r){
 
   const totalNow = (last&&last.total)||(P.me&&P.me.score)||0;
   tally($('#fbTotal'), P.prevTotal||0, totalNow, 1000, 250);
+  if(P.wheelUrl && totalNow!==(P.prevTotal||0)) playSfxUrl(P.wheelUrl, 1400);
   P.prevTotal = totalNow;
   const notes=[];
   if(last&&last.x2)  notes.push('⚡ ไอเทมแต้ม x2 ทำงาน — คะแนนข้อนี้คูณสอง');
@@ -1997,7 +2026,8 @@ $('#btnCreateRoom').onclick = async ()=>{
     await setDoc(roomRef(), { status:'lobby', qTotal:quiz.length, qIndex:-1, timeLimit:tl, prankOn:!!pp,
       playerCount:0, roster:[], setName:set.name, createdAt:Date.now(),
       brand:{ name:BRAND.name, sub:BRAND.sub, logo:BRAND.logo, favicon:BRAND.favicon, credit:BRAND.credit },
-      snd:{ bgm:SYS.bgm||'', endm:SYS.endm||'', vol:SYS.vol||30, sfx:+SYS.sfx } });
+      snd:{ bgm:SYS.bgm||'', endm:SYS.endm||'', lobby:SYS.lobby||'', wheel:(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel)||'',
+            vol:SYS.vol||30, sfx:+SYS.sfx } });
     await setDoc(doc(db,'rooms',H.pin,'private','quiz'), { items:H.quiz, timeLimit:tl, prankOn:!!pp });
     ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
     const custom = quiz.filter(x=>+x.time>0).length;
@@ -2016,7 +2046,8 @@ $('#btnResume').onclick = async ()=>{
   H.pin=pin; const d=r.data();
   H.quiz = q.exists()? q.data().items : [];
   H.timeLimit=d.timeLimit||DEF_TIME; H.prankOn=!!d.prankOn; H.qIndex=d.qIndex??-1; H.setName=d.setName||'';
-  if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, vol:d.snd.vol, sfx:d.snd.sfx}; SND.vol=(d.snd.vol||30)/100; SND.sfxOn=!!(+d.snd.sfx); }
+  if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, lobby:d.snd.lobby||'', wheel:d.snd.wheel||'',
+                   vol:d.snd.vol, sfx:d.snd.sfx}; SND.vol=(d.snd.vol||30)/100; SND.sfxOn=!!(+d.snd.sfx); }
   ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
   const ps=await getDocs(collection(db,'rooms',pin,'players'));
   H.players.clear(); ps.forEach(p=>H.players.set(p.id,{id:p.id,...p.data()}));
@@ -2032,6 +2063,7 @@ function openLobby(){
   makeQR($('#qrBox'), joinUrl(H.pin), 200);
   $('#qrBox2').dataset.pin='';
   H.players.clear(); renderHostPlayers();
+  if(SYS.lobby){ ac(); playMusic(bgmEl(), SYS.lobby); }
   H.unsubPlayers && H.unsubPlayers();
   H.unsubPlayers = onSnapshot(collection(db,'rooms',H.pin,'players'), snap=>{
     snap.docChanges().forEach(c=>{
@@ -2064,7 +2096,7 @@ $('#btnStartGame').onclick = async ()=>{
   H.unsubPlayers && H.unsubPlayers(); H.unsubPlayers=null;
   const roster=[...H.players.values()].map(p=>({id:p.id,n:p.name,e:p.emoji}));
   await updateDoc(roomRef(), { roster, playerCount:H.players.size });
-  H.qIndex=-1; sfx('start'); nextQuestion();
+  stopMusic(bgmEl()); H.qIndex=-1; sfx('start'); nextQuestion();
 };
 
 const qTime = q => (q && +q.time>0) ? +q.time : H.timeLimit;
@@ -2365,11 +2397,10 @@ function showScoreboard(){
       <div class="nm">${esc(p.name)}${tags} ${gtxt}</div>
       ${mv}<div class="sc" data-from="${from}" data-to="${p.score||0}">${from.toLocaleString()}</div></div>`;
   }).join('') || '<p class="muted center">ยังไม่มีผู้เล่น</p>';
-  // แอนิเมชันนับคะแนนวิ่งขึ้นทีละคน
-  $('#sbRows').querySelectorAll('.sc[data-to]').forEach((el,i)=>{
-    tally(el, +el.dataset.from, +el.dataset.to, 1100, 320 + i*90);
-  });
-  if(arr.length){ setTimeout(()=>sfx('reveal'), 320); }
+  // แอนิเมชันนับคะแนนวิ่งขึ้นทีละคน + เสียงประกอบ
+  const rows=$('#sbRows').querySelectorAll('.sc[data-to]');
+  rows.forEach((el,i)=>{ tally(el, +el.dataset.from, +el.dataset.to, 1100, 320 + i*90); });
+  if(rows.length && SYS.wheel) playSfxUrl(SYS.wheel, 320 + (rows.length-1)*90 + 1250);
   if(H.prankOn && H.lastWinners && H.lastWinners.length){
     $('#sbHexNote').style.display='block';
     $('#sbHexNote').innerHTML = `🎁 ผู้ได้รับไอเทมสำหรับข้อถัดไป (⚡ x2 / 🛡️ โล่ / 😈 แกล้งเพื่อน): <b>${H.lastWinners.map(esc).join(' • ')}</b>`;
@@ -2396,6 +2427,7 @@ async function endGame(){
     <tr><td>${i+1}</td><td>${esc(p.emoji)} ${esc(p.name)}</td><td>${p.correct||0}</td>
     <td style="font-family:Mitr;font-weight:700;color:#fde047" data-to="${p.score||0}">0</td></tr>`).join('');
   $('#hostEndRows').querySelectorAll('[data-to]').forEach((el,i)=>tally(el, 0, +el.dataset.to, 1200, 200+i*70));
+  if(SYS.wheel) playSfxUrl(SYS.wheel, 2600);
   $('#hostPodium').querySelectorAll('.sc[data-to]').forEach((el,i)=>tally(el, 0, +el.dataset.to, 1400, 400+i*220));
   show('scHostEnd');
 }
@@ -2409,6 +2441,7 @@ $('#btnCsv').onclick=()=>{
 /* ---------- sound settings ---------- */
 function renderSys(){
   $('#inBgm').value=SYS.bgm||''; $('#inEndm').value=SYS.endm||'';
+  $('#inLobby').value=SYS.lobby||''; $('#inWheel').value=(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel);
   $('#inVol').value=String(SYS.vol||30); $('#inSfx').value=String(+SYS.sfx);
 }
 $('#btnTestBgm').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
@@ -2417,9 +2450,16 @@ $('#btnTestBgm').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_m
 $('#btnTestEnd').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
   SND.vol=(+$('#inVol').value)/100; const u=$('#inEndm').value.trim();
   if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(bgmEl()); playMusic(endmEl(),u); toast('กำลังทดสอบเพลงสรุปผล'); };
-$('#btnStopTest').onclick=()=>{ stopMusic(bgmEl()); stopMusic(endmEl()); };
+$('#btnTestLobby').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
+  SND.vol=(+$('#inVol').value)/100; const u=$('#inLobby').value.trim();
+  if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(endmEl()); playMusic(bgmEl(),u); toast('กำลังทดสอบเพลงห้องรอ'); };
+$('#btnTestWheel').onclick=()=>{ ac(); SND.muted=false; SND.sfxOn=true; localStorage.setItem('kq_mute','0'); updateMuteBtn();
+  SND.vol=(+$('#inVol').value)/100; const u=$('#inWheel').value.trim();
+  if(!u) return toast('ยังไม่ได้วางลิงก์เสียง'); playSfxUrl(u, 4000); toast('กำลังทดสอบเสียงคะแนนวิ่ง'); };
+$('#btnStopTest').onclick=()=>{ stopMusic(bgmEl()); stopMusic(endmEl()); stopSfxUrl(); };
 $('#btnSaveSys').onclick=async ()=>{
   SYS={ bgm:$('#inBgm').value.trim(), endm:$('#inEndm').value.trim(),
+        lobby:$('#inLobby').value.trim(), wheel:$('#inWheel').value.trim(),
         vol:+$('#inVol').value, sfx:+$('#inSfx').value };
   SND.vol=SYS.vol/100; SND.sfxOn=!!SYS.sfx;
   try{ await setDoc(doc(db,'bank','settings'),{...SYS,updatedAt:Date.now()}); toast('บันทึกการตั้งค่าเรียบร้อย ✅'); }
