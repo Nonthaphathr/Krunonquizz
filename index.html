@@ -294,6 +294,14 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 #scHostGame #revealBtns .grow,#scHostGame #revealBtns3 .grow{flex:1 1 auto;min-width:0}
 #scHostGame #hCols,#scHostGame #hAnswers{flex:0 0 auto}
 #scHostGame #hgQ>.card:last-child{flex:0 0 auto;margin-top:0}
+#scHostGame.rv .htabs{margin:4px 0}
+#scHostGame.rv .card{padding:8px 12px}
+#scHostGame.rv .qtop{margin-bottom:4px}
+#scHostGame.rv .ans{padding:6px 10px;box-shadow:0 3px 0 rgba(0,0,0,.26)}
+#scHostGame.rv .ans .shape{font-size:17px}
+#scHostGame.rv .explain{max-height:7vh;padding:6px 10px;font-size:13px}
+#scHostGame.rv #revealBtns{margin-top:6px!important}
+#scHostGame.rv #revealBtns .btn-lg{padding:8px 16px;font-size:15px}
 #scHostGame #hgStat,#scHostGame #hgQr{overflow:auto}
 #scHostGame .word-big{margin:0}
 #scHostGame .card{padding:12px 14px}
@@ -323,12 +331,15 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 .cols.hide{display:none !important}
 .cols.four{grid-template-columns:repeat(4,1fr)}
 .cols.two{grid-template-columns:repeat(2,1fr)}
-.col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
-.col .n{font-family:'Mitr';font-weight:700;font-size:clamp(20px,4.4vw,34px);line-height:1.1;margin-bottom:4px;
+.col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-height:0}
+.col .trk{flex:1 1 auto;min-height:0;width:100%;position:relative}
+.col .n{flex:none;font-family:'Mitr';font-weight:700;font-size:clamp(18px,3vw,30px);line-height:1.1;margin-bottom:3px;
   opacity:0;transition:opacity .3s}
 .col.shown .n{opacity:1}
-.col .bar{width:100%;height:0;border-radius:10px 10px 0 0;transition:height .85s cubic-bezier(.2,.9,.3,1)}
-.col .base{width:100%;height:36px;border-radius:0 0 10px 10px;display:grid;place-items:center;
+.col .bar{position:absolute;left:0;right:0;bottom:0;width:auto;height:0;display:block;overflow:visible;
+  border-radius:10px 10px 0 0;transition:height .85s cubic-bezier(.2,.9,.3,1)}
+.col .n small{font-size:.5em;opacity:.85;font-weight:600;margin-left:3px}
+.col .base{flex:none;width:100%;height:30px;border-radius:0 0 10px 10px;display:grid;place-items:center;
   font-size:20px;color:#fff;filter:brightness(.85)}
 .col.win .n{color:#fde047}
 .col.win .bar{box-shadow:0 0 26px 4px rgba(253,224,71,.55)}
@@ -387,6 +398,20 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 .tcard .e{font-size:34px;line-height:1}
 .tcard .nm{font-size:15px;font-weight:600;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tcard .hit{font-size:12px;color:#fde047;font-weight:600}
+
+/* ---------- สวนสักหมัด / ล็อกจอ ---------- */
+.kqov{position:fixed;inset:0;z-index:96;display:none;align-items:center;justify-content:center;padding:18px;
+  background:rgba(10,2,30,.9);backdrop-filter:blur(4px)}
+.kqov.on{display:flex}
+.kqov.lock{z-index:120;background:rgba(40,0,10,.92)}
+.kqbox{max-width:460px;width:100%;text-align:center;background:linear-gradient(135deg,rgba(239,68,68,.35),rgba(139,92,246,.3));
+  border:2px solid rgba(255,255,255,.25);border-radius:22px;padding:20px 18px;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+.kqttl{font-family:'Mitr';font-weight:700;font-size:clamp(26px,7vw,40px);color:#fde047;margin-top:6px}
+.rv-ic{animation:wob .5s infinite alternate}
+.lk-ic{animation:lkShake .45s infinite alternate}
+@keyframes lkShake{from{transform:rotate(-10deg)}to{transform:rotate(10deg) scale(1.06)}}
+.chip .kick{margin-left:4px;border:0;background:rgba(239,68,68,.85);color:#fff;border-radius:50%;width:24px;height:24px;
+  font-size:13px;line-height:24px;padding:0;cursor:pointer;flex:none}
 
 /* ---------- prank window ---------- */
 .pk-hero{text-align:center;padding:10px 0 4px}
@@ -571,6 +596,29 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   <div style="font-size:40px" id="hexIcon">🌫️</div>
   <div style="font-family:'Mitr';font-size:20px;font-weight:700" id="hexTitle">โดนแกล้ง!</div>
   <div style="font-size:14px;opacity:.95" id="hexBy">จาก —</div>
+</div>
+
+<!-- ===== สวนสักหมัด : สิทธิ์เอาคืน ===== -->
+<div id="revOv" class="kqov">
+  <div class="kqbox">
+    <div style="font-size:64px;line-height:1" class="rv-ic">👊</div>
+    <div class="kqttl">ได้สิทธิ์ สวนสักหมัด!</div>
+    <p id="revTxt" style="margin:6px 0 10px">คุณถูกแกล้งหลายครั้งในรอบนี้</p>
+    <div class="players" id="revList" style="justify-content:center"></div>
+    <p class="muted" id="revHint" style="margin:10px 0 12px">กดปุ่มเพื่อล็อกหน้าจอทุกคนที่เคยแกล้งคุณ ในข้อถัดไป<br>(ใช้ได้เฉพาะรอบนี้ — ใช้แล้วจะเริ่มนับใหม่)</p>
+    <button class="btn-lg btn-warn" id="btnRevenge">👊 สวนสักหมัด!</button>
+    <button class="btn-lg btn-ghost" id="btnRevClose" style="margin-top:8px">ไม่เป็นไร ปล่อยไป</button>
+  </div>
+</div>
+<!-- ===== ถูกเอาคืน : ล็อกหน้าจอ ===== -->
+<div id="lockOv" class="kqov lock">
+  <div class="kqbox">
+    <div style="font-size:78px;line-height:1" class="lk-ic">🔒</div>
+    <div class="kqttl">สวนสักหมัด!</div>
+    <p style="margin:6px 0 4px;font-size:18px">คุณถูกเอาคืนโดย <b id="lockBy" style="color:#fde047">—</b></p>
+    <div class="bigcount" id="lockRing" style="margin:12px auto 4px"><span id="lockCount">0</span></div>
+    <p class="muted" style="margin:0">หน้าจอถูกล็อกชั่วคราว รอสักครู่…</p>
+  </div>
 </div>
 
 <!-- ========== PLAYER: PRANK WINDOW (ผู้ที่ไม่ได้ไอเทม) ========== -->
@@ -1032,7 +1080,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   </div>
   <div class="card">
     <div class="row between"><h3 style="margin:0">ตารางอันดับทั้งหมด</h3>
-      <button class="btn-sm btn-ghost" id="btnCsv">⬇ ดาวน์โหลด .csv</button></div>
+      <button class="btn-sm btn-ghost" id="btnCsv">⬇ ส่งออกผลคะแนน</button></div>
     <div class="tbl-wrap" style="margin-top:10px">
       <table><thead><tr><th style="width:44px">#</th><th>ผู้เล่น</th><th style="width:70px">ตอบถูก</th><th style="width:90px">คะแนน</th></tr></thead>
       <tbody id="hostEndRows"></tbody></table>
@@ -1044,6 +1092,31 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 </div><!-- /wrap -->
 </div><!-- /app -->
 <!-- ========== MODAL : MASTER PROMPT ========== -->
+<!-- ===== ส่งออกผลคะแนน ===== -->
+<div id="exportModal" class="ovl">
+  <div class="sheet">
+    <div class="card">
+      <h3 style="margin-top:0">⬇ ส่งออกผลคะแนน</h3>
+      <p class="muted" style="margin:0 0 10px">ได้ไฟล์ Excel (.xlsx) 2 ชีต: <b>คะแนนดิบ</b> และ <b>คะแนนแปลง</b> ตามคะแนนเต็มที่กรอก</p>
+      <div class="field"><label>คะแนนเต็มที่ต้องการแปลง</label>
+        <input type="number" id="exFull" min="1" step="any" value="10" inputmode="decimal"></div>
+      <div class="field" style="margin-top:10px"><label>แปลงจาก</label>
+        <select id="exBasis">
+          <option value="correct">จำนวนข้อที่ตอบถูก (ถูก ÷ จำนวนข้อทั้งหมด × คะแนนเต็ม)</option>
+          <option value="score">คะแนนในเกม (คะแนน ÷ คะแนนสูงสุดในห้อง × คะแนนเต็ม)</option>
+        </select></div>
+      <div class="field" style="margin-top:10px"><label>ทศนิยม</label>
+        <select id="exDec"><option value="0">ไม่มีทศนิยม (ปัดเศษ)</option><option value="1">1 ตำแหน่ง</option><option value="2" selected>2 ตำแหน่ง</option></select></div>
+      <p class="muted" id="exPreview" style="margin:10px 0 0"></p>
+      <div class="row" style="margin-top:14px">
+        <button class="btn-lg btn-ok grow" id="btnExGo">⬇ ดาวน์โหลด .xlsx</button>
+        <button class="btn-lg btn-ghost" id="btnExCsv" style="flex:0 0 auto">.csv (คะแนนดิบ)</button>
+      </div>
+      <button class="btn-lg btn-ghost" id="btnExClose" style="margin-top:8px">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
 <div id="promptModal" class="ovl">
   <div class="sheet">
     <div class="row between" style="margin-bottom:10px">
@@ -1248,6 +1321,8 @@ const db  = getFirestore(app);
 const ADMIN_PASS   = "krunont";   // << เปลี่ยนรหัสผ่านครูได้ที่นี่
 const BASE_SCORE   = 1000;        // คะแนนเต็มต่อข้อ
 const STREAK_BONUS = 100;         // โบนัสต่อสตรีค (สูงสุด 5)
+const REVENGE_MIN  = 3;           // ถูกแกล้งสะสมตลอดเกมครบกี่ครั้ง (นับต่อจากการสวนครั้งล่าสุด) จึงได้สิทธิ์ "สวนสักหมัด" ในรอบที่ครบ
+const LOCK_RATIO   = 0.75;        // สวนสักหมัด: ล็อกจอผู้ที่แกล้ง = 3/4 ของเวลาข้อนั้น
 const CUT_POINTS   = 300;         // คะแนนที่ถูกหักเมื่อโดนไอเทม "ตัดแต้ม"
 const DEF_TIME     = 10;          // เวลาต่อข้อเริ่มต้น (วินาที)
 const PRANK_SECS   = 25;          // ความยาว "ช่วงเวลาแห่งการกลั่นแกล้ง" (วินาที)
@@ -1310,11 +1385,14 @@ function fitHostQuestion(){
   const tailH  = (tail && tail!==card && !tail.classList.contains('hide')) ? tail.offsetHeight : 0;
   const colsOn = !cols.classList.contains('hide');
   let rest = avail - tailH - gap*3;
-  const colsH = colsOn ? Math.max(60, Math.min(150, rest*0.26)) : 0;
+  // ตอนเฉลย: ให้กราฟได้พื้นที่ราวครึ่งจอ แล้วย่อคำถาม/ตัวเลือกลง
+  const colsH = colsOn ? Math.max(120, Math.min(420, rest*0.48)) : 0;
   rest -= colsH;
   const rows = ansBox.classList.contains('two') ? 1 : 2;
-  const ansH = Math.max(44*rows+ (rows-1)*gap, Math.min(rest*0.52, 88*rows+(rows-1)*gap));
-  const wordH = Math.max(64, rest - ansH - gap);
+  const ansH = colsOn
+    ? Math.max(34*rows+(rows-1)*gap, Math.min(rest*0.5, 58*rows+(rows-1)*gap))
+    : Math.max(44*rows+ (rows-1)*gap, Math.min(rest*0.52, 88*rows+(rows-1)*gap));
+  const wordH = Math.max(colsOn?48:64, rest - ansH - gap);
   if(colsOn) cols.style.height=Math.round(colsH)+'px';
   const cellH = Math.round((ansH-(rows-1)*gap)/rows);
   ansBox.querySelectorAll('.ans').forEach(a=>a.style.height=cellH+'px');
@@ -1955,6 +2033,8 @@ $('#btnGoJoin').onclick = async ()=>{
     const s=await getDoc(doc(db,'rooms',pin));
     if(!s.exists()){ btn.disabled=false; return toast('ไม่พบห้องนี้ กรุณาตรวจสอบ PIN'); }
     if(s.data().status==='ended'){ btn.disabled=false; return toast('ห้องนี้จบเกมไปแล้ว'); }
+    let kicked=false; try{ kicked=localStorage.getItem('kq_kick_'+pin)==='1'; }catch(e){}
+    if(kicked){ btn.disabled=false; return toast('คุณถูกเชิญออกจากห้องนี้แล้ว ไม่สามารถเข้าซ้ำได้'); }
     P.pin=pin; P.roomStatus=s.data().status||'lobby';
     // เคยเล่นห้องนี้ในเครื่องนี้แล้ว → กลับเข้าเกมเดิมทันที
     const sv=savedPlayer(pin);
@@ -2004,13 +2084,25 @@ $('#btnJoin').onclick = async ()=>{
   }catch(e){ console.error(e); toast('เข้าห้องไม่สำเร็จ: '+e.message); $('#btnJoin').disabled=false; }
 };
 
+function kickedOut(){
+  P.unsubMe && P.unsubMe(); P.unsubMe=null;
+  P.unsubRoom && P.unsubRoom(); P.unsubRoom=null;
+  clearInterval(P.timer); closePrankUI(); stopMusic(bgmEl());
+  try{ localStorage.removeItem('kq_'+P.pin); localStorage.setItem('kq_kick_'+P.pin,'1'); }catch(e){}
+  P.me=null; P.id=null;
+  show('scHome'); $('#btnJoin').disabled=false;
+  alert('คุณถูกครูเชิญออกจากห้องนี้');
+}
 function listenMe(){
   P.unsubMe && P.unsubMe();
   P.unsubMe = onSnapshot(doc(db,'rooms',P.pin,'players',P.id), s=>{
-    if(!s.exists()) return;
+    if(!s.exists()){ if(P.me) kickedOut(); return; }
     const d=s.data(); P.me=d;
     $('#pScore').textContent = (d.score||0).toLocaleString();
-    if(d.hex && d.hex.q !== undefined && d.hex.q > P.qIndex) P.pendingHex = d.hex;
+    const hx = Object.values(d.hexes||{}).filter(h=>h && h.q!==undefined && h.q > P.qIndex);
+    if(d.hex && d.hex.q!==undefined && d.hex.q > P.qIndex) hx.push(d.hex);
+    if(hx.length) P.pendingHex = hx;
+    checkRevenge(); checkLock();
     if(d.hexToken && d.hexToken > P.hexUsed) P.hexToken = d.hexToken;
     // วาดหน้าเฉลยได้เฉพาะตอนที่ห้องยังอยู่ในสถานะเฉลยของข้อนั้นจริง ๆ เท่านั้น
     // (กัน snapshot ที่มาช้าย้อนกลับมาทับ ทำให้ผู้เล่นค้างหน้าผลการตอบขณะที่คนอื่นไปข้อต่อไปแล้ว)
@@ -2063,13 +2155,15 @@ function renderQuestion(r){
   let limit=(+q.time>0 ? +q.time : P.limit), fog=false, flip=false;
 
   const shielded = (P.shieldQ===r.qIndex);
-  const hex = (!shielded && P.pendingHex && P.pendingHex.q===r.qIndex) ? P.pendingHex : null;
-  if(shielded && P.pendingHex && P.pendingHex.q===r.qIndex){ P.pendingHex=null; toast('🛡️ โล่กันแกล้งทำงาน! ไอเทมของเพื่อนถูกบล็อก'); }
+  const hxList = (P.pendingHex||[]).filter(h=>h.q===r.qIndex);
+  const hex = (!shielded && hxList.length) ? hxList : null;
+  if(shielded && hxList.length){ P.pendingHex=null; toast('🛡️ โล่กันแกล้งทำงาน! ไอเทมของเพื่อนถูกบล็อก'); }
   if(hex){
-    if(hex.t==='mix')  order=shuffle(order);
-    if(hex.t==='rush') limit=Math.max(5, limit-5);
-    if(hex.t==='fog')  fog=true;
-    if(hex.t==='flip') flip=true;
+    const ts=new Set(hex.map(h=>h.t));
+    if(ts.has('mix'))  order=shuffle(order);
+    if(ts.has('rush')) limit=Math.max(5, limit-5);
+    if(ts.has('fog'))  fog=true;
+    if(ts.has('flip')) flip=true;
     showHex(hex); P.pendingHex=null;
   }
   P.order=order;
@@ -2091,6 +2185,8 @@ function renderQuestion(r){
   if(P.bgmUrl) playMusic(bgmEl(), P.bgmUrl);
   const elapsed = r.startAt ? Math.max(0, Date.now()-r.startAt) : 0;
   startTimer(limit, elapsed);
+  P.qLimit = limit; P.qStartAt = r.startAt || Date.now();
+  checkLock();
 }
 
 function hideFlash(){ const f=$('#flash'); f.classList.remove('on','ok','no'); $('#confetti').innerHTML=''; }
@@ -2115,10 +2211,12 @@ function confetti(n=44){
   }
   setTimeout(()=>box.innerHTML='',3200);
 }
-function showHex(h){
-  const p = PRANKS.find(x=>x.id===h.t)||PRANKS[0]; sfx('hex');
-  $('#hexIcon').textContent=p.e; $('#hexTitle').textContent='โดนแกล้ง! '+p.n;
-  $('#hexBy').textContent='จาก '+(h.by||'เพื่อนลึกลับ')+' '+(h.e||'😈');
+function showHex(list){
+  list = Array.isArray(list) ? list : [list];
+  const ps = list.map(h=>PRANKS.find(x=>x.id===h.t)||PRANKS[0]); sfx('hex');
+  $('#hexIcon').textContent=ps.map(p=>p.e).join(' ');
+  $('#hexTitle').textContent='โดนแกล้ง! '+[...new Set(ps.map(p=>p.n))].join(' + ');
+  $('#hexBy').textContent='จาก '+list.map(h=>(h.by||'เพื่อนลึกลับ')+' '+(h.e||'😈')).join(', ');
   const b=$('#hexBanner'); b.style.opacity='1'; b.style.transform='translate(-50%,-50%) scale(1)';
   setTimeout(()=>{ b.style.opacity='0'; b.style.transform='translate(-50%,-50%) scale(.4)'; }, 2600);
 }
@@ -2141,7 +2239,8 @@ function startTimer(limit, elapsed=0){
 }
 
 async function answer(i, btn){
-  if(P.locked) return; P.locked=true; clearInterval(P.timer);
+  if(P.locked) return;
+  if(P.lockUntil && Date.now()<P.lockUntil) return toast('🔒 หน้าจอยังถูกล็อกอยู่'); P.locked=true; clearInterval(P.timer);
   const ms=Date.now()-P.t0; sfx('tap');
   $('#pAnswers').querySelectorAll('.ans').forEach(b=>{ if(b!==btn) b.classList.add('dim'); });
   $('#pLockEmoji').textContent='✅';
@@ -2230,6 +2329,54 @@ function renderEnd(r){
   show('scEnd');
 }
 
+/* ---------- สวนสักหมัด (ผู้ถูกแกล้งหลายครั้ง) ---------- */
+function checkRevenge(){
+  const rv = P.me && P.me.revenge;
+  const ov = $('#revOv');
+  if(!rv || !P.stage.startsWith('prank') || rv.q!==P.prankFor || P.revUsed===rv.q || P.revSkip===rv.q){
+    ov.classList.remove('on'); return;
+  }
+  $('#revTxt').innerHTML = `คุณถูกเพื่อนแกล้งมาแล้ว <b>${rv.n||(rv.from||[]).length}</b> ครั้ง — ถึงเวลาเอาคืน!`;
+  $('#revList').innerHTML = (rv.names||[]).map(n=>`<span class="chip">😈 ${esc(n)}</span>`).join('');
+  if(!ov.classList.contains('on')){ ov.classList.add('on'); sfx('prank'); }
+}
+$('#btnRevClose').onclick = ()=>{ const rv=P.me&&P.me.revenge; if(rv) P.revSkip=rv.q; $('#revOv').classList.remove('on'); };
+$('#btnRevenge').onclick = async ()=>{
+  const rv=P.me&&P.me.revenge; if(!rv || P.revUsed===rv.q) return;
+  const btn=$('#btnRevenge'); btn.disabled=true;
+  try{
+    const b=writeBatch(db);
+    (rv.from||[]).forEach(id=> b.update(doc(db,'rooms',P.pin,'players',id),
+      { [`locks.${P.id}`]:{ q:rv.q, by:P.name, e:P.emoji } }));
+    b.set(doc(db,'rooms',P.pin,'items',`q${rv.q}_${P.id}_revenge`),
+      { q:rv.q, t:'revenge', to:(rv.from||[])[0]||'', tos:rv.from||[], names:rv.names||[], from:P.id, by:P.name });
+    await b.commit();
+    P.revUsed=rv.q; $('#revOv').classList.remove('on');
+    sfx('hex'); toast('👊 สวนสักหมัดสำเร็จ! เพื่อนจะถูกล็อกจอในข้อถัดไป');
+  }catch(e){ toast('ส่งไม่สำเร็จ: '+e.message); }
+  btn.disabled=false;
+};
+/* ---------- ถูกเอาคืน: ล็อกจอ 3/4 ของเวลาข้อ ---------- */
+function checkLock(){
+  if(!P.me || !P.stage.startsWith('question') || P.lockShown===P.qIndex) return;
+  const lk = Object.values(P.me.locks||{}).filter(x=>x && x.q===P.qIndex);
+  if(!lk.length || !P.qLimit) return;
+  P.lockShown = P.qIndex;
+  const dur = Math.round(P.qLimit*LOCK_RATIO*1000);
+  P.lockUntil = (P.qStartAt||Date.now()) + dur;
+  if(Date.now() >= P.lockUntil) return;
+  $('#lockBy').textContent = lk.map(x=>`${x.e||''} ${x.by||'เพื่อน'}`).join(', ');
+  $('#lockOv').classList.add('on'); sfx('hex');
+  clearInterval(P.lockT);
+  const tick=()=>{
+    const left=Math.max(0, P.lockUntil-Date.now());
+    $('#lockCount').textContent=Math.ceil(left/1000);
+    $('#lockRing').style.setProperty('--p',(left/dur*100)+'%');
+    if(left<=0 || !P.stage.startsWith('question')){ clearInterval(P.lockT); $('#lockOv').classList.remove('on'); }
+  };
+  tick(); P.lockT=setInterval(tick,150);
+}
+
 /* ---------- prank UI ---------- */
 let prankPick=null;
 function itemUsed(){ return P.hexToken<=P.hexUsed; }
@@ -2237,6 +2384,7 @@ function itemUsed(){ return P.hexToken<=P.hexUsed; }
 /* ---------- ช่วงเวลาแห่งการกลั่นแกล้ง (ฝั่งผู้เล่น) ---------- */
 function closePrankUI(){
   clearInterval(P.prankT); P.prankT=null;
+  $('#revOv').classList.remove('on');
   $('#prankModal').style.display='none';
   $('#pmCount').style.display='none';
 }
@@ -2266,6 +2414,8 @@ function renderPrankWindow(r){
   document.body.classList.remove('fbok','fbno');
   const nq  = (r.prankFor!==undefined && r.prankFor!==null) ? r.prankFor : (r.qIndex+1);
   const end = r.prankEnd || (Date.now()+PRANK_SECS*1000);
+  P.prankFor = nq;
+  setTimeout(checkRevenge, 0);
   const canUse = (P.hexToken===nq) && (P.hexUsed < P.hexToken);
   if(canUse){
     sfx('prank');
@@ -2343,11 +2493,10 @@ async function sendPrank(target){
   const nq=P.qIndex+1;
   try{
     await updateDoc(doc(db,'rooms',P.pin,'players',target),
-      { hex:{ t:prankPick, by:P.name, e:P.emoji, q:nq } });
-    if(prankPick==='cut'){
-      await setDoc(doc(db,'rooms',P.pin,'items',`q${nq}_${P.id}_cut`),
-        { q:nq, t:'cut', to:target, from:P.id, by:P.name });
-    }
+      { [`hexes.${P.id}`]:{ t:prankPick, by:P.name, e:P.emoji, q:nq } });
+    // บันทึกทุกลูกเล่นลง items (เดิมบันทึกเฉพาะ "ตัดแต้ม" ทำให้จอครูนับไม่ครบ)
+    await setDoc(doc(db,'rooms',P.pin,'items',`q${nq}_${P.id}_${prankPick==='cut'?'cut':'prank'}`),
+      { q:nq, t:prankPick, to:target, from:P.id, by:P.name });
     P.hexUsed=P.hexToken;
     const tn=(P.roster.find(x=>x.id===target)||{}).n||'เพื่อน';
     $('#prankDone').textContent=`ส่งลูกเล่นไปหา ${tn} เรียบร้อย! จะทำงานในข้อถัดไป 😈`;
@@ -2476,7 +2625,7 @@ $('#btnCreateRoom').onclick = async ()=>{
     if(!quiz.length) throw new Error('ไม่มีข้อสอบตามเงื่อนไขที่เลือก');
     H.autoPlay = au>0; H.autoDelay = au>0?au:6;
     SND.vol=(SYS.vol||30)/100; SND.sfxOn=!!(+SYS.sfx);
-    H.quiz=quiz; H.prankEvery=pe; H.prankOn=pe!==0; H.timeLimit=tl; H.qIndex=-1;
+    H.itemHist=null; H.quiz=quiz; H.prankEvery=pe; H.prankOn=pe!==0; H.timeLimit=tl; H.qIndex=-1;
     H.prevRank=new Map(); H.prevScore=new Map(); H.setName=set.name;
     H.pin = await genPin();
     await setDoc(roomRef(), { status:'lobby', qTotal:quiz.length, qIndex:-1, timeLimit:tl,
@@ -2500,7 +2649,7 @@ $('#btnResume').onclick = async ()=>{
   if(!/^\d{6}$/.test(pin)) return toast('กรอก PIN 6 หลัก');
   const [r,q] = await Promise.all([getDoc(doc(db,'rooms',pin)), getDoc(doc(db,'rooms',pin,'private','quiz'))]);
   if(!r.exists()) return toast('ไม่พบห้องนี้');
-  H.pin=pin; const d=r.data();
+  H.pin=pin; H.itemHist=null; const d=r.data();
   H.quiz = q.exists()? q.data().items : [];
   H.timeLimit=d.timeLimit||DEF_TIME; H.prankOn=!!d.prankOn; H.prankEvery=(d.prankEvery===undefined?(d.prankOn?1:0):d.prankEvery); H.qIndex=d.qIndex??-1; H.setName=d.setName||'';
   if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, lobby:d.snd.lobby||'', wheel:d.snd.wheel||'',
@@ -2537,7 +2686,15 @@ function openLobby(){
 function renderHostPlayers(){
   $('#hostCount').textContent=H.players.size;
   $('#hostPlayers').innerHTML=[...H.players.values()].slice(-120)
-    .map(p=>`<span class="chip"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}</span>`).join('');
+    .map(p=>`<span class="chip"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}
+      <button class="kick" data-kick="${p.id}" title="เชิญออกจากห้อง">✕</button></span>`).join('');
+  $('#hostPlayers').querySelectorAll('[data-kick]').forEach(b=>b.onclick=async()=>{
+    const pl=H.players.get(b.dataset.kick); if(!pl) return;
+    if(!confirm(`เชิญ “${pl.name}” ออกจากห้อง?`)) return;
+    b.disabled=true;
+    try{ await deleteDoc(doc(db,'rooms',H.pin,'players',pl.id)); toast('นำ '+pl.name+' ออกจากห้องแล้ว'); }
+    catch(e){ b.disabled=false; toast('ลบไม่สำเร็จ: '+e.message); }
+  });
 }
 $('#btnCancelRoom').onclick = async ()=>{
   if(!confirm('ยกเลิกห้องนี้?')) return;
@@ -2618,10 +2775,11 @@ function renderHostQuestionUI(q){
   const cols=$('#hCols');
   cols.className='cols hide '+(two?'two':'four');   // ซ่อนไว้ก่อน เผยตอนเฉลย
   cols.innerHTML=q.choices.map((c,i)=>`<div class="col" data-i="${i}">
-    <div class="n">0</div><div class="bar" style="background:var(--c${i+1})"></div>
+    <div class="n">0</div><div class="trk"><div class="bar" style="background:var(--c${i+1})"></div></div>
     <div class="base" style="background:var(--c${i+1})">${SHAPES[i]||''}</div></div>`).join('');
   $('#hAnsCount').textContent=0; $('#hPlayerCount').textContent=H.players.size;
   $('#hBars2').innerHTML=''; $('#hExplain').classList.add('hide');
+  $('#scHostGame').classList.remove('rv');
   requestAnimationFrame(()=>{ fitHostQuestion(); requestAnimationFrame(fitHostQuestion); });
   $('#revealBtns').classList.add('hide'); $('#revealBtns3').classList.add('hide');
   $('#btnSkip').classList.remove('hide');
@@ -2652,7 +2810,7 @@ $('#btnNextQ2').onclick = ()=>{ cancelAuto(); goNext(); };
 $('#btnSkipPrank').onclick = ()=>{ endPrankWindow(); };
 
 const SHAPES = ['▲','◆','●','■'];
-const itemDef = id => [...PRANKS,...SELF_ITEMS].find(x=>x.id===id) || {e:'🎁',n:'ไอเทม'};
+const itemDef = id => [...PRANKS,...SELF_ITEMS,{id:'revenge',e:'👊',n:'สวนสักหมัด'}].find(x=>x.id===id) || {e:'🎁',n:'ไอเทม'};
 
 /* เปิด "ช่วงเวลาแห่งการกลั่นแกล้ง" ก่อนขึ้นข้อถัดไป */
 async function goNext(){
@@ -2666,9 +2824,33 @@ async function goNext(){
   $('#pkUsed').textContent='0'; $('#pkFeed').innerHTML='';
   show('scHostPrank'); sfx('prank');
   H.unsubItems && H.unsubItems();
+  H.revGrant = new Map();   // target -> จำนวนครั้งสะสมที่ส่งสิทธิ์ไปแล้วในรอบนี้
+  if(!H.itemHist){          // ประวัติไอเทมทั้งเกม (โหลดครั้งเดียว เช่น ครูรีเฟรชหน้ากลางเกม)
+    try{ const all=await getDocs(collection(db,'rooms',H.pin,'items'));
+         H.itemHist=all.docs.map(d=>d.data()||{}).filter(v=>v.q<nq); }
+    catch(e){ H.itemHist=[]; }
+  }
+  H.curItems=[];
   H.unsubItems = onSnapshot(query(collection(db,'rooms',H.pin,'items'), where('q','==',nq)), s=>{
+    // ---- สวนสักหมัด: นับครั้งที่ถูกแกล้งสะสมตลอดเกม (เริ่มนับใหม่หลังสวนแล้ว) ----
+    const cur=s.docs.map(d=>d.data()||{}); H.curItems=cur;
+    const all=[...(H.itemHist||[]), ...cur];
+    const isPrank=v=>PRANKS.some(p=>p.id===v.t) && v.to && v.to!==v.from;
+    const lastRev=new Map();
+    all.forEach(v=>{ if(v.t==='revenge') lastRev.set(v.from, Math.max(lastRev.get(v.from)??-1, v.q)); });
+    const hitNow=new Set(cur.filter(isPrank).map(v=>v.to));       // ได้สิทธิ์เฉพาะรอบที่โดนแกล้งจนครบ
+    hitNow.forEach(tid=>{
+      if(!H.players.has(tid) || lastRev.get(tid)===nq) return;
+      const ev=all.filter(v=>isPrank(v) && v.to===tid && v.q>(lastRev.get(tid)??-1));
+      if(ev.length<REVENGE_MIN || H.revGrant.get(tid)===ev.length) return;
+      H.revGrant.set(tid, ev.length);
+      const m=new Map(); ev.forEach(v=>m.set(v.from, v.by||'เพื่อน'));
+      updateDoc(doc(db,'rooms',H.pin,'players',tid),
+        { revenge:{ q:nq, n:ev.length, from:[...m.keys()], names:[...m.values()] } }).catch(e=>console.warn(e));
+    });
     $('#pkUsed').textContent=s.size;
-    const need=(H.lastWinners||[]).length;
+    const need=(H.lastWinners||[]).length + H.revGrant.size;
+    $('#pkTotal').textContent=need;
     if(need && s.size>=need && H.prankT){        // ใช้ครบทุกคนแล้ว ไม่ต้องรอเวลาหมด
       clearInterval(H.prankT); H.prankT=null;
       $('#pkCount').textContent='0';
@@ -2676,7 +2858,8 @@ async function goNext(){
     }
     $('#pkFeed').innerHTML = s.docs.map(d=>{
       const v=d.data()||{}, it=itemDef(v.t);
-      const to = (v.to && v.to!==v.from) ? ((H.players.get(v.to)||{}).name||'เพื่อน') : null;
+      const to = v.t==='revenge' ? (v.names||[]).join(', ')
+               : (v.to && v.to!==v.from) ? ((H.players.get(v.to)||{}).name||'เพื่อน') : null;
       return `<div class="lb-item"><div class="e">${it.e}</div>
         <div class="nm">${esc(v.by||'ผู้เล่น')} ใช้ <b>${esc(it.n)}</b>${to?` ใส่ ${esc(to)}`:' กับตัวเอง'}</div></div>`;
     }).join('');
@@ -2695,6 +2878,8 @@ async function goNext(){
 }
 function endPrankWindow(){
   clearInterval(H.prankT); H.prankT=null;
+  if(H.itemHist && H.curItems) H.itemHist.push(...H.curItems);
+  H.curItems=[];
   H.unsubItems && H.unsubItems(); H.unsubItems=null;
   nextQuestion();
 }
@@ -2814,14 +2999,18 @@ async function doReveal(){
   }).join('');
   // กราฟแท่งแนวตั้งบนหน้าคำถาม (สไตล์ Kahoot)
   const maxN=Math.max(1, ...counts);
+  $('#scHostGame').classList.add('rv');
   $('#hCols').classList.remove('hide');
   $('#hCols').querySelectorAll('.col').forEach(el=>{
     const i=+el.dataset.i, v=counts[i]||0;
     el.classList.add('shown');
     el.classList.toggle('win', i===q.correct);
     el.classList.toggle('lose', i!==q.correct);
-    el.querySelector('.n').innerHTML = (i===q.correct?'<span class="tick">✔</span>':'')+v;
-    setTimeout(()=>{ el.querySelector('.bar').style.height = (8+(v/maxN)*72)+'%'; }, 60);
+    const pc=Math.round(v/total*100);
+    el.querySelector('.n').innerHTML = (i===q.correct?'<span class="tick">✔</span>':'')+v+`<small>(${pc}%)</small>`;
+    // ความสูงเทียบกับตัวเลือกที่มีคนตอบมากสุด (มากสุด = เต็มราง) ข้อที่ไม่มีใครตอบเหลือเส้นบาง ๆ
+    const h = v ? Math.max(6, v/maxN*100) : 2;
+    setTimeout(()=>{ el.querySelector('.bar').style.height = h+'%'; }, 60);
   });
   $('#hExplain').innerHTML=`<b>เฉลย: ${esc(q.choices[q.correct].t)}</b>${q.explain?('<br>'+esc(q.explain)):''}`;
   $('#hExplain').classList.remove('hide');
@@ -2951,11 +3140,69 @@ async function endGame(){
   $('#hostPodium').querySelectorAll('.sc[data-to]').forEach((el,i)=>tally(el, 0, +el.dataset.to, 1400, 400+i*220));
   show('scHostEnd');
 }
-$('#btnCsv').onclick=()=>{
+/* ---------- ส่งออกผลคะแนน (คะแนนดิบ + คะแนนแปลง) ---------- */
+function exportRows(){
+  const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
+  const nQ=H.quiz.length||0, top=Math.max(0,...arr.map(p=>p.score||0));
+  const full=+$('#exFull').value, basis=$('#exBasis').value, dec=+$('#exDec').value;
+  const conv=p=>{
+    const r = basis==='score' ? (top? (p.score||0)/top : 0) : (nQ? (p.correct||0)/nQ : 0);
+    return +(r*full).toFixed(dec);
+  };
+  return {arr,nQ,top,full,basis,dec,conv};
+}
+function exportPreview(){
+  const {arr,nQ,full,conv}=exportRows();
+  if(!(full>0)) return $('#exPreview').textContent='กรุณากรอกคะแนนเต็มมากกว่า 0';
+  const p=arr[0];
+  $('#exPreview').innerHTML = p ? `ตัวอย่าง: ${esc(p.name)} ตอบถูก ${p.correct||0}/${nQ} ข้อ → <b style="color:#fde047">${conv(p)}</b> / ${full}` : 'ยังไม่มีผู้เล่น';
+}
+['exFull','exBasis','exDec'].forEach(id=>$('#'+id).addEventListener('input',exportPreview));
+$('#btnCsv').onclick=()=>{ $('#exportModal').classList.add('on'); exportPreview(); setTimeout(()=>$('#exFull').select(),50); };
+$('#btnExClose').onclick=()=>$('#exportModal').classList.remove('on');
+const exName = ext => `ผลเกม_${(H.setName||'KrunonQuizz').replace(/[\\/:*?"<>|]/g,'_')}_${H.pin}.${ext}`;
+$('#btnExCsv').onclick=()=>{
   const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
   let csv='อันดับ,ชื่อ,ตัวละคร,ตอบถูก,สตรีคสูงสุด,คะแนนรวม\r\n';
   arr.forEach((p,i)=>{ csv+=`${i+1},${csvCell(p.name)},${p.emoji},${p.correct||0},${p.best||0},${p.score||0}\r\n`; });
-  download(`ผลเกม_${(H.setName||'KrunonQuizz')}_${H.pin}.csv`, csv, 'text/csv');
+  download(exName('csv'), csv, 'text/csv');
+};
+let xlsxP=null;
+function loadXlsx(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  return xlsxP ||= new Promise((ok,no)=>{
+    const sc=document.createElement('script');
+    sc.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload=()=>ok(window.XLSX); sc.onerror=()=>{ xlsxP=null; no(new Error('โหลดไลบรารี Excel ไม่สำเร็จ')); };
+    document.head.appendChild(sc);
+  });
+}
+$('#btnExGo').onclick=async()=>{
+  const {arr,nQ,top,full,basis,dec,conv}=exportRows();
+  if(!(full>0)) return toast('กรุณากรอกคะแนนเต็มมากกว่า 0');
+  const btn=$('#btnExGo'); btn.disabled=true;
+  try{
+    const X=await loadXlsx();
+    const raw=[['อันดับ','ชื่อ','ตัวละคร','ตอบถูก (ข้อ)','จำนวนข้อทั้งหมด','ตอบผิด/ไม่ทัน (ข้อ)','สตรีคสูงสุด','คะแนนในเกม']];
+    arr.forEach((p,i)=>raw.push([i+1,p.name||'',p.emoji||'',p.correct||0,nQ,Math.max(0,nQ-(p.correct||0)),p.best||0,p.score||0]));
+    const how = basis==='score' ? `คะแนนในเกม ÷ คะแนนสูงสุด (${top}) × ${full}` : `ข้อที่ตอบถูก ÷ ${nQ} × ${full}`;
+    const cv=[['อันดับ','ชื่อ', basis==='score'?'คะแนนในเกม':'ตอบถูก (ข้อ)', basis==='score'?'คะแนนสูงสุดในห้อง':'จำนวนข้อทั้งหมด', `คะแนนแปลง (เต็ม ${full})`, 'ร้อยละ']];
+    arr.forEach((p,i)=>{ const v=conv(p);
+      cv.push([i+1,p.name||'', basis==='score'?(p.score||0):(p.correct||0), basis==='score'?top:nQ, v, +(v/full*100).toFixed(2)]); });
+    cv.push([]);
+    cv.push(['','วิธีคำนวณ', how]);
+    cv.push(['','ชุดข้อสอบ', H.setName||'-']);
+    cv.push(['','ห้อง (PIN)', H.pin]);
+    const wb=X.utils.book_new();
+    const s1=X.utils.aoa_to_sheet(raw); s1['!cols']=[{wch:7},{wch:26},{wch:8},{wch:12},{wch:15},{wch:17},{wch:11},{wch:12}];
+    const s2=X.utils.aoa_to_sheet(cv);  s2['!cols']=[{wch:7},{wch:26},{wch:14},{wch:18},{wch:18},{wch:9}];
+    X.utils.book_append_sheet(wb,s1,'คะแนนดิบ');
+    X.utils.book_append_sheet(wb,s2,`คะแนนแปลงเต็ม ${full}`.slice(0,31));
+    X.writeFile(wb, exName('xlsx'));
+    $('#exportModal').classList.remove('on');
+    toast('ส่งออกไฟล์เรียบร้อย');
+  }catch(e){ toast(e.message+' — ลองกด .csv แทน'); }
+  btn.disabled=false;
 };
 
 /* ---------- sound settings ---------- */
