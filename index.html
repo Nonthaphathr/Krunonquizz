@@ -399,6 +399,57 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 .tcard .nm{font-size:15px;font-weight:600;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tcard .hit{font-size:12px;color:#fde047;font-weight:600}
 
+/* ---------- การ์ดโชคชะตา / ข้อพิเศษ ---------- */
+.bcard{position:fixed;inset:0;z-index:115;display:none;align-items:center;justify-content:center;padding:18px;
+  background:radial-gradient(circle at 50% 40%,rgba(250,204,21,.28),rgba(10,2,30,.95) 65%)}
+.bcard.on{display:flex;animation:bcFade 3.9s ease forwards}
+@keyframes bcFade{0%{opacity:0}6%{opacity:1}90%{opacity:1}100%{opacity:0}}
+.bc-in{text-align:center;max-width:520px;width:100%}
+.bc-top{font-family:'Mitr';font-weight:700;font-size:clamp(18px,4vw,26px);color:#fde047;letter-spacing:.5px}
+.bc-flip{position:relative;width:clamp(170px,42vw,250px);aspect-ratio:3/4;margin:16px auto;perspective:900px}
+.bc-back,.bc-front{position:absolute;inset:0;border-radius:22px;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;backface-visibility:hidden;border:3px solid rgba(255,255,255,.55);box-shadow:0 12px 40px rgba(0,0,0,.45)}
+.bc-back{background:repeating-linear-gradient(45deg,#7c3aed 0 14px,#6d28d9 14px 28px);font-family:'Mitr';font-size:90px;
+  color:#fde047;animation:bcBack 3.9s ease forwards}
+.bc-front{background:linear-gradient(160deg,#fde047,#f97316);color:#2e1065;transform:rotateY(180deg);animation:bcFront 3.9s ease forwards}
+.bc-ic{font-size:clamp(64px,16vw,96px);line-height:1}
+.bc-name{font-family:'Mitr';font-weight:700;font-size:clamp(24px,6vw,34px);margin-top:8px}
+.bc-desc{font-size:clamp(17px,3.6vw,22px);opacity:0;animation:bcDesc 3.9s ease forwards}
+@keyframes bcBack{0%,22%{transform:rotateY(0) scale(.9)}40%,100%{transform:rotateY(-180deg) scale(1)}}
+@keyframes bcFront{0%,22%{transform:rotateY(180deg) scale(.9)}40%,100%{transform:rotateY(0) scale(1)}}
+@keyframes bcDesc{0%,38%{opacity:0;transform:translateY(10px)}50%,100%{opacity:1;transform:none}}
+.bonustag{margin:0 0 10px;padding:8px 12px;border-radius:14px;text-align:center;font-weight:700;
+  background:linear-gradient(90deg,#f59e0b,#f97316);color:#1c0a33;animation:pop .35s ease}
+#hPrompt.isbonus{color:#fde047;font-weight:700}
+/* ---------- โหมดทีม ---------- */
+.teambox{flex:1 1 100%;border:2px solid var(--tc);border-radius:16px;padding:8px 10px;margin:6px 0;
+  background:color-mix(in srgb,var(--tc) 14%,transparent)}
+.teambox .th{font-family:'Mitr';font-weight:700;margin-bottom:6px}
+#hostPlayers:has(.teambox){display:block}
+.tbar{margin:8px 0}
+.tbar .tl{font-weight:700;margin-bottom:4px}
+.tbar .tl small{opacity:.7;font-weight:400}
+.tbar .sync{background:#22c55e;color:#052e16;border-radius:10px;padding:1px 8px;font-size:12px}
+.tbar .tt{position:relative;height:30px;border-radius:10px;background:rgba(255,255,255,.1);overflow:hidden}
+.tbar .tt i{position:absolute;left:0;top:0;bottom:0;background:var(--tc);border-radius:10px;transition:width 1s cubic-bezier(.2,.9,.3,1)}
+.tbar .tt b{position:relative;z-index:1;line-height:30px;padding-left:10px;font-family:'Mitr';text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.teamwin{font-family:'Mitr';font-weight:700;font-size:clamp(20px,4.5vw,30px);text-align:center;color:#fde047}
+.teamtag{display:inline-block;padding:3px 12px;border-radius:12px;font-weight:700;color:#fff;background:var(--tc);
+  text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.teamline{margin-top:10px;padding:10px;border-radius:14px;border:2px solid var(--tc);text-align:center;font-weight:600;
+  background:color-mix(in srgb,var(--tc) 16%,transparent)}
+
+/* ---------- ฉายาท้ายเกม ---------- */
+.awards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:10px}
+.aw{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:12px;text-align:center;
+  opacity:0;animation:awIn .5s ease forwards}
+.aw.mine{border-color:#fde047;background:rgba(250,204,21,.18)}
+.aw .ic{font-size:36px;line-height:1.1}
+.aw .tt{font-family:'Mitr';font-weight:700;color:#fde047;margin-top:4px}
+.aw .who{font-weight:700;margin-top:4px;word-break:break-word}
+.aw .v{font-size:13px;opacity:.8}
+@keyframes awIn{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}
+
 /* ---------- สวนสักหมัด / ล็อกจอ ---------- */
 .kqov{position:fixed;inset:0;z-index:96;display:none;align-items:center;justify-content:center;padding:18px;
   background:rgba(10,2,30,.9);backdrop-filter:blur(4px)}
@@ -501,6 +552,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div id="waitEmoji" style="font-size:76px">🙂</div>
     <div class="logo" style="font-size:clamp(22px,6vw,34px)" id="waitName">—</div>
     <div class="sub">คุณอยู่ในห้องแล้ว! รอครูเริ่มเกม…</div>
+    <div id="waitTeam" style="margin-top:8px"></div>
   </div>
   <div class="card center">
     <div class="wait-dots"><span></span><span></span><span></span></div>
@@ -512,13 +564,14 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 <!-- ========== PLAYER GAME ========== -->
 <section id="scPlay" class="screen">
   <div class="scoreline">
-    <span id="pMe">🙂 ผู้เล่น</span>
+    <span><span id="pMe">🙂 ผู้เล่น</span> <span id="pTeam"></span></span>
     <b id="pScore">0</b>
   </div>
   <div class="qtop">
     <div class="qnum">ข้อ <b id="pQn">1</b> / <span id="pQt">10</span></div>
     <div class="timer" id="pTimer"><span>0</span></div>
   </div>
+  <div class="bonustag hide" id="pBonusTag"></div>
   <div class="card" style="padding:14px">
     <div class="prompt" id="pPrompt">—</div>
     <div class="word-big" id="pWord">—</div>
@@ -554,6 +607,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
         <div style="font-family:'Mitr';font-size:32px;font-weight:700;color:#fde047" id="fbTotal">0</div></div>
     </div>
     <div class="gapline" id="fbGap"></div>
+    <div class="teamline" id="fbTeam" style="display:none"></div>
   </div>
   <div class="card">
     <div class="explain" id="fbExplain" style="margin-top:0"></div>
@@ -641,6 +695,12 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="badge" style="font-size:16px;margin-top:8px">อันดับที่ <b id="endRank">-</b></div>
     <div style="font-family:'Mitr';font-size:44px;font-weight:700;color:#fde047;margin-top:10px" id="endScore">0</div>
     <p class="muted" id="endDetail"></p>
+    <p id="endMyAward" style="font-weight:700;color:#fde047;margin:6px 0 0"></p>
+    <div class="teamline" id="endTeam" style="display:none"></div>
+  </div>
+  <div class="card" id="endAwardsCard" style="display:none">
+    <h3>🏅 ฉายาประจำเกม</h3>
+    <div class="awards" id="endAwards"></div>
   </div>
   <div class="card">
     <h3>🏆 อันดับผู้เล่น</h3>
@@ -660,7 +720,8 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
       <input id="inAdminPass" type="password" placeholder="ใส่รหัสผ่าน"></div>
     <button class="btn-lg" id="btnAdminLogin">เข้าสู่ระบบ</button>
     <button class="btn-lg btn-ghost" id="btnAdminBack" style="margin-top:10px">👦 ฉันเป็นนักเรียน — เข้าร่วมเกม</button>
-    <p class="muted center" style="margin-top:12px">รหัสเริ่มต้น: <b>krunont</b> (แก้ไขได้ที่ตัวแปร <code>ADMIN_PASS</code> ในไฟล์)</p>
+    <p class="muted center" style="margin-top:12px">🔒 รหัสผ่านถูกตรวจที่เซิร์ฟเวอร์ — เครื่องที่เข้าสำเร็จแล้วจะจำไว้จนกว่าจะกด “ออกจากระบบ”<br>
+      ตั้ง/เปลี่ยนรหัสได้ที่แท็บ 💾 สำรอง &amp; ความปลอดภัย</p>
   </div>
 </section>
 
@@ -673,7 +734,9 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <button data-tab="tabBank">📚 คลังข้อสอบ</button>
     <button data-tab="tabBrand">🎨 แบรนด์ระบบ</button>
     <button data-tab="tabSys">⚙️ เสียง/เพลง</button>
+    <button data-tab="tabSafe">💾 สำรอง &amp; ความปลอดภัย</button>
     <button data-tab="tabHelp">❔ วิธีใช้</button>
+    <button id="btnLogout" style="background:rgba(239,68,68,.25)">🚪 ออกจากระบบ</button>
   </div>
 
   <!-- ---------- create room ---------- -->
@@ -728,6 +791,32 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
             <option value="-1">สุ่ม — ระบบสุ่มให้เอง</option>
             <option value="0">ปิดใช้งาน</option>
           </select></div>
+      </div>
+      <div class="row">
+        <div class="grow field"><label>🃏 การ์ดโชคชะตา (ข้อพิเศษสุ่ม)</label>
+          <select id="cfgBonus">
+            <option value="0.2" selected>เปิด — นาน ๆ ครั้ง (ราว 1 ใน 5 ข้อ)</option>
+            <option value="0.35">เปิด — บ่อย (ราว 1 ใน 3 ข้อ)</option>
+            <option value="0">ปิด</option>
+          </select>
+          <p class="muted" style="margin:6px 0 0">💰 ทองคำ x2 • ⚡ สายฟ้า เวลาครึ่งเดียว x1.5 • 🎲 เสี่ยงดวง • 🧸 ปลอดภัย สตรีคไม่หาย • 🕊️ สงบศึก ไอเทมแกล้งไม่ทำงาน</p></div>
+        <div class="grow field"><label>🏳️ โหมดทีม</label>
+          <select id="cfgTeams">
+            <option value="0" selected>ปิด — เล่นเดี่ยว</option>
+            <option value="2">2 ทีม (🔴 แดง / 🔵 น้ำเงิน)</option>
+            <option value="3">3 ทีม (+ 🟢 เขียว)</option>
+            <option value="4">4 ทีม (+ 🟡 เหลือง)</option>
+          </select>
+          <p class="muted" style="margin:6px 0 0">ระบบจัดทีมให้เท่า ๆ กันอัตโนมัติ (สุ่มใหม่ได้ในห้องรอ) • คะแนนทีม = คะแนนเฉลี่ยต่อคน •
+            ทีมที่ตอบถูกถึง 70% ได้ 🤝 โบนัสพร้อมใจ +200 ทั้งทีม • แกล้งเพื่อนร่วมทีมไม่ได้</p></div>
+      </div>
+      <div class="row">
+        <div class="grow field"><label>🏅 ฉายาท้ายเกม</label>
+          <select id="cfgAwards">
+            <option value="1" selected>แสดง — มือไว / แม่นยำ / จอมป่วน / ดาวรุ่ง ฯลฯ</option>
+            <option value="0">ไม่แสดง</option>
+          </select>
+          <p class="muted" style="margin:6px 0 0">ให้รางวัลนอกเหนือจากอันดับ เด็กที่ไม่ติดท็อปก็มีโอกาสได้รางวัล</p></div>
       </div>
       <button class="btn-lg btn-ok" id="btnCreateRoom">สร้างห้อง + แสดง QR Code</button>
     </div>
@@ -830,6 +919,52 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     </div>
   </div>
 
+  <!-- ---------- backup & security ---------- -->
+  <div id="tabSafe" class="tabpane hide">
+    <div class="card">
+      <div class="row between"><h3 style="margin:0">💾 สำรองข้อมูลทั้งระบบ</h3>
+        <span class="badge" id="bkLast">ยังไม่เคยสำรองบนเครื่องนี้</span></div>
+      <p class="muted">ไฟล์ <code>.json</code> เดียว เก็บ <b>คลังข้อสอบทุกชุด</b> + <b>แบรนด์ระบบ</b> + <b>ตั้งค่าเสียง/เพลง</b> — แนะนำให้สำรองทุกครั้งหลังแก้ไขคลังข้อสอบ</p>
+      <button class="btn-lg btn-ok" id="btnBackup">⬇ ดาวน์โหลดไฟล์สำรอง (.json)</button>
+      <h3 style="margin-top:18px">♻️ กู้คืนจากไฟล์สำรอง</h3>
+      <div class="field"><label>วิธีกู้คืนคลังข้อสอบ</label>
+        <select id="rsMode">
+          <option value="merge" selected>รวม — ชุดที่มีอยู่แล้ว (รหัสตรงกัน) จะถูกแทนที่ด้วยไฟล์สำรอง ชุดอื่นไม่แตะ</option>
+          <option value="copy">เพิ่มเป็นชุดใหม่ทั้งหมด — ไม่แตะชุดเดิมเลย (ชื่อชุดจะต่อท้าย “(กู้คืน)”)</option>
+        </select></div>
+      <label class="muted" style="display:flex;gap:8px;align-items:center;margin:4px 0 10px">
+        <input type="checkbox" id="rsBrand" style="width:auto"> กู้คืนแบรนด์ระบบ และตั้งค่าเสียง/เพลงด้วย</label>
+      <button class="btn-lg btn-warn" id="btnRestore">⬆ เลือกไฟล์สำรองเพื่อกู้คืน</button>
+      <input type="file" id="fileRestore" accept=".json,application/json" class="hide">
+      <p class="muted" id="rsInfo" style="margin:8px 0 0"></p>
+    </div>
+
+    <div class="card">
+      <h3>🔑 รหัสผ่านครู</h3>
+      <p class="muted">รหัสผ่านเก็บในเอกสาร <code>secure/admin</code> ซึ่งหน้าเว็บอ่านไม่ได้ — เปลี่ยนแล้วเครื่องอื่นที่เคยเข้าไว้จะถูกออกจากระบบทั้งหมด (ยกเว้นเครื่องนี้)</p>
+      <div class="row">
+        <div class="grow field"><label>รหัสใหม่ (อย่างน้อย 6 ตัว)</label><input type="password" id="inNewPass" autocomplete="new-password"></div>
+        <div class="grow field"><label>ยืนยันรหัสใหม่</label><input type="password" id="inNewPass2" autocomplete="new-password"></div>
+      </div>
+      <button class="btn-lg" id="btnChangePass">🔑 เปลี่ยนรหัสผ่าน</button>
+      <p class="muted" style="margin:10px 0 0">เครื่องที่เข้าระบบครูอยู่ตอนนี้: <b id="adminCount">-</b> เครื่อง</p>
+    </div>
+
+    <div class="card">
+      <h3>🧹 ล้างห้องเกมเก่า</h3>
+      <p class="muted">ห้องที่เล่นจบแล้วจะค้างอยู่ในฐานข้อมูล ลบห้องที่เก่ากว่าที่กำหนดพร้อมข้อมูลผู้เล่น/คำตอบ/ไอเทมในห้อง<br>
+        ⚠️ การลบนับเป็นโควตาเขียน — ห้อง 60 คน × 15 ข้อ ใช้ราว 1,000 ครั้ง จึงลบได้ครั้งละไม่เกิน 5 ห้อง<br>
+        ส่งออกผลคะแนนของห้องที่ต้องการก่อนลบ</p>
+      <div class="row">
+        <div class="grow field"><label>ลบห้องที่สร้างไว้นานกว่า</label>
+          <select id="clDays"><option value="1">1 วัน</option><option value="3">3 วัน</option><option value="7" selected>7 วัน</option><option value="30">30 วัน</option></select></div>
+        <button class="btn-ghost" id="btnScanRooms" style="align-self:flex-end">🔍 ตรวจนับ</button>
+      </div>
+      <p class="muted" id="clInfo" style="margin:6px 0 10px"></p>
+      <button class="btn-lg btn-no" id="btnCleanRooms" disabled>🗑 ลบห้องเก่า (ครั้งละ 5 ห้อง)</button>
+    </div>
+  </div>
+
   <!-- ---------- help ---------- -->
   <div id="tabHelp" class="tabpane hide">
     <div class="card">
@@ -842,8 +977,20 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
       <p class="muted">ตอบถูกได้สูงสุด 1,000 คะแนน ลดหลั่นตามเวลาที่ใช้ (เร็วได้มากกว่า) + โบนัสตอบถูกติดต่อกัน (สตรีค) ข้อละ 100 คะแนน สูงสุด 5 สตรีค</p>
       <h3 style="margin-top:16px">แบรนด์ระบบ</h3>
       <p class="muted">แท็บ <b>แบรนด์ระบบ</b> เปลี่ยนชื่อระบบ/โลโก้/favicon ได้ทันที ค่าที่บันทึกจะถูกใช้กับทุกเครื่องที่เปิดเว็บนี้</p>
+      <h3 style="margin-top:16px">🃏 การ์ดโชคชะตา &amp; 🏅 ฉายาท้ายเกม</h3>
+      <p class="muted">เปิดได้ตอนสร้างห้อง — ระบบสุ่มข้อพิเศษให้เอง (ไม่มีใครรู้ล่วงหน้า) ก่อนข้อพิเศษจะมีการ์ดพลิกขึ้นจอทุกเครื่อง 3 วินาที<br>
+        💰 ทองคำ x2 • ⚡ สายฟ้า เวลาครึ่งเดียว x1.5 • 🎲 เสี่ยงดวง ถูก x1.5 ผิดเสีย 300 • 🧸 ปลอดภัย ผิดแล้วสตรีคไม่หาย • 🕊️ สงบศึก ไอเทมแกล้งไม่ทำงาน<br>
+        จบเกมมีฉายา: แม่นยำที่สุด • มือไวที่สุด • สตรีคร้อนแรง • ดาวรุ่งพุ่งแรง • จอมป่วน • นักสู้ใจแกร่ง • นักล้างแค้น</p>
+      <h3 style="margin-top:16px">ความปลอดภัย</h3>
+      <p class="muted">เฉลย คลังข้อสอบ และคะแนน แก้/อ่านได้เฉพาะเครื่องครู • ความเร็วตอบใช้เวลาเซิร์ฟเวอร์ • ครูเข้าระบบด้วยรหัสที่ตรวจบนเซิร์ฟเวอร์<br>
+        การตรวจฝั่งนักเรียนออกแบบให้ <b>ไม่เสียโควตาอ่านเพิ่ม</b></p>
+      <h3 style="margin-top:16px">🏳️ โหมดทีม</h3>
+      <p class="muted">เลือก 2–4 ทีมตอนสร้างห้อง ระบบจัดทีมให้เท่ากันอัตโนมัติ (กด 🔀 สุ่มทีมใหม่ในห้องรอได้) • คะแนนทีม = คะแนนเฉลี่ยต่อคน (ทีมคนน้อยไม่เสียเปรียบ)
+        • ทีมที่สมาชิกตอบถูกถึง 70% ได้ 🤝 โบนัสพร้อมใจ +200 ทุกคน • แกล้งได้เฉพาะคนต่างทีม • จบเกมมีฉายา 🤝 MVP ทีมชนะเลิศ และไฟล์ Excel มีชีตคะแนนทีม</p>
       <h3 style="margin-top:16px">ประหยัดโควตา Firestore</h3>
-      <p class="muted">1 รอบเกม (60 คน × 15 ข้อ) ใช้ราว <b>2,000 writes / 5,000 reads</b> อยู่ในโควตาฟรี (20,000 writes / 50,000 reads ต่อวัน) เล่นได้ราว 8–9 รอบต่อวัน</p>
+      <p class="muted">ผลคะแนนของทุกคนรวมอยู่ในเอกสารห้องเอกสารเดียว (ไม่เขียนเอกสารนักเรียนทีละคน)<br>
+        1 รอบเกม (60 คน × 15 ข้อ) ใช้ราว <b>1,100 writes / 4,500 reads</b> — โควตาฟรี 20,000 writes / 50,000 reads ต่อวัน เล่นได้ราว <b>10–11 รอบต่อวัน</b><br>
+        ปัจจัยที่กินโควตามากที่สุดคือ จำนวนนักเรียน × จำนวนครั้งที่หน้าจอเปลี่ยน — ปิด “ช่วงกลั่นแกล้ง” หรือตั้งเป็นทุก 2–3 ข้อ จะเล่นได้มากขึ้นอีก</p>
     </div>
   </div>
 </section>
@@ -941,6 +1088,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="row between"><h3 style="margin:0">ผู้เล่นในห้อง</h3>
       <span class="badge ok" style="font-size:17px"><b id="hostCount">0</b> คน</span></div>
     <div class="players" id="hostPlayers"></div>
+    <button class="btn-sm btn-ghost hide" id="btnShuffleTeams" style="margin-top:10px">🔀 สุ่มทีมใหม่</button>
   </div>
   <button class="btn-lg btn-ok" id="btnStartGame" style="margin-top:14px">🚀 เริ่มเกม</button>
 </section>
@@ -999,6 +1147,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
         <div><b id="stFast">-</b><small>ตอบถูกเร็วสุด</small></div>
         <div><b id="stStreak">-</b><small>สตรีคสูงสุด</small></div>
       </div>
+      <div id="hTeamsDash" style="margin-top:14px;display:none"></div>
       <div class="bars" id="hBars2" style="margin-top:14px"></div>
       <div class="row hide" id="revealBtns3" style="margin-top:12px">
         <button class="btn-lg btn-ok grow" id="btnNextQ3">ดูอันดับ 📊</button>
@@ -1035,6 +1184,10 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   <div class="row between" style="margin-bottom:10px">
     <h2 style="margin:0">📊 อันดับหลังข้อที่ <span id="sbQn">1</span></h2>
     <span class="badge">PIN <b id="sbPin">-</b></span>
+  </div>
+  <div class="card" id="sbTeamCard" style="display:none">
+    <h3 style="margin:0 0 8px">🏳️ คะแนนทีม <small class="muted">(คะแนนเฉลี่ยต่อคน)</small></h3>
+    <div id="sbTeams"></div>
   </div>
   <div class="card">
     <div class="lb" id="sbRows"></div>
@@ -1077,6 +1230,14 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="sub"><span class="bName">KrunonQuizz</span> — ห้อง <b id="endPinTxt"></b></div></div>
   <div class="card">
     <div class="podium" id="hostPodium"></div>
+  </div>
+  <div class="card" id="hostTeamEnd" style="display:none">
+    <div class="teamwin" id="hostTeamWin"></div>
+    <div id="hostTeamBars" style="margin-top:10px"></div>
+  </div>
+  <div class="card" id="hostAwardsCard" style="display:none">
+    <h3 style="margin:0">🏅 ฉายาประจำเกม</h3>
+    <div class="awards" id="hostAwards"></div>
   </div>
   <div class="card">
     <div class="row between"><h3 style="margin:0">ตารางอันดับทั้งหมด</h3>
@@ -1292,6 +1453,16 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 <audio id="bgm" loop playsinline preload="none"></audio>
 <audio id="endm" loop playsinline preload="none"></audio>
 <audio id="sfxa" playsinline preload="none"></audio>
+<!-- ===== การ์ดโชคชะตา (ข้อพิเศษ) ===== -->
+<div class="bcard" id="hostBonus"><div class="bc-in">
+  <div class="bc-top">🃏 การ์ดโชคชะตา • <span class="bc-q">ข้อที่ 1</span></div>
+  <div class="bc-flip"><div class="bc-back">?</div><div class="bc-front"><div class="bc-ic">💰</div><div class="bc-name">—</div></div></div>
+  <div class="bc-desc">—</div></div></div>
+<div class="bcard" id="playerBonus"><div class="bc-in">
+  <div class="bc-top">🃏 การ์ดโชคชะตา • <span class="bc-q">ข้อที่ 1</span></div>
+  <div class="bc-flip"><div class="bc-back">?</div><div class="bc-front"><div class="bc-ic">💰</div><div class="bc-name">—</div></div></div>
+  <div class="bc-desc">—</div></div></div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1299,8 +1470,10 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc,
-  onSnapshot, getDocs, query, where, writeBatch
+  onSnapshot, getDocs, query, where, writeBatch, serverTimestamp, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* =======================================================================
    KrunonQuizz  |  ระบบเกมตอบคำถามแบบยืดหยุ่น (4 ตัวเลือก / ถูก-ผิด)
@@ -1317,8 +1490,31 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+const auth = getAuth(app);
 
-const ADMIN_PASS   = "krunont";   // << เปลี่ยนรหัสผ่านครูได้ที่นี่
+/* ---------- ยืนยันตัวตนแบบ Anonymous (อัตโนมัติ ผู้ใช้ไม่ต้องทำอะไร) ----------
+   ทุกคำขอไป Firestore ต้องมี uid เพื่อให้กฎความปลอดภัยตรวจได้ว่าใครเป็นเจ้าของข้อมูล
+   รหัสผ่านครูไม่ได้เก็บในไฟล์นี้แล้ว — ตรวจที่เซิร์ฟเวอร์จากเอกสาร secure/admin */
+let UID = null;
+const authReady = new Promise(res=>{
+  onAuthStateChanged(auth, u=>{ if(u){ UID=u.uid; res(u); } });
+});
+let authErr = null;
+signInAnonymously(auth).catch(e=>{
+  authErr = e; console.error('auth', e);
+  const msg = /operation-not-allowed|admin-restricted/.test(e.code||'')
+    ? 'ระบบยังไม่เปิด Anonymous Sign-in ใน Firebase (ครูต้องเปิดที่ Authentication → Sign-in method)'
+    : 'เชื่อมต่อระบบยืนยันตัวตนไม่สำเร็จ: '+(e.code||e.message);
+  setTimeout(()=>toast(msg), 600);
+});
+async function ensureAuth(){
+  if(UID) return UID;
+  if(authErr) throw new Error('ยืนยันตัวตนไม่สำเร็จ — ตรวจว่าเปิด Anonymous Sign-in แล้ว');
+  const u = await Promise.race([authReady, new Promise((_,no)=>setTimeout(()=>no(new Error('เชื่อมต่อช้าเกินไป ลองใหม่อีกครั้ง')),12000))]);
+  return u.uid;
+}
+const isDenied = e => /permission|insufficient/i.test((e && (e.code||e.message))||'');
+
 const BASE_SCORE   = 1000;        // คะแนนเต็มต่อข้อ
 const STREAK_BONUS = 100;         // โบนัสต่อสตรีค (สูงสุด 5)
 const REVENGE_MIN  = 3;           // ถูกแกล้งสะสมตลอดเกมครบกี่ครั้ง (นับต่อจากการสวนครั้งล่าสุด) จึงได้สิทธิ์ "สวนสักหมัด" ในรอบที่ครบ
@@ -1327,6 +1523,29 @@ const CUT_POINTS   = 300;         // คะแนนที่ถูกหัก�
 const DEF_TIME     = 10;          // เวลาต่อข้อเริ่มต้น (วินาที)
 const PRANK_SECS   = 25;          // ความยาว "ช่วงเวลาแห่งการกลั่นแกล้ง" (วินาที)
 const TARGET_SHOW  = 8;           // จำนวนชื่อเพื่อนที่สุ่มมาให้เลือกแกล้ง
+const BONUS_INTRO  = 3500;        // ความยาวหน้าเปิดการ์ดข้อพิเศษ (มิลลิวินาที)
+const GAMBLE_LOSS  = 300;         // ข้อเสี่ยงดวง: ตอบผิดเสียกี่คะแนน (ไม่ตอบไม่เสีย)
+
+/* ---------- การ์ดโชคชะตา / ข้อพิเศษ ---------- */
+const BONUSES = [
+  {id:'gold',  e:'💰', n:'ข้อทองคำ',     d:'ข้อนี้ตอบถูก คะแนนคูณ 2 ทุกคน!',                       mul:2},
+  {id:'flash', e:'⚡', n:'ข้อสายฟ้า',    d:'เวลาเหลือครึ่งเดียว แต่ตอบถูกได้คะแนน x1.5',             mul:1.5},
+  {id:'risk',  e:'🎲', n:'ข้อเสี่ยงดวง',  d:`ตอบถูก x1.5 • ตอบผิดเสีย ${GAMBLE_LOSS} • ไม่ตอบไม่เสีย`, mul:1.5},
+  {id:'safe',  e:'🧸', n:'ข้อปลอดภัย',   d:'ตอบผิดข้อนี้ สตรีคไม่หาย ลองเสี่ยงได้เต็มที่',             mul:1},
+  {id:'truce', e:'🕊️', n:'ข้อสงบศึก',   d:'ไอเทมแกล้งทุกชนิดไม่ทำงานในข้อนี้',                       mul:1}
+];
+const bonusDef = id => BONUSES.find(b=>b.id===id) || null;
+
+/* ---------- โหมดทีม ---------- */
+const TEAMS = [
+  {id:'r', n:'ทีมแดง',    e:'🔴', c:'#ef4444'},
+  {id:'b', n:'ทีมน้ำเงิน', e:'🔵', c:'#3b82f6'},
+  {id:'g', n:'ทีมเขียว',   e:'🟢', c:'#22c55e'},
+  {id:'y', n:'ทีมเหลือง',  e:'🟡', c:'#eab308'}
+];
+const TEAM_SYNC_RATIO = 0.7;      // สมาชิกในทีมตอบถูกถึงสัดส่วนนี้ → ได้ "โบนัสพร้อมใจ" ทั้งทีม
+const TEAM_SYNC_BONUS = 200;      // คะแนนโบนัสพร้อมใจต่อคน
+const teamDef = id => TEAMS.find(t=>t.id===id) || null;
 
 /* ---------------- helpers ---------------- */
 const $  = s => document.querySelector(s);
@@ -1614,7 +1833,11 @@ function renderSets(){
   });
   $('#setList').querySelectorAll('[data-dl]').forEach(b=>b.onclick=async ()=>{
     const s=SETS.find(x=>x.id===b.dataset.dl); if(!s) return;
-    if(!confirm(`ลบชุด “${s.name}” (${s.items.length} ข้อ) ถาวร?`)) return;
+    if(!confirm(`ลบชุด “${s.name}” (${s.items.length} ข้อ) ถาวร?\n(ระบบจะดาวน์โหลดไฟล์สำรองของชุดนี้ให้ก่อนลบ)`)) return;
+    download(`สำรองก่อนลบ_${s.name.replace(/[\\/:*?"<>|]/g,'_')}_${stamp()}.json`,
+      JSON.stringify({ app:'KrunonQuizz', format:2, exportedAt:new Date().toISOString(),
+        sets:[{ id:s.id, name:s.name, desc:s.desc, items:s.items, updatedAt:s.updatedAt }], brand:null, settings:null },null,1),
+      'application/json');
     try{ await deleteDoc(doc(db,'quizsets',s.id)); await loadSets(); renderSets(); fillSetSelect(); toast('ลบชุดแล้ว'); }
     catch(e){ toast('ลบไม่สำเร็จ: '+e.message); }
   });
@@ -2030,11 +2253,12 @@ $('#btnGoJoin').onclick = async ()=>{
   if(!/^\d{6}$/.test(pin)) return toast('กรุณากรอก PIN 6 หลัก');
   const btn=$('#btnGoJoin'); btn.disabled=true;
   try{
+    await ensureAuth();
     const s=await getDoc(doc(db,'rooms',pin));
     if(!s.exists()){ btn.disabled=false; return toast('ไม่พบห้องนี้ กรุณาตรวจสอบ PIN'); }
     if(s.data().status==='ended'){ btn.disabled=false; return toast('ห้องนี้จบเกมไปแล้ว'); }
     let kicked=false; try{ kicked=localStorage.getItem('kq_kick_'+pin)==='1'; }catch(e){}
-    if(kicked){ btn.disabled=false; return toast('คุณถูกเชิญออกจากห้องนี้แล้ว ไม่สามารถเข้าซ้ำได้'); }
+    if(kicked || (s.data().banned||[]).includes(UID)){ btn.disabled=false; return toast('คุณถูกเชิญออกจากห้องนี้แล้ว ไม่สามารถเข้าซ้ำได้'); }
     P.pin=pin; P.roomStatus=s.data().status||'lobby';
     // เคยเล่นห้องนี้ในเครื่องนี้แล้ว → กลับเข้าเกมเดิมทันที
     const sv=savedPlayer(pin);
@@ -2042,6 +2266,8 @@ $('#btnGoJoin').onclick = async ()=>{
       try{
         const me=await getDoc(doc(db,'rooms',pin,'players',sv.id));
         if(me.exists()){
+          // เซสชันยืนยันตัวตนถูกล้าง (uid เปลี่ยน) → ผูกเครื่องนี้กลับเข้ากับผู้เล่นเดิม
+          if(me.data().uid!==UID) await updateDoc(me.ref, { uid:UID, rejoinAt:Date.now() });
           P.id=sv.id; P.name=me.data().name||sv.name; P.emoji=me.data().emoji||sv.emoji||'🙂';
           btn.disabled=false; enterGame(); toast('กลับเข้าเกมเดิมเรียบร้อย ✅'); return;
         }
@@ -2068,20 +2294,23 @@ $('#btnJoin').onclick = async ()=>{
         const ex=await getDocs(query(collection(db,'rooms',P.pin,'players'), where('name','==',name)));
         if(!ex.empty){
           const d=ex.docs[0];
+          if(d.data().uid!==UID) await updateDoc(d.ref, { uid:UID, rejoinAt:Date.now() });
           P.id=d.id; P.emoji=d.data().emoji||P.emoji; reused=true;
         }
-      }catch(e){ console.warn(e); }
+      }catch(e){ console.warn(e); if(isDenied(e)) throw new Error('ไม่สามารถกลับเข้าห้องนี้ได้'); }
     }
     if(!reused){
       const ref = await addDoc(collection(db,'rooms',P.pin,'players'), {
-        name, emoji:P.emoji, score:0, streak:0, best:0, correct:0, joinedAt:Date.now()
+        name, emoji:P.emoji, joinedAt:Date.now(), uid:await ensureAuth()
       });
       P.id=ref.id;
     }
     localStorage.setItem('kq_'+P.pin, JSON.stringify({id:P.id,name,emoji:P.emoji}));
     sfx('join'); enterGame();
     if(reused) toast('กลับเข้าเกมด้วยชื่อเดิมเรียบร้อย ✅');
-  }catch(e){ console.error(e); toast('เข้าห้องไม่สำเร็จ: '+e.message); $('#btnJoin').disabled=false; }
+  }catch(e){ console.error(e);
+    toast(isDenied(e) ? 'เข้าห้องไม่ได้ — ห้องอาจจบแล้ว หรือคุณถูกเชิญออกจากห้องนี้' : 'เข้าห้องไม่สำเร็จ: '+e.message);
+    $('#btnJoin').disabled=false; }
 };
 
 function kickedOut(){
@@ -2098,17 +2327,10 @@ function listenMe(){
   P.unsubMe = onSnapshot(doc(db,'rooms',P.pin,'players',P.id), s=>{
     if(!s.exists()){ if(P.me) kickedOut(); return; }
     const d=s.data(); P.me=d;
-    $('#pScore').textContent = (d.score||0).toLocaleString();
     const hx = Object.values(d.hexes||{}).filter(h=>h && h.q!==undefined && h.q > P.qIndex);
     if(d.hex && d.hex.q!==undefined && d.hex.q > P.qIndex) hx.push(d.hex);
     if(hx.length) P.pendingHex = hx;
     checkRevenge(); checkLock();
-    if(d.hexToken && d.hexToken > P.hexUsed) P.hexToken = d.hexToken;
-    // วาดหน้าเฉลยได้เฉพาะตอนที่ห้องยังอยู่ในสถานะเฉลยของข้อนั้นจริง ๆ เท่านั้น
-    // (กัน snapshot ที่มาช้าย้อนกลับมาทับ ทำให้ผู้เล่นค้างหน้าผลการตอบขณะที่คนอื่นไปข้อต่อไปแล้ว)
-    if(P.lastRoom && P.stage===('reveal:'+P.lastRoom.qIndex) && d.last && d.last.q===P.lastRoom.qIndex && !P.fbDone){
-      P.fbDone=true; renderReveal(P.lastRoom);
-    }
   });
 }
 
@@ -2124,6 +2346,13 @@ function listenRoom(){
     if(r.snd && !P.sndSet){ P.sndSet=true; SND.vol=(r.snd.vol||30)/100; SND.sfxOn=!!(+((r.snd.sfx)??1));
       P.bgmUrl=r.snd.bgm||''; P.endUrl=r.snd.endm||''; P.lobbyUrl=r.snd.lobby||''; P.wheelUrl=r.snd.wheel||''; }
     P.stage = r.status + ':' + r.qIndex;
+    // ผลคะแนน / สิทธิ์ไอเทม / ทีม มากับเอกสารห้อง (ไม่ต้องอ่านเอกสารผู้เล่นเพิ่ม)
+    if(r.res && r.res[P.id]){ P.res=r.res[P.id]; P.resQ=r.resQ; P.total=P.res.t||0; $('#pScore').textContent=P.total.toLocaleString(); }
+    if(Array.isArray(r.tokens) && r.tokens.includes(P.id) && r.tokenQ > P.hexUsed) P.hexToken=r.tokenQ;
+    P.teamN = r.teamN||0; P.teams = r.teams||[];
+    const rt = (P.roster.find(x=>x.id===P.id)||{}).t || (r.tmap||{})[P.id] || null;
+    if(rt!==P.team || !P.teamShown){ P.team=rt; P.teamShown=true; renderMyTeam(); }
+    P.teamBoard = r.teamBoard || null;
     if(r.status==='lobby'){
       $('#waitCount').textContent = Math.max(r.playerCount||0, 1);
       if(P.lobbyUrl) playMusic(bgmEl(), P.lobbyUrl);
@@ -2133,14 +2362,19 @@ function listenRoom(){
       if(r.qIndex!==P.qIndex) renderQuestion(r);
       else if(!$('#scPlay').classList.contains('on')) show('scPlay');
     }
-    else if(r.status==='reveal'){ P.lastRoom=r; P.fbDone=false; renderReveal(r); }
+    else if(r.status==='reveal'){ P.lastRoom=r; renderReveal(r); }
     else if(r.status==='prank'){ renderPrankWindow(r); }
+    else if(r.status==='bonus'){
+      const bd=bonusDef(r.bonus);
+      if(bd && P.bonusSeen!==r.bonusFor){ P.bonusSeen=r.bonusFor; closePrankUI(); showBonusCard($('#playerBonus'), bd, (r.bonusFor||0)+1); }
+    }
     else if(r.status==='ended'){ renderEnd(r); }
   });
 }
 
 function renderQuestion(r){
-  P.qIndex = r.qIndex; P.locked=false; P.fbDone=true;
+  P.qIndex = r.qIndex; P.locked=false;
+  $('#playerBonus').classList.remove('on');
   closePrankUI();
   document.body.classList.remove('fbok','fbno');
   const q=r.current;
@@ -2154,10 +2388,16 @@ function renderQuestion(r){
   let order=[...q.choices.keys()];
   let limit=(+q.time>0 ? +q.time : P.limit), fog=false, flip=false;
 
-  const shielded = (P.shieldQ===r.qIndex);
+  const truce = q.bonus==='truce';
+  const shielded = (P.shieldQ===r.qIndex) || truce;
   const hxList = (P.pendingHex||[]).filter(h=>h.q===r.qIndex);
   const hex = (!shielded && hxList.length) ? hxList : null;
-  if(shielded && hxList.length){ P.pendingHex=null; toast('🛡️ โล่กันแกล้งทำงาน! ไอเทมของเพื่อนถูกบล็อก'); }
+  if(shielded && hxList.length){ P.pendingHex=null;
+    toast(truce ? '🕊️ ข้อสงบศึก! ไอเทมแกล้งของเพื่อนถูกยกเลิก' : '🛡️ โล่กันแกล้งทำงาน! ไอเทมของเพื่อนถูกบล็อก'); }
+  const bd = bonusDef(q.bonus);
+  const bt = $('#pBonusTag');
+  bt.classList.toggle('hide', !bd);
+  if(bd) bt.textContent = `${bd.e} ${bd.n} — ${bd.d}`;
   if(hex){
     const ts=new Set(hex.map(h=>h.t));
     if(ts.has('mix'))  order=shuffle(order);
@@ -2247,8 +2487,13 @@ async function answer(i, btn){
   $('#pLocked').querySelector('h3').textContent='ส่งคำตอบแล้ว!';
   $('#pLocked').classList.remove('hide');
   try{
-    await setDoc(doc(db,'rooms',P.pin,'answers',`q${P.qIndex}_${P.id}`), { pid:P.id, q:P.qIndex, c:i, ms });
-  }catch(e){ console.warn(e); }
+    // at = เวลาเซิร์ฟเวอร์ (กฎบังคับ) จอครูใช้ค่านี้คิดความเร็ว จึงปลอมค่า ms ไม่ได้
+    await setDoc(doc(db,'rooms',P.pin,'answers',`q${P.qIndex}_${P.id}`),
+      { pid:P.id, q:P.qIndex, c:i, ms:Math.round(ms), uid:UID, at:serverTimestamp() });
+  }catch(e){
+    console.warn(e);
+    if(isDenied(e)){ $('#pLockEmoji').textContent='⏰'; $('#pLocked').querySelector('h3').textContent='ส่งคำตอบไม่ทัน — ข้อนี้ปิดแล้ว'; }
+  }
 }
 function lockOut(){
   P.locked=true;
@@ -2259,7 +2504,10 @@ function lockOut(){
 
 function renderReveal(r){
   clearInterval(P.timer); closePrankUI();
-  const last = P.me && P.me.last && P.me.last.q===r.qIndex ? P.me.last : null;
+  const L = (r.res && r.res[P.id] && r.resQ===r.qIndex) ? r.res[P.id] : null;
+  const last = L ? { q:r.qIndex, ok:!!L.ok, pts:L.p||0, c:L.c, st:L.s||0, total:L.t||0, x2:!!L.x2, sh:!!L.sh,
+                     cut:L.cut||null, bonus:(r.current&&r.current.bonus)||null, loss:L.l||0, tb:L.tb||0,
+                     rank:L.rk, ahead:L.ah||null } : null;
   const ok = last ? last.ok : false;
   const timeout = last ? (last.c===-1) : true;
 
@@ -2276,11 +2524,19 @@ function renderReveal(r){
     ? `🔥 ตอบถูกติดต่อกัน <b>${last.st}</b> ข้อ — โบนัส +${Math.min(last.st-1,5)*STREAK_BONUS}`
     : (ok ? 'เริ่มต้นสตรีค! ตอบถูกต่อเนื่องจะได้โบนัสเพิ่ม' : 'สตรีคถูกรีเซ็ตเป็น 0');
 
-  const totalNow = (last&&last.total)||(P.me&&P.me.score)||0;
+  const totalNow = last ? last.total : (P.total||0);
   tally($('#fbTotal'), P.prevTotal||0, totalNow, 1000, 250);
   if(P.wheelUrl && totalNow!==(P.prevTotal||0)) playSfxUrl(P.wheelUrl, 1400);
   P.prevTotal = totalNow;
   const notes=[];
+  const lb = last && bonusDef(last.bonus);
+  if(lb){
+    if(lb.id==='risk') notes.push(ok ? '🎲 เสี่ยงดวงสำเร็จ! คะแนน x1.5' : (last.loss ? `🎲 เสี่ยงดวงพลาด เสีย ${last.loss} คะแนน` : '🎲 ไม่ได้ตอบ จึงไม่เสียคะแนน'));
+    else if(lb.id==='safe') notes.push(ok ? '🧸 ข้อปลอดภัย — ตอบถูกด้วย เยี่ยม!' : '🧸 ข้อปลอดภัย — สตรีคของคุณยังอยู่');
+    else if(lb.id==='truce') notes.push('🕊️ ข้อสงบศึก — ไอเทมแกล้งไม่ทำงานในข้อนี้');
+    else if(ok) notes.push(`${lb.e} ${lb.n} — คะแนนข้อนี้ x${lb.mul}`);
+  }
+  if(last&&last.tb)  notes.push(`🤝 ทีมของคุณพร้อมใจตอบถูก! โบนัสทีม +${last.tb}`);
   if(last&&last.x2)  notes.push('⚡ ไอเทมแต้ม x2 ทำงาน — คะแนนข้อนี้คูณสอง');
   if(last&&last.sh)  notes.push('🛡️ โล่กันแกล้งทำงาน — บล็อกไอเทมของเพื่อนได้');
   if(last&&last.cut) notes.push(`💸 ถูก ${esc(last.cut.by||'เพื่อน')} ตัดแต้ม −${(last.cut.amt||0).toLocaleString()}`);
@@ -2293,6 +2549,7 @@ function renderReveal(r){
   else if(last && last.ahead) $('#fbGap').innerHTML = `ตามหลัง <b>${esc(last.ahead.e||'')} ${esc(last.ahead.n||'อันดับเหนือกว่า')}</b> อยู่ <b style="color:#fde047">${(last.ahead.d||0).toLocaleString()}</b> คะแนน`;
   else                        $('#fbGap').innerHTML = 'ตอบให้เร็วและถูกต้องเพื่อไต่อันดับขึ้นไป!';
 
+  renderTeamLine($('#fbTeam'), r.teamBoard);
   const cc = r.current.choices[r.correct];
   $('#fbExplain').innerHTML = `<b>เฉลย: ${esc(cc?cc.t:'')}</b>${r.explain?('<br>'+esc(r.explain)):''}`;
 
@@ -2311,18 +2568,46 @@ function renderReveal(r){
   show('scFb');
 }
 
+function renderMyTeam(){
+  const t=teamDef(P.team);
+  const tag = t ? `<span class="teamtag" style="--tc:${t.c}">${t.e} ${esc(t.n)}</span>` : '';
+  $('#pTeam').innerHTML=tag;
+  $('#waitTeam').innerHTML = t ? `คุณอยู่ ${tag}` : (P.teamN ? '<span class="muted">โหมดทีม — รอครูจัดทีม…</span>' : '');
+}
+function renderTeamLine(el, board, final){
+  const t=teamDef(P.team);
+  if(!el) return;
+  if(!t || !board){ el.style.display='none'; return; }
+  const mine=board.find(x=>x.id===P.team);
+  if(!mine){ el.style.display='none'; return; }
+  el.style.display=''; el.style.setProperty('--tc', t.c);
+  const lead=board[0], ld=teamDef(lead.id)||{};
+  const head = final
+    ? (mine.r===1 ? `🏆 ${t.e} ${esc(t.n)} ชนะเลิศ!` : `${t.e} ${esc(t.n)} ได้อันดับ ${mine.r} จาก ${board.length} ทีม`)
+    : `${t.e} ${esc(t.n)} อยู่อันดับ ${mine.r}/${board.length}`;
+  const sub = mine.r===1 ? `เฉลี่ย ${mine.avg.toLocaleString()} คะแนน/คน${board.filter(x=>x.r===1).length>1?' (เสมอกับทีมอื่น)':''}`
+    : `ตามหลัง ${ld.e||''} ${esc(ld.n||'')} อยู่ ${(lead.avg-mine.avg).toLocaleString()} คะแนนเฉลี่ย`;
+  el.innerHTML = `${head}<br><small>${sub}</small>`;
+}
+
 function renderEnd(r){
   clearInterval(P.timer); closePrankUI(); hideFlash(); document.body.classList.remove('fbok','fbno');
   stopMusic(bgmEl());
   if(!P.endPlayed){ P.endPlayed=true; sfx('podium'); confetti(70); if(P.endUrl) playMusic(endmEl(), P.endUrl); }
   const top=r.top||[];
   const mine = top.find(t=>t.id===P.id);
-  const rank = mine ? mine.r : (P.me&&P.me.lastRank) || '-';
+  const F = (r.fin && r.fin[P.id]) || {};
+  const rank = F.r || (mine ? mine.r : (P.res&&P.res.rk)) || '-';
   $('#endEmoji').textContent = P.emoji;
   $('#endName').textContent  = P.name;
   $('#endRank').textContent  = rank;
-  $('#endScore').textContent = ((P.me&&P.me.score)||0).toLocaleString();
-  $('#endDetail').textContent = `ตอบถูก ${(P.me&&P.me.correct)||0} ข้อ จาก ${r.qTotal} ข้อ • สตรีคสูงสุด ${(P.me&&P.me.best)||0}`;
+  $('#endScore').textContent = (F.s ?? P.total ?? 0).toLocaleString();
+  $('#endDetail').textContent = `ตอบถูก ${F.c ?? (P.res&&P.res.cr) ?? 0} ข้อ จาก ${r.qTotal} ข้อ • สตรีคสูงสุด ${F.b ?? (P.res&&P.res.b) ?? 0}`;
+  renderTeamLine($('#endTeam'), r.teamBoard, true);
+  const aw=r.awards||[], mineAw=aw.filter(a=>a.id===P.id);
+  $('#endAwardsCard').style.display = aw.length ? '' : 'none';
+  $('#endMyAward').textContent = mineAw.length ? ('🏅 คุณได้ฉายา: '+mineAw.map(a=>a.ic+' '+a.tt).join(' • ')) : '';
+  renderAwards($('#endAwards'), aw, P.id);
   $('#endLb').innerHTML = top.map(t=>`
     <div class="lb-item ${t.r<=3?'g'+t.r:''}"><div class="rk">${t.r<=3?['🥇','🥈','🥉'][t.r-1]:t.r}</div>
     <div class="e">${esc(t.e)}</div><div class="nm">${esc(t.n)}</div><div class="sc">${t.s.toLocaleString()}</div></div>`).join('');
@@ -2347,9 +2632,9 @@ $('#btnRevenge').onclick = async ()=>{
   try{
     const b=writeBatch(db);
     (rv.from||[]).forEach(id=> b.update(doc(db,'rooms',P.pin,'players',id),
-      { [`locks.${P.id}`]:{ q:rv.q, by:P.name, e:P.emoji } }));
+      { [`locks.${UID}`]:{ q:rv.q, by:P.name, e:P.emoji, pid:P.id } }));
     b.set(doc(db,'rooms',P.pin,'items',`q${rv.q}_${P.id}_revenge`),
-      { q:rv.q, t:'revenge', to:(rv.from||[])[0]||'', tos:rv.from||[], names:rv.names||[], from:P.id, by:P.name });
+      { q:rv.q, t:'revenge', to:(rv.from||[])[0]||'', tos:rv.from||[], names:rv.names||[], from:P.id, by:P.name, uid:UID });
     await b.commit();
     P.revUsed=rv.q; $('#revOv').classList.remove('on');
     sfx('hex'); toast('👊 สวนสักหมัดสำเร็จ! เพื่อนจะถูกล็อกจอในข้อถัดไป');
@@ -2434,7 +2719,7 @@ async function useSelfItem(id){
   const nq = P.qIndex+1;
   try{
     await setDoc(doc(db,'rooms',P.pin,'items',`q${nq}_${P.id}_self`),
-      { q:nq, t:id, to:P.id, from:P.id, by:P.name });
+      { q:nq, t:id, to:P.id, from:P.id, by:P.name, uid:UID });
     P.hexUsed=P.hexToken;
     if(id==='shield') P.shieldQ=nq;
     if(id==='x2')     P.boostQ=nq;
@@ -2470,20 +2755,21 @@ $('#btnPrank').onclick=()=>openItemModal(false);
 $('#prankClose').onclick=()=>{ $('#prankModal').style.display='none'; };
 $('#btnReroll').onclick=()=>{ rollTargets(); sfx('tap'); };
 
+const prankable = ()=>P.roster.filter(x=>x.id!==P.id && !(P.team && x.t===P.team));
 function rollTargets(){
-  const all=P.roster.filter(x=>x.id!==P.id);
+  const all=prankable();
   P.targetPool = shuffle(all).slice(0, TARGET_SHOW);
   renderTargets();
 }
 function renderTargets(){
   const list=P.targetPool||[];
-  $('#btnReroll').style.display = (P.roster.filter(x=>x.id!==P.id).length>TARGET_SHOW) ? '' : 'none';
+  $('#btnReroll').style.display = (prankable().length>TARGET_SHOW) ? '' : 'none';
   $('#prankTargets').innerHTML = list.length ? list.map(x=>`
     <div class="tcard" data-t="${x.id}">
       <div class="e">${esc(x.e)}</div>
       <div class="nm">${esc(x.n)}</div>
       <div class="hit">😈 แกล้งคนนี้</div></div>`).join('')
-    : '<p class="muted">ยังไม่มีเพื่อนให้แกล้งในห้องนี้</p>';
+    : '<p class="muted">ยังไม่มีเพื่อน (ทีมอื่น) ให้แกล้งในห้องนี้</p>';
   $('#prankTargets').querySelectorAll('[data-t]').forEach(el=>el.onclick=()=>sendPrank(el.dataset.t));
 }
 async function sendPrank(target){
@@ -2492,11 +2778,13 @@ async function sendPrank(target){
   if(P.hexToken<=P.hexUsed) return toast('ใช้ไอเทมของข้อนี้ไปแล้ว');
   const nq=P.qIndex+1;
   try{
-    await updateDoc(doc(db,'rooms',P.pin,'players',target),
-      { [`hexes.${P.id}`]:{ t:prankPick, by:P.name, e:P.emoji, q:nq } });
-    // บันทึกทุกลูกเล่นลง items (เดิมบันทึกเฉพาะ "ตัดแต้ม" ทำให้จอครูนับไม่ครบ)
-    await setDoc(doc(db,'rooms',P.pin,'items',`q${nq}_${P.id}_${prankPick==='cut'?'cut':'prank'}`),
-      { q:nq, t:prankPick, to:target, from:P.id, by:P.name });
+    // บันทึกไอเทม + ลูกเล่นบนจอเพื่อนใน batch เดียว (กฎตรวจว่ามีไอเทมจริงคู่กันเสมอ)
+    const b=writeBatch(db);
+    b.set(doc(db,'rooms',P.pin,'items',`q${nq}_${P.id}_${prankPick==='cut'?'cut':'prank'}`),
+      { q:nq, t:prankPick, to:target, from:P.id, by:P.name, uid:UID });
+    b.update(doc(db,'rooms',P.pin,'players',target),
+      { [`hexes.${UID}`]:{ t:prankPick, by:P.name, e:P.emoji, q:nq, pid:P.id } });
+    await b.commit();
     P.hexUsed=P.hexToken;
     const tn=(P.roster.find(x=>x.id===target)||{}).n||'เพื่อน';
     $('#prankDone').textContent=`ส่งลูกเล่นไปหา ${tn} เรียบร้อย! จะทำงานในข้อถัดไป 😈`;
@@ -2514,7 +2802,8 @@ async function sendPrank(target){
 const H = { pin:null, quiz:[], qIndex:-1, timeLimit:DEF_TIME, prankOn:true, prevRank:new Map(), prevScore:new Map(), lastStat:{},
             players:new Map(), unsubPlayers:null, unsubAns:null, timer:null,
             lastCountWrite:0, answers:new Map(), revealed:false, unsubItems:null, prankT:null, prankEnd:0,
-            autoPlay:false, autoDelay:6, autoT:null, autoLeft:0, setName:'', prankEvery:1 };
+            autoPlay:false, autoDelay:6, autoT:null, autoLeft:0, setName:'', prankEvery:1,
+            teamN:0, teamOf:new Map(), lobbyT:null, teamBoard:null };
 
 function roomRef(){ return doc(db,'rooms',H.pin); }
 
@@ -2561,18 +2850,41 @@ async function enterAdmin(){
   renderSets(); fillSetSelect(); renderBrandForm(); renderSys();
   show('scHostMenu');
 }
+/* เครื่องนี้ยืนยันเป็นครูแล้วหรือยัง (มีเอกสาร admins/{uid}) */
+async function checkAdmin(){
+  try{ const uid=await ensureAuth(); return (await getDoc(doc(db,'admins',uid))).exists(); }
+  catch(e){ return false; }
+}
 $('#btnAdminLogin').onclick = async ()=>{
-  if($('#inAdminPass').value !== ADMIN_PASS) return toast('รหัสผ่านไม่ถูกต้อง');
-  sessionStorage.setItem('kq_admin','1');
-  const b=$('#btnAdminLogin'); b.disabled=true; b.textContent='กำลังโหลดข้อมูล…';
-  await enterAdmin();
+  const pass=$('#inAdminPass').value;
+  if(!pass) return toast('กรุณาใส่รหัสผ่าน');
+  const b=$('#btnAdminLogin'); b.disabled=true; b.textContent='กำลังตรวจสอบ…';
+  try{
+    const uid=await ensureAuth();
+    // เซิร์ฟเวอร์เทียบรหัสกับ secure/admin ให้ — ถ้าไม่ตรง จะถูกปฏิเสธ (permission-denied)
+    await setDoc(doc(db,'admins',uid), { key:pass, at:Date.now(), ua:navigator.userAgent.slice(0,120) });
+    $('#inAdminPass').value='';
+    sessionStorage.setItem('kq_admin','1');
+    b.textContent='กำลังโหลดข้อมูล…';
+    await enterAdmin();
+  }catch(e){
+    console.warn(e);
+    toast(isDenied(e) ? 'รหัสผ่านไม่ถูกต้อง (หรือยังไม่ได้สร้างเอกสาร secure/admin)' : 'เข้าสู่ระบบไม่สำเร็จ: '+e.message);
+  }
   b.disabled=false; b.textContent='เข้าสู่ระบบ';
+};
+$('#btnLogout').onclick = async ()=>{
+  if(!confirm('ออกจากระบบครูบนเครื่องนี้?')) return;
+  try{ await deleteDoc(doc(db,'admins',UID)); }catch(e){ console.warn(e); }
+  sessionStorage.removeItem('kq_admin');
+  show('scHostLogin'); toast('ออกจากระบบแล้ว');
 };
 $('#btnAdminBack').onclick = ()=>{ location.hash='#play'; show('scHome'); };
 $('#btnBackMenu').onclick  = ()=>{ cancelAuto(); stopMusic(endmEl()); stopMusic(bgmEl()); show('scHostMenu'); };
 
-$$('.tabs button').forEach(b=> b.onclick=()=>{
-  $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+$$('.tabs button[data-tab]').forEach(b=> b.onclick=()=>{
+  $$('.tabs button[data-tab]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  if(b.dataset.tab==='tabSafe') refreshSafeTab();
   $$('.tabpane').forEach(p=>p.classList.add('hide'));
   $('#'+b.dataset.tab).classList.remove('hide');
 });
@@ -2623,13 +2935,26 @@ $('#btnCreateRoom').onclick = async ()=>{
     const quiz = buildQuestions(set.items, { kind, count,
       shuffleQ: sh==='both'||sh==='q', shuffleC: sh==='both'||sh==='c' });
     if(!quiz.length) throw new Error('ไม่มีข้อสอบตามเงื่อนไขที่เลือก');
+    // การ์ดโชคชะตา: สุ่มข้อพิเศษ (ไม่ใช่ข้อแรก ไม่ติดกัน) — เก็บใน private จึงไม่มีใครรู้ล่วงหน้า
+    const bRate=+$('#cfgBonus').value;
+    if(bRate>0 && quiz.length>=3){
+      const want=Math.max(1, Math.round(quiz.length*bRate));
+      const idx=shuffle([...quiz.keys()].slice(1));
+      const picked=[];
+      for(const i of idx){ if(picked.length>=want) break; if(!picked.some(j=>Math.abs(j-i)<2)) picked.push(i); }
+      picked.forEach(i=>{ quiz[i].bonus = BONUSES[rnd(BONUSES.length)].id; });
+    }
+    H.awardsOn = $('#cfgAwards').value==='1';
+    H.teamN = +$('#cfgTeams').value || 0;
+    H.teamOf = new Map();
     H.autoPlay = au>0; H.autoDelay = au>0?au:6;
     SND.vol=(SYS.vol||30)/100; SND.sfxOn=!!(+SYS.sfx);
     H.itemHist=null; H.quiz=quiz; H.prankEvery=pe; H.prankOn=pe!==0; H.timeLimit=tl; H.qIndex=-1;
-    H.prevRank=new Map(); H.prevScore=new Map(); H.setName=set.name;
+    H.prevRank=new Map(); H.prevScore=new Map(); H.setName=set.name; H.bonusShown=-1; H.startTs=null;
     H.pin = await genPin();
     await setDoc(roomRef(), { status:'lobby', qTotal:quiz.length, qIndex:-1, timeLimit:tl,
-      prankOn:pe!==0, prankEvery:pe,
+      prankOn:pe!==0, prankEvery:pe, awardsOn:H.awardsOn, banned:[],
+      teamN:H.teamN, teams:TEAMS.slice(0,H.teamN), tmap:{},
       playerCount:0, roster:[], setName:set.name, createdAt:Date.now(),
       brand:{ name:BRAND.name, sub:BRAND.sub, logo:BRAND.logo, favicon:BRAND.favicon, credit:BRAND.credit },
       snd:{ bgm:SYS.bgm||'', endm:SYS.endm||'', lobby:SYS.lobby||'', wheel:(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel)||'',
@@ -2638,7 +2963,8 @@ $('#btnCreateRoom').onclick = async ()=>{
     ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
     const custom = quiz.filter(x=>+x.time>0).length;
     $('#lobbySetInfo').textContent = `ชุด “${set.name}” • ${quiz.length} ข้อ • ข้อละ ${tl} วินาที`
-      + (custom?` (มี ${custom} ข้อที่ตั้งเวลาเฉพาะไว้)`:'');
+      + (custom?` (มี ${custom} ข้อที่ตั้งเวลาเฉพาะไว้)`:'')
+      + (H.teamN?` • โหมดทีม ${H.teamN} ทีม (ระบบจัดทีมให้อัตโนมัติ)`:'');
     openLobby();
   }catch(e){ console.error(e); toast('สร้างห้องไม่สำเร็จ: '+e.message); }
   btn.disabled=false; btn.textContent='สร้างห้อง + แสดง QR Code';
@@ -2647,16 +2973,28 @@ $('#btnCreateRoom').onclick = async ()=>{
 $('#btnResume').onclick = async ()=>{
   const pin=$('#inResumePin').value.trim();
   if(!/^\d{6}$/.test(pin)) return toast('กรอก PIN 6 หลัก');
-  const [r,q] = await Promise.all([getDoc(doc(db,'rooms',pin)), getDoc(doc(db,'rooms',pin,'private','quiz'))]);
+  let r,q;
+  try{ [r,q] = await Promise.all([getDoc(doc(db,'rooms',pin)), getDoc(doc(db,'rooms',pin,'private','quiz'))]); }
+  catch(e){ return toast(isDenied(e)?'ไม่มีสิทธิ์ควบคุมห้องนี้ — ลองออกจากระบบแล้วเข้าใหม่':'เปิดห้องไม่สำเร็จ: '+e.message); }
   if(!r.exists()) return toast('ไม่พบห้องนี้');
   H.pin=pin; H.itemHist=null; const d=r.data();
   H.quiz = q.exists()? q.data().items : [];
+  H.awardsOn = d.awardsOn!==false;
+  H.startTs = (d.startTs && d.startTs.toMillis) ? d.startTs.toMillis() : null;
+  H.bonusShown = d.qIndex??-1;
   H.timeLimit=d.timeLimit||DEF_TIME; H.prankOn=!!d.prankOn; H.prankEvery=(d.prankEvery===undefined?(d.prankOn?1:0):d.prankEvery); H.qIndex=d.qIndex??-1; H.setName=d.setName||'';
   if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, lobby:d.snd.lobby||'', wheel:d.snd.wheel||'',
                    vol:d.snd.vol, sfx:d.snd.sfx}; SND.vol=(d.snd.vol||30)/100; SND.sfxOn=!!(+d.snd.sfx); }
   ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
-  const ps=await getDocs(collection(db,'rooms',pin,'players'));
+  H.teamN = d.teamN||0;
+  const [ps, st] = await Promise.all([ getDocs(collection(db,'rooms',pin,'players')),
+                                       getDoc(doc(db,'rooms',pin,'private','state')).catch(()=>null) ]);
   H.players.clear(); ps.forEach(p=>H.players.set(p.id,{id:p.id,...p.data()}));
+  // คะแนนเก็บที่ private/state (ไม่เขียนลงเอกสารผู้เล่นทุกข้อ เพื่อประหยัดโควตา)
+  const sv = (st && st.exists()) ? (st.data().pl||{}) : {};
+  H.teamOf = new Map(Object.entries(d.tmap||{}));
+  (d.roster||[]).forEach(x=>{ if(x.t) H.teamOf.set(x.id, x.t); });
+  H.players.forEach(p=>{ const v=sv[p.id]; if(v) Object.assign(p, unpackState(v)); if(H.teamOf.has(p.id)) p.team=H.teamOf.get(p.id); });
   $('#lobbySetInfo').textContent = H.setName ? `ชุด “${H.setName}” • ${H.quiz.length} ข้อ` : '';
   if(d.status==='lobby') openLobby();
   else { renderHostQuestionUI(H.quiz[H.qIndex]); show('scHostGame'); refreshDash(); toast('เข้าควบคุมห้องเดิมแล้ว'); }
@@ -2673,33 +3011,79 @@ function openLobby(){
   H.unsubPlayers && H.unsubPlayers();
   H.unsubPlayers = onSnapshot(collection(db,'rooms',H.pin,'players'), snap=>{
     snap.docChanges().forEach(c=>{
-      if(c.type==='removed') H.players.delete(c.doc.id);
-      else H.players.set(c.doc.id, {id:c.doc.id, ...c.doc.data()});
+      if(c.type==='removed'){ H.players.delete(c.doc.id); H.teamOf && H.teamOf.delete(c.doc.id); }
+      else {
+        H.players.set(c.doc.id, {id:c.doc.id, ...c.doc.data()});
+        if(H.teamN && !H.teamOf.has(c.doc.id)) H.teamOf.set(c.doc.id, smallestTeam());
+      }
     });
     renderHostPlayers();
-    const now=Date.now();
-    if(now-H.lastCountWrite>15000){ H.lastCountWrite=now;
-      updateDoc(roomRef(),{playerCount:H.players.size}).catch(()=>{}); }
+    scheduleLobbyWrite();
   });
   show('scHostLobby');
 }
+/* อัปเดตจำนวนคน/ทีมบนเอกสารห้อง แบบหน่วงเวลา (ทุกการเขียนห้อง = ทุกเครื่องต้องอ่าน 1 ครั้ง) */
+function scheduleLobbyWrite(){
+  if(H.lobbyT) return;
+  const wait=Math.max(0, 15000-(Date.now()-H.lastCountWrite));
+  H.lobbyT=setTimeout(()=>{
+    H.lobbyT=null; H.lastCountWrite=Date.now();
+    const data={ playerCount:H.players.size };
+    if(H.teamN) data.tmap=Object.fromEntries(H.teamOf);
+    updateDoc(roomRef(), data).catch(()=>{});
+  }, wait);
+}
+function teamCounts(){
+  const m=new Map(TEAMS.slice(0,H.teamN).map(t=>[t.id,0]));
+  H.teamOf.forEach((t,pid)=>{ if(H.players.has(pid) && m.has(t)) m.set(t, m.get(t)+1); });
+  return m;
+}
+function smallestTeam(){
+  const m=teamCounts(); const min=Math.min(...m.values());
+  const c=[...m.keys()].filter(k=>m.get(k)===min);
+  return c[rnd(c.length)];
+}
+function shuffleTeams(){
+  H.teamOf=new Map();
+  shuffle([...H.players.keys()]).forEach((pid,i)=>H.teamOf.set(pid, TEAMS[i%H.teamN].id));
+}
+$('#btnShuffleTeams').onclick=()=>{
+  if(!H.teamN) return;
+  shuffleTeams(); renderHostPlayers(); scheduleLobbyWrite(); sfx('tap'); toast('สุ่มทีมใหม่แล้ว');
+};
+function playerChip(p){
+  return `<span class="chip"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}
+      <button class="kick" data-kick="${p.id}" title="เชิญออกจากห้อง">✕</button></span>`;
+}
 function renderHostPlayers(){
   $('#hostCount').textContent=H.players.size;
-  $('#hostPlayers').innerHTML=[...H.players.values()].slice(-120)
-    .map(p=>`<span class="chip"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}
-      <button class="kick" data-kick="${p.id}" title="เชิญออกจากห้อง">✕</button></span>`).join('');
+  $('#btnShuffleTeams').classList.toggle('hide', !H.teamN);
+  if(H.teamN){
+    const all=[...H.players.values()];
+    $('#hostPlayers').innerHTML = TEAMS.slice(0,H.teamN).map(t=>{
+      const mem=all.filter(p=>H.teamOf.get(p.id)===t.id);
+      return `<div class="teambox" style="--tc:${t.c}"><div class="th">${t.e} ${t.n} <b>${mem.length}</b> คน</div>
+        <div class="players">${mem.map(playerChip).join('')}</div></div>`;
+    }).join('');
+  } else {
+    $('#hostPlayers').innerHTML=[...H.players.values()].slice(-120).map(playerChip).join('');
+  }
   $('#hostPlayers').querySelectorAll('[data-kick]').forEach(b=>b.onclick=async()=>{
     const pl=H.players.get(b.dataset.kick); if(!pl) return;
     if(!confirm(`เชิญ “${pl.name}” ออกจากห้อง?`)) return;
     b.disabled=true;
-    try{ await deleteDoc(doc(db,'rooms',H.pin,'players',pl.id)); toast('นำ '+pl.name+' ออกจากห้องแล้ว'); }
+    try{
+      // บันทึก uid ไว้ในรายชื่อห้ามเข้า (ตรวจที่เซิร์ฟเวอร์ ล้างเครื่องแล้วก็เข้าซ้ำไม่ได้)
+      if(pl.uid) await updateDoc(roomRef(), { banned: arrayUnion(pl.uid) });
+      await deleteDoc(doc(db,'rooms',H.pin,'players',pl.id)); toast('นำ '+pl.name+' ออกจากห้องแล้ว');
+    }
     catch(e){ b.disabled=false; toast('ลบไม่สำเร็จ: '+e.message); }
   });
 }
 $('#btnCancelRoom').onclick = async ()=>{
   if(!confirm('ยกเลิกห้องนี้?')) return;
   cancelAuto(); stopMusic(bgmEl()); stopMusic(endmEl());
-  H.unsubPlayers && H.unsubPlayers();
+  H.unsubPlayers && H.unsubPlayers(); clearTimeout(H.lobbyT); H.lobbyT=null;
   try{ await deleteDoc(roomRef()); }catch(e){}
   H.pin=null; show('scHostMenu');
 };
@@ -2727,21 +3111,59 @@ $('#btnStartGame').onclick = ()=>{
 async function startGameNow(){
   $('#introModal').classList.remove('on');
   H.unsubPlayers && H.unsubPlayers(); H.unsubPlayers=null;
-  const roster=[...H.players.values()].map(p=>({id:p.id,n:p.name,e:p.emoji}));
-  await updateDoc(roomRef(), { roster, playerCount:H.players.size });
+  clearTimeout(H.lobbyT); H.lobbyT=null;
+  H.players.forEach(p=>{
+    p.score=0; p.streak=0; p.best=0; p.correct=0;
+    if(H.teamN){ if(!H.teamOf.has(p.id)) H.teamOf.set(p.id, smallestTeam()); p.team=H.teamOf.get(p.id); }
+  });
+  await updateDoc(roomRef(), { roster:buildRoster(), playerCount:H.players.size,
+    ...(H.teamN?{tmap:Object.fromEntries(H.teamOf)}:{}) });
   stopMusic(bgmEl()); H.qIndex=-1; sfx('start'); nextQuestion();
 }
 
-const qTime = q => (q && +q.time>0) ? +q.time : H.timeLimit;
+const qTime = q => {
+  const base = (q && +q.time>0) ? +q.time : H.timeLimit;
+  return (q && q.bonus==='flash') ? Math.max(3, Math.ceil(base/2)) : base;
+};
 
+/* หน้าเปิดการ์ดโชคชะตาก่อนข้อพิเศษ (ทั้งจอครูและจอนักเรียน) */
+function showBonusCard(el, b, qn){
+  el.querySelector('.bc-ic').textContent=b.e;
+  el.querySelector('.bc-name').textContent=b.n;
+  el.querySelector('.bc-desc').textContent=b.d;
+  el.querySelector('.bc-q').textContent='ข้อที่ '+qn;
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  sfx('prank');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('on'), BONUS_INTRO+400);
+}
+
+// กันกดซ้ำ/ทำงานซ้อน (เช่น กดข้ามระหว่างการ์ดโชคชะตากำลังแสดง) ทำให้ข้ามข้อ
 async function nextQuestion(){
+  if(H.busyNext) return;
+  H.busyNext=true;
+  try{ await nextQuestionInner(); } finally { H.busyNext=false; }
+}
+async function nextQuestionInner(){
   H.qIndex++;
   if(H.qIndex>=H.quiz.length) return endGame();
   const q=H.quiz[H.qIndex];
   H.revealed=false; H.answers.clear();
-  const pub = { type:q.type, prompt:q.prompt, word:q.word, choices:q.choices, time:qTime(q) };
+  const bd = bonusDef(q.bonus);
+  if(bd && H.bonusShown!==H.qIndex){
+    H.bonusShown=H.qIndex;
+    cancelAuto(); clearInterval(H.prankT); H.prankT=null;
+    H.unsubItems && H.unsubItems(); H.unsubItems=null;
+    try{ await updateDoc(roomRef(), { status:'bonus', bonusFor:H.qIndex, bonus:bd.id }); }catch(e){ console.warn(e); }
+    showBonusCard($('#hostBonus'), bd, H.qIndex+1);
+    await new Promise(r=>setTimeout(r, BONUS_INTRO));
+    $('#hostBonus').classList.remove('on');
+  }
+  const pub = { type:q.type, prompt:q.prompt, word:q.word, choices:q.choices, time:qTime(q), bonus:q.bonus||null };
   await updateDoc(roomRef(), { status:'question', qIndex:H.qIndex, current:pub,
-    correct:null, explain:null, startAt:Date.now() });
+    correct:null, explain:null, res:null, startAt:Date.now(), startTs:serverTimestamp() });
+  // เวลาเริ่มข้อตามนาฬิกาเซิร์ฟเวอร์ ใช้คิดความเร็วของคำตอบ
+  H.startTs=null;
+  getDoc(roomRef()).then(s=>{ const t=s.data()&&s.data().startTs; if(t && t.toMillis) H.startTs=t.toMillis(); }).catch(()=>{});
   cancelAuto(); clearInterval(H.prankT); H.prankT=null;
   H.unsubItems && H.unsubItems(); H.unsubItems=null;
   renderHostQuestionUI(q);
@@ -2764,7 +3186,9 @@ function renderHostQuestionUI(q){
   if(!q) return;
   $('#hQn').textContent=H.qIndex+1; $('#hQt').textContent=H.quiz.length; $('#hPin').textContent=H.pin;
   $('#hTimer').title='เวลาข้อนี้ '+qTime(q)+' วินาที';
-  $('#hPrompt').textContent=q.prompt||'';
+  const hb=bonusDef(q.bonus);
+  $('#hPrompt').textContent=(hb?`${hb.e} ${hb.n} (${hb.d}) • `:'')+(q.prompt||'');
+  $('#hPrompt').classList.toggle('isbonus', !!hb);
   $('#hWord').textContent=q.word;
   const two=q.choices.length<=2;
   const box=$('#hAnswers');
@@ -2877,6 +3301,7 @@ async function goNext(){
   tick(); H.prankT=setInterval(tick,150);
 }
 function endPrankWindow(){
+  if(!$('#scHostPrank').classList.contains('on') || H.busyNext) return;
   clearInterval(H.prankT); H.prankT=null;
   if(H.itemHist && H.curItems) H.itemHist.push(...H.curItems);
   H.curItems=[];
@@ -2886,20 +3311,55 @@ function endPrankWindow(){
 $('#btnBackReveal').onclick = ()=>{ cancelAuto(); show('scHostGame'); syncAutoUI(); $('#btnNextQ').textContent=autoLabel('reveal'); };
 $('#btnEndNow').onclick = ()=>{ if(confirm('จบเกมทันทีและแสดงผลสรุป?')) endGame(); };
 
+function buildRoster(){
+  return [...H.players.values()].map(p=>({id:p.id,n:p.name,e:p.emoji,...(p.team?{t:p.team}:{})}));
+}
+/* สถานะคะแนน (สำหรับกู้คืนจอครู) — 1 write ต่อข้อ */
+const packState = p => ({ s:p.score||0, st:p.streak||0, b:p.best||0, c:p.correct||0, ms:p.msSum||0, n:p.okN||0,
+                          w:p.worst||0, r:p.lastRank||0, ...(p.team?{t:p.team}:{}) });
+const unpackState = v => ({ score:v.s||0, streak:v.st||0, best:v.b||0, correct:v.c||0, msSum:v.ms||0, okN:v.n||0,
+                            worst:v.w||0, lastRank:v.r||0, ...(v.t?{team:v.t}:{}) });
+function saveHostState(){
+  const pl={}; H.players.forEach(p=>pl[p.id]=packState(p));
+  setDoc(doc(db,'rooms',H.pin,'private','state'), { pl, q:H.qIndex, at:Date.now() }).catch(e=>console.warn('state',e));
+}
+function calcTeamBoard(syncTeams){
+  const all=[...H.players.values()];
+  return TEAMS.slice(0,H.teamN).map(t=>{
+    const mem=all.filter(p=>p.team===t.id);
+    const sum=mem.reduce((a,p)=>a+(p.score||0),0);
+    return { id:t.id, n:mem.length, sum, avg: mem.length ? Math.round(sum/mem.length) : 0,
+             sync: syncTeams ? (syncTeams.has(t.id)?1:0) : 0 };
+  }).sort((a,b)=>b.avg-a.avg).map((x,i,arr)=>({...x, r: arr.findIndex(y=>y.avg===x.avg)+1 }));   // คะแนนเท่ากัน = อันดับเท่ากัน
+}
+function teamBarsHtml(board){
+  if(!board || !board.length) return '';
+  const max=Math.max(1, ...board.map(x=>x.avg));
+  return board.map(x=>{ const t=teamDef(x.id)||{};
+    return `<div class="tbar" style="--tc:${t.c}">
+      <div class="tl">${x.r===1&&x.avg>0?'👑':x.r} ${t.e} ${esc(t.n)} <small>${x.n} คน</small>${x.sync?' <span class="sync">🤝 +'+TEAM_SYNC_BONUS+'</span>':''}</div>
+      <div class="tt"><i style="width:${Math.max(3,x.avg/max*100)}%"></i><b>${x.avg.toLocaleString()}</b></div></div>`;
+  }).join('');
+}
+
 async function doReveal(){
   if(H.revealed) return; H.revealed=true;
   clearInterval(H.timer); H.unsubAns && H.unsubAns(); H.unsubAns=null;
   H.prevScore = new Map([...H.players.values()].map(p=>[p.id, p.score||0]));
   const q=H.quiz[H.qIndex], limitMs=qTime(q)*1000;
+  const bd=bonusDef(q.bonus), truce = !!(bd && bd.id==='truce');
   const counts=Array(q.choices.length).fill(0);
   let correctN=0, fastest=null;
 
   // เติมรายชื่อผู้เล่น ถ้ามีคนตอบที่ยังไม่อยู่ในรายการ (เช่น คนหลุดแล้วกลับเข้ามาใหม่)
-  let missing=false;
+  let missing=false, rosterChanged=false;
   H.answers.forEach((a,pid)=>{ if(!H.players.has(pid)) missing=true; });
   if(H.players.size===0 || missing){
     const ps=await getDocs(collection(db,'rooms',H.pin,'players'));
-    ps.forEach(p=>{ if(!H.players.has(p.id)) H.players.set(p.id,{id:p.id,...p.data()}); });
+    ps.forEach(p=>{ if(!H.players.has(p.id)){
+      const np={id:p.id,...p.data()};
+      if(H.teamN){ np.team = H.teamOf.get(p.id) || smallestTeam(); H.teamOf.set(p.id, np.team); }
+      H.players.set(p.id,np); rosterChanged=true; } });
     $('#hPlayerCount').textContent=H.players.size;
   }
 
@@ -2919,29 +3379,53 @@ async function doReveal(){
   H.players.forEach(p=>{
     const a=H.answers.get(p.id);
     let ok=false, pts=0, c=-1, ms=limitMs;
-    if(a){ c=a.c; ms=Math.min(a.ms, limitMs); counts[c]=(counts[c]||0)+1; ok = (c===q.correct); }
+    if(a){
+      c=a.c;
+      // ความเร็วจากนาฬิกาเซิร์ฟเวอร์ (ปลอมไม่ได้) — ถ้าไม่มีค่อยใช้ค่าจากเครื่องผู้เล่น
+      const srv = (H.startTs && a.at && a.at.toMillis) ? a.at.toMillis()-H.startTs : null;
+      const raw = (srv!==null && srv>=0) ? srv : (+a.ms||limitMs);
+      ms=Math.max(0, Math.min(raw, limitMs));
+      if(c>=0 && c<q.choices.length) counts[c]=(counts[c]||0)+1;
+      ok = (c===q.correct);
+    }
     const x2 = boosts.has(p.id);
+    let gambleLoss=0;
     if(ok){
       correctN++;
       pts = Math.round(BASE_SCORE*(1 - 0.5*Math.min(1, ms/limitMs)));
       p.streak=(p.streak||0)+1;
       pts += Math.min(p.streak-1,5)*STREAK_BONUS;
+      if(bd) pts = Math.round(pts*bd.mul);
       if(x2) pts *= 2;
       p.best=Math.max(p.best||0, p.streak);
       p.correct=(p.correct||0)+1;
+      p.msSum=(p.msSum||0)+ms; p.okN=(p.okN||0)+1;
       fastList.push({id:p.id, ms});
       if(!fastest || ms<fastest.ms) fastest={n:p.name,e:p.emoji,ms};
-    } else { p.streak=0; }
-    const cl = cuts.get(p.id);
+    } else {
+      if(!(bd && bd.id==='safe')) p.streak=0;
+      if(bd && bd.id==='risk' && a){ gambleLoss=GAMBLE_LOSS; pts-=GAMBLE_LOSS; }
+    }
+    const cl = truce ? null : cuts.get(p.id);
     const shielded = shields.has(p.id);
     let cutInfo=null;
     if(cl && cl.length && !shielded){
       cutInfo={ by:[...new Set(cl)].join(', '), amt:CUT_POINTS*cl.length };
       pts -= cutInfo.amt;
     }
-    p.score=Math.max(0,(p.score||0)+pts);
-    results.push({p, ok, pts, c, st:p.streak, x2:ok&&x2, sh:shielded&&cl&&cl.length>0, cut:cutInfo});
+    results.push({p, ok, pts, c, st:p.streak, x2:ok&&x2, sh:shielded&&cl&&cl.length>0, cut:cutInfo, loss:gambleLoss, tb:0});
   });
+
+  // ---- โหมดทีม: โบนัสพร้อมใจ (สมาชิกตอบถูกถึง 70%) ----
+  const syncTeams=new Set();
+  if(H.teamN){
+    TEAMS.slice(0,H.teamN).forEach(t=>{
+      const mem=results.filter(r=>r.p.team===t.id);
+      if(mem.length && mem.filter(r=>r.ok).length/mem.length >= TEAM_SYNC_RATIO) syncTeams.add(t.id);
+    });
+    results.forEach(r=>{ if(syncTeams.has(r.p.team)){ r.tb=TEAM_SYNC_BONUS; r.pts+=TEAM_SYNC_BONUS; } });
+  }
+  results.forEach(r=>{ r.p.score=Math.max(0,(r.p.score||0)+r.pts); });
 
   const sorted=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
   const rankOf=new Map(), aheadOf=new Map();
@@ -2965,22 +3449,25 @@ async function doReveal(){
   const winSet=new Set(winners);
   H.lastWinners = winners.map(id=>H.players.get(id)).filter(Boolean).map(p=>`${p.emoji} ${p.name}`);
 
-  let batch=writeBatch(db), n=0;
+  // ---- ประหยัดโควตา: ผลของทุกคนรวมไว้ในเอกสารห้องเอกสารเดียว (ทุกเครื่องอ่านห้องอยู่แล้ว) ----
+  //      แทนการเขียนเอกสารผู้เล่นทีละคน → ลด write ราว 60 ครั้ง และ read ราว 60 ครั้ง ต่อข้อ
+  const res={};
   for(const r of results){
-    batch.update(doc(db,'rooms',H.pin,'players',r.p.id), {
-      score:r.p.score, streak:r.p.streak, best:r.p.best||0, correct:r.p.correct||0,
-      last:{ q:H.qIndex, ok:r.ok, pts:r.pts, c:r.c, st:r.st, total:r.p.score,
-             x2:!!r.x2, sh:!!r.sh, cut:r.cut||null,
-             rank:rankOf.get(r.p.id), ahead: aheadOf.get(r.p.id)||null },
-      lastRank: rankOf.get(r.p.id),
-      ...(winSet.has(r.p.id) ? { hexToken: tokenQ } : {})
-    });
-    if(++n>=450){ await batch.commit(); batch=writeBatch(db); n=0; }
+    const p=r.p;
+    p.lastRank=rankOf.get(p.id);
+    p.worst=Math.max(p.worst||0, H.qIndex>=1 ? p.lastRank : 0);
+    const o={ ok:r.ok?1:0, p:r.pts, c:r.c, s:r.st, t:p.score, rk:p.lastRank, cr:p.correct||0, b:p.best||0 };
+    if(r.x2) o.x2=1; if(r.sh) o.sh=1; if(r.cut) o.cut=r.cut; if(r.loss) o.l=r.loss; if(r.tb) o.tb=r.tb;
+    const ah=aheadOf.get(p.id); if(ah) o.ah=ah;
+    res[p.id]=o;
   }
-  if(n) await batch.commit();
-
+  const teamBoard = H.teamN ? calcTeamBoard(syncTeams) : null;
+  H.teamBoard = teamBoard;
   const top=sorted.slice(0,10).map((p,i)=>({id:p.id,n:p.name,e:p.emoji,s:p.score||0,r:i+1}));
-  await updateDoc(roomRef(), { status:'reveal', correct:q.correct, explain:q.explain||'', top, playerCount:H.players.size });
+  await updateDoc(roomRef(), { status:'reveal', correct:q.correct, explain:q.explain||'', top,
+    playerCount:H.players.size, res, resQ:H.qIndex, tokens:winners, tokenQ,
+    ...(teamBoard?{teamBoard}:{}), ...(rosterChanged?{roster:buildRoster()}:{}) });
+  saveHostState();
 
   const total=H.players.size||1;
   $('#hAnswers').querySelectorAll('.ans').forEach(el=>{
@@ -3041,6 +3528,7 @@ function refreshDash(){
   const bp=arr.find(p=>(p.best||0)===bs&&bs>0);
   $('#stStreak').textContent= bs? `${bp?bp.emoji:''} ${bs}` : '-';
   $('#hPlayerCount').textContent=H.players.size;
+  const tb=$('#hTeamsDash'); if(tb){ tb.style.display=H.teamN?'':'none'; if(H.teamN) tb.innerHTML=teamBarsHtml(H.teamBoard||calcTeamBoard(null)); }
   const lim = H.showAllLb ? arr.length : 12;
   $('#hLbRows').innerHTML=arr.slice(0,lim).map((p,i)=>`
     <tr><td style="font-family:Mitr;font-weight:700">${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
@@ -3090,6 +3578,8 @@ function showScoreboard(){
   $('#sbCorrect').textContent=(H.lastStat.correctPc??0)+'%';
   $('#sbFast').textContent=H.lastStat.fast||'-';
   $('#sbPlayers').textContent=arr.length;
+  $('#sbTeamCard').style.display = H.teamN ? '' : 'none';
+  if(H.teamN) $('#sbTeams').innerHTML = teamBarsHtml(H.teamBoard || calcTeamBoard(null));
   $('#sbRows').innerHTML = arr.slice(0,10).map((p,i)=>{
     const prev=H.prevRank.get(p.id), now=i+1;
     let mv='<span class="mv eq">—</span>';
@@ -3126,7 +3616,22 @@ async function endGame(){
   if(SYS.endm) playMusic(endmEl(), SYS.endm);
   const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
   const top=arr.slice(0,20).map((p,i)=>({id:p.id,n:p.name,e:p.emoji,s:p.score||0,r:i+1,c:p.correct||0}));
-  await updateDoc(roomRef(), { status:'ended', top, playerCount:H.players.size });
+  let awards=[];
+  if(H.awardsOn!==false){ try{ awards=await computeAwards(arr); }catch(e){ console.warn('awards',e); } }
+  const fin={}; arr.forEach((p,i)=>{ fin[p.id]={ s:p.score||0, c:p.correct||0, b:p.best||0, r:i+1 }; });
+  const teamBoard = H.teamN ? calcTeamBoard(null) : null;
+  await updateDoc(roomRef(), { status:'ended', top, awards, fin, playerCount:H.players.size,
+    ...(teamBoard?{teamBoard}:{}) });
+  saveHostState();
+  $('#hostTeamEnd').style.display = teamBoard ? '' : 'none';
+  if(teamBoard){
+    const w=teamDef(teamBoard[0].id)||{};
+    const wins=teamBoard.filter(x=>x.r===1).map(x=>teamDef(x.id)||{});
+    $('#hostTeamWin').innerHTML=`🏆 ${wins.length>1?'เสมอ! ':''}ทีมชนะเลิศ: ${wins.map(t=>`<span style="color:${t.c}">${t.e} ${esc(t.n)}</span>`).join(' + ')} — เฉลี่ย ${teamBoard[0].avg.toLocaleString()} คะแนน/คน`;
+    $('#hostTeamBars').innerHTML=teamBarsHtml(teamBoard);
+  }
+  renderAwards($('#hostAwards'), awards, null);
+  $('#hostAwardsCard').style.display = awards.length ? '' : 'none';
   $('#endPinTxt').textContent=H.pin;
   const pod=[arr[1],arr[0],arr[2]], cls=['p2','p1','p3'], md=['🥈','🥇','🥉'];
   $('#hostPodium').innerHTML=pod.map((p,i)=>p?`
@@ -3140,6 +3645,58 @@ async function endGame(){
   $('#hostPodium').querySelectorAll('.sc[data-to]').forEach((el,i)=>tally(el, 0, +el.dataset.to, 1400, 400+i*220));
   show('scHostEnd');
 }
+/* ---------- ฉายาท้ายเกม ---------- */
+async function computeAwards(arr){
+  if(!arr.length) return [];
+  const sent=new Map(), recv=new Map(), rev=new Map();
+  const s=await getDocs(collection(db,'rooms',H.pin,'items'));
+  s.forEach(d=>{ const v=d.data()||{};
+    if(PRANKS.some(p=>p.id===v.t) && v.to && v.to!==v.from){
+      sent.set(v.from,(sent.get(v.from)||0)+1); recv.set(v.to,(recv.get(v.to)||0)+1); }
+    if(v.t==='revenge') rev.set(v.from,(rev.get(v.from)||0)+1);
+  });
+  const rankNow=new Map(arr.map((p,i)=>[p.id,i+1]));
+  const nQ=H.quiz.length||1;
+  const defs=[
+    {k:'acc',  ic:'🎯', tt:'แม่นยำที่สุด',     f:p=>(p.correct||0)>0 ? (p.correct||0)*1e7+(p.score||0) : null,
+               v:p=>`ตอบถูก ${p.correct||0}/${nQ} ข้อ`},
+    {k:'fast', ic:'⚡', tt:'มือไวที่สุด',      f:p=>(p.okN||0)>=Math.max(2,Math.ceil(nQ*0.3)) ? -(p.msSum/p.okN) : null,
+               v:p=>`ตอบถูกเฉลี่ย ${(p.msSum/p.okN/1000).toFixed(2)} วินาที`},
+    {k:'fire', ic:'🔥', tt:'สตรีคร้อนแรง',     f:p=>(p.best||0)>=3 ? p.best : null,
+               v:p=>`ตอบถูกติดกัน ${p.best} ข้อ`},
+    {k:'rise', ic:'🚀', tt:'ดาวรุ่งพุ่งแรง',    f:p=>{ const d=(p.worst||0)-rankNow.get(p.id); return d>=2 ? d : null; },
+               v:p=>`ไต่จากอันดับ ${p.worst} ขึ้นมาอันดับ ${rankNow.get(p.id)}`},
+    {k:'imp',  ic:'😈', tt:'จอมป่วนประจำห้อง', f:p=>sent.get(p.id)||null, v:p=>`แกล้งเพื่อน ${sent.get(p.id)} ครั้ง`},
+    {k:'tank', ic:'🥊', tt:'นักสู้ใจแกร่ง',     f:p=>(recv.get(p.id)||0)>=2 ? recv.get(p.id) : null,
+               v:p=>`โดนแกล้ง ${recv.get(p.id)} ครั้งแต่ยังสู้`},
+    {k:'rev',  ic:'👊', tt:'นักล้างแค้น',       f:p=>rev.get(p.id)||null, v:p=>`สวนสักหมัด ${rev.get(p.id)} ครั้ง`}
+  ];
+  if(H.teamN){
+    const tb=calcTeamBoard(null), win=tb[0];
+    defs.unshift({k:'mvp', ic:'🤝', tt:'MVP ทีมชนะเลิศ',
+      f:p=>(win && p.team===win.id && win.n>0) ? (p.score||0) : null,
+      v:p=>`${(teamDef(p.team)||{}).e||''} ${(teamDef(p.team)||{}).n||''} • ${(p.score||0).toLocaleString()} คะแนน`});
+  }
+  const got=new Map(), out=[];
+  for(const d of defs){
+    const c=arr.map(p=>({p,m:d.f(p)})).filter(x=>x.m!==null && x.m!==undefined && !Number.isNaN(x.m))
+               .sort((a,b)=>b.m-a.m);
+    if(!c.length) continue;
+    // เสมอกัน → ให้คนที่ยังไม่ได้ฉายาก่อน กระจายรางวัลให้หลายคน
+    const best=c.filter(x=>x.m===c[0].m);
+    const pick=best.find(x=>!got.has(x.p.id)) || best[0];
+    got.set(pick.p.id,(got.get(pick.p.id)||0)+1);
+    out.push({k:d.k, ic:d.ic, tt:d.tt, id:pick.p.id, n:pick.p.name, e:pick.p.emoji, v:d.v(pick.p)});
+  }
+  return out;
+}
+function renderAwards(box, list, myId){
+  if(!box) return;
+  box.innerHTML=(list||[]).map((a,i)=>`<div class="aw ${a.id===myId?'mine':''}" style="animation-delay:${400+i*450}ms">
+    <div class="ic">${esc(a.ic)}</div><div class="tt">${esc(a.tt)}</div>
+    <div class="who">${esc(a.e)} ${esc(a.n)}</div><div class="v">${esc(a.v)}</div></div>`).join('');
+}
+
 /* ---------- ส่งออกผลคะแนน (คะแนนดิบ + คะแนนแปลง) ---------- */
 function exportRows(){
   const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
@@ -3163,8 +3720,8 @@ $('#btnExClose').onclick=()=>$('#exportModal').classList.remove('on');
 const exName = ext => `ผลเกม_${(H.setName||'KrunonQuizz').replace(/[\\/:*?"<>|]/g,'_')}_${H.pin}.${ext}`;
 $('#btnExCsv').onclick=()=>{
   const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
-  let csv='อันดับ,ชื่อ,ตัวละคร,ตอบถูก,สตรีคสูงสุด,คะแนนรวม\r\n';
-  arr.forEach((p,i)=>{ csv+=`${i+1},${csvCell(p.name)},${p.emoji},${p.correct||0},${p.best||0},${p.score||0}\r\n`; });
+  let csv='อันดับ,ชื่อ,ตัวละคร,ทีม,ตอบถูก,สตรีคสูงสุด,คะแนนรวม\r\n';
+  arr.forEach((p,i)=>{ csv+=`${i+1},${csvCell(p.name)},${p.emoji},${csvCell((teamDef(p.team)||{}).n||'')},${p.correct||0},${p.best||0},${p.score||0}\r\n`; });
   download(exName('csv'), csv, 'text/csv');
 };
 let xlsxP=null;
@@ -3183,8 +3740,8 @@ $('#btnExGo').onclick=async()=>{
   const btn=$('#btnExGo'); btn.disabled=true;
   try{
     const X=await loadXlsx();
-    const raw=[['อันดับ','ชื่อ','ตัวละคร','ตอบถูก (ข้อ)','จำนวนข้อทั้งหมด','ตอบผิด/ไม่ทัน (ข้อ)','สตรีคสูงสุด','คะแนนในเกม']];
-    arr.forEach((p,i)=>raw.push([i+1,p.name||'',p.emoji||'',p.correct||0,nQ,Math.max(0,nQ-(p.correct||0)),p.best||0,p.score||0]));
+    const raw=[['อันดับ','ชื่อ','ตัวละคร','ทีม','ตอบถูก (ข้อ)','จำนวนข้อทั้งหมด','ตอบผิด/ไม่ทัน (ข้อ)','สตรีคสูงสุด','คะแนนในเกม']];
+    arr.forEach((p,i)=>raw.push([i+1,p.name||'',p.emoji||'',(teamDef(p.team)||{}).n||'-',p.correct||0,nQ,Math.max(0,nQ-(p.correct||0)),p.best||0,p.score||0]));
     const how = basis==='score' ? `คะแนนในเกม ÷ คะแนนสูงสุด (${top}) × ${full}` : `ข้อที่ตอบถูก ÷ ${nQ} × ${full}`;
     const cv=[['อันดับ','ชื่อ', basis==='score'?'คะแนนในเกม':'ตอบถูก (ข้อ)', basis==='score'?'คะแนนสูงสุดในห้อง':'จำนวนข้อทั้งหมด', `คะแนนแปลง (เต็ม ${full})`, 'ร้อยละ']];
     arr.forEach((p,i)=>{ const v=conv(p);
@@ -3194,10 +3751,17 @@ $('#btnExGo').onclick=async()=>{
     cv.push(['','ชุดข้อสอบ', H.setName||'-']);
     cv.push(['','ห้อง (PIN)', H.pin]);
     const wb=X.utils.book_new();
-    const s1=X.utils.aoa_to_sheet(raw); s1['!cols']=[{wch:7},{wch:26},{wch:8},{wch:12},{wch:15},{wch:17},{wch:11},{wch:12}];
+    const s1=X.utils.aoa_to_sheet(raw); s1['!cols']=[{wch:7},{wch:26},{wch:8},{wch:12},{wch:12},{wch:15},{wch:17},{wch:11},{wch:12}];
     const s2=X.utils.aoa_to_sheet(cv);  s2['!cols']=[{wch:7},{wch:26},{wch:14},{wch:18},{wch:18},{wch:9}];
     X.utils.book_append_sheet(wb,s1,'คะแนนดิบ');
     X.utils.book_append_sheet(wb,s2,`คะแนนแปลงเต็ม ${full}`.slice(0,31));
+    if(H.teamN){
+      const tb=calcTeamBoard(null);
+      const ts=[['อันดับทีม','ทีม','จำนวนคน','คะแนนรวม','คะแนนเฉลี่ยต่อคน']];
+      tb.forEach(x=>ts.push([x.r,(teamDef(x.id)||{}).n||x.id,x.n,x.sum,x.avg]));
+      const s3=X.utils.aoa_to_sheet(ts); s3['!cols']=[{wch:10},{wch:16},{wch:10},{wch:12},{wch:18}];
+      X.utils.book_append_sheet(wb,s3,'คะแนนทีม');
+    }
     X.writeFile(wb, exName('xlsx'));
     $('#exportModal').classList.remove('on');
     toast('ส่งออกไฟล์เรียบร้อย');
@@ -3234,6 +3798,134 @@ $('#btnSaveSys').onclick=async ()=>{
 };
 
 /* =======================================================================
+   สำรอง / กู้คืน / ความปลอดภัย
+   ======================================================================= */
+const BK_KEY='kq_lastBackup';
+function showLastBackup(){
+  let t=0; try{ t=+localStorage.getItem(BK_KEY)||0; }catch(e){}
+  $('#bkLast').textContent = t ? ('สำรองล่าสุด '+new Date(t).toLocaleString('th-TH')) : 'ยังไม่เคยสำรองบนเครื่องนี้';
+  $('#bkLast').classList.toggle('ok', !!t);
+}
+async function refreshSafeTab(){
+  showLastBackup();
+  try{ const s=await getDocs(collection(db,'admins')); $('#adminCount').textContent=s.size; }
+  catch(e){ $('#adminCount').textContent='-'; }
+}
+const stamp = ()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; };
+
+async function buildBackup(){
+  await loadSets();
+  const [b,g]=await Promise.all([getDoc(doc(db,'bank','brand')), getDoc(doc(db,'bank','settings'))]);
+  return { app:'KrunonQuizz', format:2, exportedAt:new Date().toISOString(),
+    sets: SETS.map(s=>({ id:s.id, name:s.name, desc:s.desc, items:s.items, updatedAt:s.updatedAt })),
+    brand: b.exists()? b.data() : null, settings: g.exists()? g.data() : null };
+}
+$('#btnBackup').onclick = async ()=>{
+  const btn=$('#btnBackup'); btn.disabled=true;
+  try{
+    const data=await buildBackup();
+    download(`KrunonQuizz-backup-${stamp()}.json`, JSON.stringify(data,null,1), 'application/json');
+    try{ localStorage.setItem(BK_KEY, String(Date.now())); }catch(e){}
+    showLastBackup();
+    toast(`สำรองแล้ว ${data.sets.length} ชุด ✅`);
+  }catch(e){ toast('สำรองไม่สำเร็จ: '+e.message); }
+  btn.disabled=false;
+};
+$('#btnRestore').onclick = ()=>$('#fileRestore').click();
+$('#fileRestore').onchange = async ev=>{
+  const f=ev.target.files[0]; ev.target.value=''; if(!f) return;
+  let data;
+  try{ data=JSON.parse((await f.text()).replace(/^﻿/,'')); }catch(e){ return toast('ไฟล์นี้ไม่ใช่ JSON ที่ถูกต้อง'); }
+  if(!data || data.app!=='KrunonQuizz' || !Array.isArray(data.sets)) return toast('ไม่ใช่ไฟล์สำรองของ KrunonQuizz');
+  const mode=$('#rsMode').value, withBrand=$('#rsBrand').checked;
+  const sets=data.sets.filter(s=>s && Array.isArray(s.items));
+  if(!confirm(`กู้คืน ${sets.length} ชุดข้อสอบ (${mode==='merge'?'รวม/แทนที่ชุดรหัสตรงกัน':'เพิ่มเป็นชุดใหม่'})`
+    + (withBrand?' + แบรนด์และเสียง':'') + `\nจากไฟล์วันที่ ${data.exportedAt||'-'} ?`)) return;
+  const btn=$('#btnRestore'); btn.disabled=true;
+  try{
+    // สำรองสถานะปัจจุบันก่อนเสมอ กันพลาด
+    const before=await buildBackup();
+    download(`KrunonQuizz-ก่อนกู้คืน-${stamp()}.json`, JSON.stringify(before,null,1), 'application/json');
+    let batch=writeBatch(db), n=0, done=0;
+    for(const s of sets){
+      const payload={ name:String(s.name||'(ไม่มีชื่อ)')+(mode==='copy'?' (กู้คืน)':''), desc:String(s.desc||''),
+        items:s.items, count:s.items.length, updatedAt:Date.now() };
+      const ref = (mode==='merge' && s.id) ? doc(db,'quizsets',String(s.id)) : doc(collection(db,'quizsets'));
+      batch.set(ref, payload); n++; done++;
+      if(n>=400){ await batch.commit(); batch=writeBatch(db); n=0; }
+    }
+    if(withBrand){
+      if(data.brand)    { batch.set(doc(db,'bank','brand'),    {...data.brand,    updatedAt:Date.now()}); n++; }
+      if(data.settings) { batch.set(doc(db,'bank','settings'), {...data.settings, updatedAt:Date.now()}); n++; }
+    }
+    if(n) await batch.commit();
+    await loadSettings(); await loadSets(); renderSets(); fillSetSelect(); renderBrandForm(); renderSys();
+    $('#rsInfo').textContent=`กู้คืนสำเร็จ ${done} ชุด เมื่อ ${new Date().toLocaleString('th-TH')} (ดาวน์โหลดสำเนาก่อนกู้คืนไว้ให้แล้ว)`;
+    toast('กู้คืนเรียบร้อย ✅');
+  }catch(e){ toast('กู้คืนไม่สำเร็จ: '+e.message); }
+  btn.disabled=false;
+};
+
+$('#btnChangePass').onclick = async ()=>{
+  const a=$('#inNewPass').value, b=$('#inNewPass2').value;
+  if(a.length<6) return toast('รหัสผ่านต้องยาวอย่างน้อย 6 ตัวอักษร');
+  if(a!==b) return toast('ยืนยันรหัสผ่านไม่ตรงกัน');
+  if(!confirm('เปลี่ยนรหัสผ่านครู และออกจากระบบเครื่องอื่นทั้งหมด?')) return;
+  const btn=$('#btnChangePass'); btn.disabled=true;
+  try{
+    await updateDoc(doc(db,'secure','admin'), { key:a, changedAt:Date.now() });
+    await setDoc(doc(db,'admins',UID), { key:a, at:Date.now(), ua:navigator.userAgent.slice(0,120) });
+    const s=await getDocs(collection(db,'admins'));
+    let batch=writeBatch(db), n=0;
+    s.forEach(d=>{ if(d.id!==UID){ batch.delete(d.ref); n++; } });
+    if(n) await batch.commit();
+    $('#inNewPass').value=''; $('#inNewPass2').value='';
+    toast(`เปลี่ยนรหัสแล้ว ✅ ออกจากระบบเครื่องอื่น ${n} เครื่อง`);
+    refreshSafeTab();
+  }catch(e){ toast('เปลี่ยนรหัสไม่สำเร็จ: '+e.message); }
+  btn.disabled=false;
+};
+
+let OLD_ROOMS=[];
+$('#btnScanRooms').onclick = async ()=>{
+  const days=+$('#clDays').value, cut=Date.now()-days*86400000;
+  $('#clInfo').textContent='กำลังตรวจนับ…';
+  try{
+    const s=await getDocs(collection(db,'rooms'));
+    OLD_ROOMS = s.docs.filter(d=>d.id!==H.pin && (d.data().createdAt||0) < cut)
+      .map(d=>({ pin:d.id, at:d.data().createdAt||0, set:d.data().setName||'', n:d.data().playerCount||0 }))
+      .sort((a,b)=>a.at-b.at);
+    $('#clInfo').textContent = `ห้องทั้งหมด ${s.size} ห้อง • เก่ากว่า ${days} วัน ${OLD_ROOMS.length} ห้อง`
+      + (OLD_ROOMS.length ? ` (เก่าสุด: ${OLD_ROOMS[0].pin} “${OLD_ROOMS[0].set}”)` : '');
+    $('#btnCleanRooms').disabled = !OLD_ROOMS.length;
+  }catch(e){ $('#clInfo').textContent='ตรวจนับไม่สำเร็จ: '+e.message; }
+};
+async function deleteRoomDeep(pin){
+  let batch=writeBatch(db), n=0;
+  const flush=async()=>{ if(n){ await batch.commit(); batch=writeBatch(db); n=0; } };
+  for(const sub of ['answers','items','players','private']){
+    const s=await getDocs(collection(db,'rooms',pin,sub));
+    for(const d of s.docs){ batch.delete(d.ref); if(++n>=450) await flush(); }
+  }
+  batch.delete(doc(db,'rooms',pin)); n++;
+  await flush();
+}
+$('#btnCleanRooms').onclick = async ()=>{
+  const list=OLD_ROOMS.slice(0,5);
+  if(!list.length) return;
+  if(!confirm(`ลบ ${list.length} ห้อง (${list.map(r=>r.pin).join(', ')}) พร้อมข้อมูลทั้งหมดในห้อง ถาวร?`)) return;
+  const btn=$('#btnCleanRooms'); btn.disabled=true;
+  let ok=0;
+  for(const r of list){
+    $('#clInfo').textContent=`กำลังลบห้อง ${r.pin} (${ok+1}/${list.length})…`;
+    try{ await deleteRoomDeep(r.pin); ok++; }catch(e){ console.warn(e); toast('ลบห้อง '+r.pin+' ไม่สำเร็จ: '+e.message); break; }
+  }
+  toast(`ลบห้องเก่าแล้ว ${ok} ห้อง`);
+  $('#btnScanRooms').click();
+};
+
+/* =======================================================================
    ROUTING
    ======================================================================= */
 buildEmojiGrid();
@@ -3247,8 +3939,9 @@ function route(){
   if(m){ $('#inPin').value=m[1]; show('scHome'); setTimeout(()=>$('#btnGoJoin').click(),400); return; }
   if(h==='#play'){ show('scHome'); return; }
   if(h.startsWith('#host') || h===''){
-    if(sessionStorage.getItem('kq_admin')==='1') enterAdmin();
-    else show('scHostLogin');
+    show('scHostLogin');
+    // เครื่องที่เคยยืนยันรหัสแล้ว เข้าแผงควบคุมได้เลย (ตรวจกับเซิร์ฟเวอร์ทุกครั้ง)
+    checkAdmin().then(ok=>{ if(ok && $('#scHostLogin').classList.contains('on')) enterAdmin(); });
     return;
   }
   show('scHome');
