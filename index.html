@@ -503,6 +503,39 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 .toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
 .toggle.on .sw{background:#22c55e}
 .toggle.on .sw::after{transform:translateX(20px)}
+/* ===== ข้อเรียงลำดับ ===== */
+.badge.ord{background:rgba(168,85,247,.4)}
+.answers.ord{grid-template-columns:1fr}
+.ans.ordi{justify-content:flex-start;text-align:left;gap:12px}
+.ans .onum{flex:none;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.25);border:2px dashed rgba(255,255,255,.75);
+  display:grid;place-items:center;font-family:'Mitr';font-weight:700;font-size:22px}
+.ans.picked .onum{background:#fff;color:#4c1d95;border-style:solid}
+.ans.picked{filter:saturate(.7) brightness(.92)}
+.ordbar{display:flex;gap:10px}
+.ordbar button{flex:1}
+.cols.three{grid-template-columns:repeat(3,1fr)}
+/* ===== มอบหมายงานแบบทดสอบ ===== */
+.chk{display:flex;gap:10px;align-items:flex-start;background:rgba(0,0,0,.22);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer;color:var(--txt);font-size:15px}
+.chk input{width:22px;height:22px;flex:none;margin:2px 0 0;accent-color:#22c55e}
+.chk small{display:block;color:var(--muted);font-size:13px}
+.tk-q{font-family:'Mitr',sans-serif;font-size:clamp(20px,4.6vw,30px);font-weight:600;line-height:1.5;text-align:center;word-break:break-word}
+.tk-prog{height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden;margin:0 0 12px}
+.tk-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#fde047);transition:width .3s}
+#tkAns.has .ans:not(.sel){opacity:.5;filter:saturate(.6)}
+#tkAns .ans.sel{outline:5px solid #fff;outline-offset:-2px}
+.tk-warn{position:fixed;inset:0;z-index:140;background:rgba(69,10,10,.95);display:none;align-items:center;justify-content:center;padding:18px}
+.tk-warn.on{display:flex}
+.alertbox{border:2px solid #f87171 !important;background:rgba(239,68,68,.16) !important}
+tr.trterm td{background:rgba(239,68,68,.14)}
+#scTaskPlay .scoreline{flex-wrap:wrap;gap:4px 12px}
+@media(max-width:760px){#scTaskPlay,#scTaskRes{padding-top:50px}}
+.bar.tkitem{height:auto;min-height:48px}
+.tki{position:relative;display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:8px 14px;font-size:15px}
+.tki .tkq{min-width:0;word-break:break-word}
+.tki small{display:block;opacity:.85;font-size:13px;margin-top:2px}
+.tki b{white-space:nowrap}
+em.badge{font-style:normal}
+.tabs button .badge{padding:1px 8px;margin-left:4px;font-size:12px}
 </style>
 </head>
 <body>
@@ -732,6 +765,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   <div class="tabs">
     <button class="on" data-tab="tabNew">🎮 สร้างห้องเล่น</button>
     <button data-tab="tabBank">📚 คลังข้อสอบ</button>
+    <button data-tab="tabTask">📝 มอบหมายงาน <span class="badge no hide" id="taAlertN">0</span></button>
     <button data-tab="tabBrand">🎨 แบรนด์ระบบ</button>
     <button data-tab="tabSys">⚙️ เสียง/เพลง</button>
     <button data-tab="tabSafe">💾 สำรอง &amp; ความปลอดภัย</button>
@@ -753,6 +787,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
             <option value="all" selected>ทั้งหมดในชุด</option>
             <option value="mc">เฉพาะ 4 ตัวเลือก</option>
             <option value="tf">เฉพาะ ถูก/ผิด (True-False)</option>
+            <option value="ord">เฉพาะ เรียงลำดับ</option>
           </select></div>
         <div class="grow field"><label>จำนวนข้อที่จะเล่น</label>
           <select id="cfgCount">
@@ -830,6 +865,56 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     </div>
   </div>
 
+  <!-- ---------- assignment (self-paced link) ---------- -->
+  <div id="tabTask" class="tabpane hide">
+    <div class="card alertbox hide" id="taAlertCard">
+      <div class="row between"><h3 style="margin:0">🚨 แจ้งเตือน: นักเรียนถูกยุติการสอบ</h3>
+        <button class="btn-sm btn-ghost" id="btnTaAckAll">✔ รับทราบทั้งหมด</button></div>
+      <div id="taAlerts" style="margin-top:6px"></div>
+    </div>
+    <div class="card">
+      <h3>📝 สร้างแบบทดสอบมอบหมาย (ทำเองผ่านลิงก์)</h3>
+      <p class="muted" style="margin-top:0">ใช้เมื่อครูไม่ได้คุมสอบ — นักเรียนเปิดลิงก์ กรอกคำนำหน้า ชื่อ-สกุล ชั้น เลขที่ แล้วทำข้อสอบทีละข้อ
+        (ไม่มีไอเทมแกล้ง/พลังพิเศษ/คะแนนความเร็ว) ผลบันทึกในระบบ ดาวน์โหลดได้ทุกเมื่อ</p>
+      <div class="field"><label>ชื่อแบบทดสอบ (เว้นว่าง = ใช้ชื่อชุดข้อสอบ)</label>
+        <input id="taTitle" maxlength="100" placeholder="เช่น แบบทดสอบหลังเรียน หน่วยที่ 2 ม.4/1"></div>
+      <div class="field"><label>ชุดข้อสอบ</label><select id="taSet"></select></div>
+      <div class="row">
+        <div class="grow field"><label>ชนิดข้อที่ใช้</label>
+          <select id="taKind">
+            <option value="all" selected>ทั้งหมดในชุด</option>
+            <option value="mc">เฉพาะ 4 ตัวเลือก</option>
+            <option value="tf">เฉพาะ ถูก/ผิด</option>
+            <option value="ord">เฉพาะ เรียงลำดับ</option>
+          </select></div>
+        <div class="grow field"><label>จำนวนข้อ</label>
+          <select id="taCount">
+            <option value="0" selected>ทั้งหมดในชุด</option>
+            <option>5</option><option>10</option><option>15</option><option>20</option><option>25</option><option>30</option><option>40</option><option>50</option>
+          </select>
+          <p class="muted" style="margin:6px 0 0">เลือกบางข้อ = ระบบสุ่มข้อจากชุดให้</p></div>
+      </div>
+      <label>ตั้งค่าแบบทดสอบ</label>
+      <label class="chk"><input type="checkbox" id="taTimerOn">
+        <span>⏱ นับเวลาถอยหลังต่อข้อ<small>หมดเวลาแล้วไปข้อถัดไปอัตโนมัติ (ข้อที่ตั้งเวลาเฉพาะไว้ในคลังจะใช้เวลาของข้อนั้น)</small></span></label>
+      <div class="field hide" id="taTimeBox" style="margin-left:34px;max-width:280px"><label>เวลาต่อข้อ (วินาที)</label>
+        <select id="taTime"><option>10</option><option>15</option><option value="20">20</option><option selected>30</option><option>45</option><option>60</option><option>90</option><option>120</option></select></div>
+      <label class="chk"><input type="checkbox" id="taCheat" checked>
+        <span>🛡️ เปิดโหมดตรวจจับทุจริต<small>ตรวจจับการสลับแท็บ/สลับแอป เตือนทุกครั้ง ออกเกิน 3 ครั้งยุติการสอบทันทีและแจ้งครู</small></span></label>
+      <label class="chk"><input type="checkbox" id="taShQ" checked>
+        <span>🔀 สลับลำดับข้อ<small>นักเรียนแต่ละคนได้ลำดับข้อไม่เหมือนกัน</small></span></label>
+      <label class="chk"><input type="checkbox" id="taShC" checked>
+        <span>🔀 สลับตัวเลือก<small>สลับตัวเลือกของข้อ 4 ตัวเลือกแยกแต่ละคน (ข้อเรียงลำดับสลับให้เสมอ)</small></span></label>
+      <button class="btn-lg btn-ok" id="btnTaCreate" style="margin-top:8px">📝 สร้างลิงก์แบบทดสอบ</button>
+    </div>
+    <div class="card">
+      <div class="row between"><h3 style="margin:0">📋 แบบทดสอบที่มอบหมายแล้ว</h3>
+        <button class="btn-sm btn-ghost" id="btnTaReload">🔄 โหลดใหม่</button></div>
+      <div class="setlist" id="taList"></div>
+      <p class="muted center" id="taEmpty" style="margin-top:14px">ยังไม่มีแบบทดสอบที่มอบหมาย</p>
+    </div>
+  </div>
+
   <!-- ---------- question bank ---------- -->
   <div id="tabBank" class="tabpane hide">
     <div class="card">
@@ -849,7 +934,8 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="card">
       <h3>รูปแบบไฟล์ CSV</h3>
       <p class="muted">หัวตาราง: <code>ประเภท,คำถาม,ตัวเลือก1,ตัวเลือก2,ตัวเลือก3,ตัวเลือก4,เฉลย,คำอธิบาย,เวลา</code></p>
-      <p class="muted">• <b>ประเภท</b> = <code>mc</code> (4 ตัวเลือก) หรือ <code>tf</code> (ถูก/ผิด)<br>
+      <p class="muted">• <b>ประเภท</b> = <code>mc</code> (4 ตัวเลือก), <code>tf</code> (ถูก/ผิด) หรือ <code>ord</code> (เรียงลำดับ)<br>
+        • ข้อ <b>ord</b> กรอกตัวเลือก 1–4 <b>ตามลำดับที่ถูกต้อง</b> (อย่างน้อย 2 รายการ) เว้นช่องเฉลยว่าง — หรือกรอกตัวเลือกคละกันแล้วใส่เฉลยเป็นลำดับเลข เช่น <code>3142</code><br>
         • <b>เฉลย</b> = เลขตัวเลือกที่ถูก (1–4) — ข้อ tf ใช้ <code>1</code>=ตัวเลือกแรก, <code>2</code>=ตัวเลือกที่สอง หรือพิมพ์ <code>ถูก</code>/<code>ผิด</code> ก็ได้<br>
         • ข้อ <b>tf</b> เว้นตัวเลือกว่างไว้ได้ ระบบจะใช้ข้อความที่ตั้งไว้ในแท็บ “แบรนด์ระบบ” — หรือกรอกตัวเลือก 1–2 เพื่อกำหนดข้อความเฉพาะข้อนั้น<br>
         • <b>เวลา</b> = วินาทีเฉพาะข้อนั้น (เว้นว่าง = ใช้เวลาของห้อง)<br>
@@ -973,6 +1059,14 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
       <p>2) กด <b>นำเข้า CSV เป็นชุดใหม่</b> → ตั้งชื่อชุด เช่น “วิสรรชนีย์ ม.4” → ระบบบันทึกเก็บไว้ในคลังถาวร</p>
       <p>3) แท็บ <b>สร้างห้องเล่น</b> → เลือกชุดข้อสอบ + จำนวนข้อ + เวลา → กดสร้างห้อง → ฉาย PIN/QR ขึ้นจอ</p>
       <p>4) นักเรียนสแกน QR → ใส่ชื่อ เลือกตัวละคร → ครูกด <b>เริ่มเกม</b></p>
+      <h3 style="margin-top:16px">📝 มอบหมายงานแบบทดสอบ</h3>
+      <p class="muted">แท็บ <b>มอบหมายงาน</b> → เลือกชุดข้อสอบ + ติ๊กตั้งค่า (จับเวลา / ตรวจจับทุจริต / สลับข้อ-ตัวเลือก) → สร้างลิงก์ แล้วส่งลิงก์หรือ QR ให้นักเรียน<br>
+        • นักเรียนกรอกคำนำหน้า ชื่อ-สกุล ชั้น เลขที่ → อ่านกติกา → ทำทีละข้อ ย้อนกลับไม่ได้ → ครบแล้วส่งอัตโนมัติ<br>
+        • โหมดตรวจจับทุจริต: สลับแท็บ/แอปจะขึ้นเตือนทุกครั้ง ออกเกิน 3 ครั้งยุติการสอบ ขึ้นข้อความให้ติดต่อครู และแจ้งเตือนในแท็บนี้<br>
+        • กด <b>ดูผล</b> เพื่อดูคะแนนสด ดาวน์โหลด Excel (ผลคะแนน / คำตอบรายข้อ / วิเคราะห์รายข้อ) และกด <b>↺ สอบใหม่</b> เพื่อให้นักเรียนที่ถูกยุติทำใหม่<br>
+        • ใช้เครื่องร่วมกันหลายคนได้ — หน้าส่งคำตอบมีปุ่ม “นักเรียนคนถัดไปใช้เครื่องนี้ต่อ”</p>
+      <h3 style="margin-top:16px">🔢 ข้อเรียงลำดับ</h3>
+      <p class="muted">สร้างในคลังข้อสอบ เลือกชนิด “เรียงลำดับ” แล้วพิมพ์ 2–4 รายการตามลำดับที่ถูกต้อง ระบบจะสลับให้นักเรียนแตะเรียงเอง ต้องเรียงถูกทั้งหมดจึงได้คะแนน</p>
       <h3 style="margin-top:16px">การให้คะแนน</h3>
       <p class="muted">ตอบถูกได้สูงสุด 1,000 คะแนน ลดหลั่นตามเวลาที่ใช้ (เร็วได้มากกว่า) + โบนัสตอบถูกติดต่อกัน (สตรีค) ข้อละ 100 คะแนน สูงสุด 5 สตรีค</p>
       <h3 style="margin-top:16px">แบรนด์ระบบ</h3>
@@ -1010,6 +1104,7 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
       <span class="badge">ทั้งหมด <b id="edCount">0</b> ข้อ</span>
       <span class="badge mc">4 ตัวเลือก <b id="edMc">0</b></span>
       <span class="badge tf">ถูก/ผิด <b id="edTf">0</b></span>
+      <span class="badge ord">เรียงลำดับ <b id="edOrd">0</b></span>
     </div>
     <div class="row" style="margin-top:12px">
       <button class="btn-sm btn-ghost" id="btnEdImport">⬆ นำเข้า CSV เข้าชุดนี้</button>
@@ -1023,19 +1118,20 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
     <div class="row between"><h3 style="margin:0" id="edFormTitle">เพิ่มข้อสอบใหม่</h3>
       <button class="btn-sm btn-ghost hide" id="btnEdCancelEdit">ยกเลิกการแก้ไข</button></div>
     <div class="field" style="margin-top:10px"><label>ชนิดข้อ</label>
-      <select id="edType"><option value="mc">4 ตัวเลือก</option><option value="tf">ถูก/ผิด (True-False)</option></select></div>
+      <select id="edType"><option value="mc">4 ตัวเลือก</option><option value="tf">ถูก/ผิด (True-False)</option><option value="ord">เรียงลำดับ (Ordering)</option></select></div>
     <div class="field"><label>คำถาม / ข้อความ</label>
       <textarea id="edQ" placeholder="พิมพ์คำถาม เช่น ข้อใดเป็นคำที่ต้องประวิสรรชนีย์"></textarea></div>
     <div id="edMcBox">
       <div class="row">
-        <div class="grow field"><label>ตัวเลือก 1</label><input id="edA0"></div>
-        <div class="grow field"><label>ตัวเลือก 2</label><input id="edA1"></div>
+        <div class="grow field"><label class="edAL" data-n="1">ตัวเลือก 1</label><input id="edA0"></div>
+        <div class="grow field"><label class="edAL" data-n="2">ตัวเลือก 2</label><input id="edA1"></div>
       </div>
       <div class="row">
-        <div class="grow field"><label>ตัวเลือก 3</label><input id="edA2"></div>
-        <div class="grow field"><label>ตัวเลือก 4</label><input id="edA3"></div>
+        <div class="grow field"><label class="edAL" data-n="3">ตัวเลือก 3</label><input id="edA2"></div>
+        <div class="grow field"><label class="edAL" data-n="4">ตัวเลือก 4</label><input id="edA3"></div>
       </div>
-      <div class="field"><label>ข้อที่เป็นคำตอบถูก</label>
+      <p class="muted hide" id="edOrdNote" style="margin:0 0 12px">🔢 พิมพ์รายการตาม<b>ลำดับที่ถูกต้อง</b> (ลำดับที่ 1 → 4) อย่างน้อย 2 รายการ — ระบบจะสลับลำดับให้นักเรียนเรียงเองอัตโนมัติ</p>
+      <div class="field" id="edCBox"><label>ข้อที่เป็นคำตอบถูก</label>
         <select id="edC"><option value="0">ตัวเลือก 1</option><option value="1">ตัวเลือก 2</option><option value="2">ตัวเลือก 3</option><option value="3">ตัวเลือก 4</option></select></div>
     </div>
     <div id="edTfBox" class="hide">
@@ -1250,6 +1346,103 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   <button class="btn-lg btn-ghost" id="btnBackMenu" style="margin-top:14px">กลับแผงควบคุม</button>
 </section>
 
+<!-- ========== TASK: STUDENT INFO ========== -->
+<section id="scTaskInfo" class="screen">
+  <div class="brand">
+    <div style="font-size:54px">📝</div>
+    <div class="logo" style="font-size:clamp(22px,6vw,36px)" id="tkTitle">แบบทดสอบ</div>
+    <div class="sub bName">KrunonQuizz</div>
+  </div>
+  <div class="card center hide" id="tkMsg"></div>
+  <div class="card hide" id="tkResumeBox" style="margin-top:14px">
+    <button class="btn-lg btn-ok" id="btnTkResume">▶ ทำแบบทดสอบต่อ</button>
+  </div>
+  <div class="card hide" id="tkForm">
+    <div class="row between" style="margin-bottom:10px"><h3 style="margin:0">กรอกข้อมูลผู้สอบ</h3><span class="badge" id="tkMetaN"></span></div>
+    <div class="row">
+      <div class="field" style="flex:1 1 130px"><label>คำนำหน้า</label>
+        <select id="tkPre"><option value="">— เลือก —</option><option>เด็กชาย</option><option>เด็กหญิง</option><option>นาย</option><option>นางสาว</option><option>นาง</option></select></div>
+      <div class="grow field"><label>ชื่อ</label><input id="tkFn" maxlength="40" autocomplete="off"></div>
+      <div class="grow field"><label>นามสกุล</label><input id="tkLn" maxlength="40" autocomplete="off"></div>
+    </div>
+    <div class="row">
+      <div class="grow field"><label>ชั้น</label><input id="tkCls" maxlength="12" placeholder="เช่น ม.4/1" autocomplete="off"></div>
+      <div class="grow field"><label>เลขที่</label><input id="tkNo" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off"></div>
+    </div>
+    <div class="card" style="background:rgba(0,0,0,.22)" id="tkRuleList"></div>
+    <button class="btn-lg btn-ok" id="btnTkStart" style="margin-top:14px">เริ่มทำแบบทดสอบ</button>
+  </div>
+  <div class="credit"><span class="bCredit">พัฒนาโดยครูนนทพัทธ์ หิรัญเรือง</span></div>
+</section>
+
+<!-- ========== TASK: STUDENT PLAY ========== -->
+<section id="scTaskPlay" class="screen">
+  <div class="scoreline"><span id="tkWho">—</span><b id="tkSw" class="hide" style="font-size:16px;color:#fca5a5"></b></div>
+  <div class="qtop">
+    <div class="qnum">ข้อ <b id="tkQn">1</b> / <span id="tkQt">1</span></div>
+    <div class="timer hide" id="tkTimer"><span>0</span></div>
+  </div>
+  <div class="tk-prog"><i id="tkBar"></i></div>
+  <div class="card" style="padding:14px">
+    <div class="prompt" id="tkPrompt">—</div>
+    <div class="tk-q" id="tkWord">—</div>
+  </div>
+  <div class="answers" id="tkAns" style="margin-top:14px"></div>
+  <button class="btn-lg" id="btnTkNext" style="margin-top:14px">ข้อถัดไป ▶</button>
+  <p class="muted center" id="tkGuardNote" style="margin-top:10px"></p>
+</section>
+
+<!-- ========== TASK: STUDENT DONE ========== -->
+<section id="scTaskDone" class="screen">
+  <div class="resulthero">
+    <div class="icon" id="tkDoneIc">✅</div>
+    <div class="head" id="tkDoneH">ส่งคำตอบเรียบร้อย</div>
+    <div class="sub" id="tkDoneSub"></div>
+  </div>
+  <div class="card center" id="tkDoneCard"></div>
+  <button class="btn-lg btn-warn hide" id="btnTkRetrySend" style="margin-top:14px">📶 ลองส่งอีกครั้ง</button>
+  <button class="btn-lg btn-ghost" id="btnTkNextUser" style="margin-top:12px">🔄 นักเรียนคนถัดไปใช้เครื่องนี้ต่อ</button>
+</section>
+
+<!-- ========== TASK: TEACHER RESULTS ========== -->
+<section id="scTaskRes" class="screen">
+  <div class="row" style="margin-bottom:12px;align-items:center;padding-right:110px">
+    <button class="btn-sm btn-ghost" id="btnTrBack">◀ กลับ</button>
+    <h2 style="margin:0;word-break:break-word" id="trTitle">📊 ผลแบบทดสอบ</h2>
+  </div>
+  <div class="card">
+    <div class="muted" id="trMeta"></div>
+    <div class="stat" style="margin-top:12px">
+      <div><b id="trDone">0</b><small>ส่งแล้ว (คน)</small></div>
+      <div><b id="trDoing">0</b><small>กำลังทำ (คน)</small></div>
+      <div><b id="trTerm" style="color:#fca5a5">0</b><small>ถูกยุติ (คน)</small></div>
+      <div><b id="trAvg">-</b><small>คะแนนเฉลี่ย (ส่งแล้ว)</small></div>
+      <div><b id="trMax">-</b><small>สูงสุด / ต่ำสุด</small></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn-sm btn-ok" id="btnTrXlsx">⬇ ดาวน์โหลด Excel</button>
+      <button class="btn-sm btn-ghost" id="btnTrCsv">⬇ CSV</button>
+      <button class="btn-sm btn-ghost" id="btnTrLink">🔗 ลิงก์/QR</button>
+      <button class="btn-sm btn-warn" id="btnTrToggle">⏸ ปิดรับคำตอบ</button>
+      <select id="trFilter" style="width:auto;flex:0 0 auto;padding:8px 12px">
+        <option value="all">แสดงทั้งหมด</option><option value="done">ส่งแล้ว</option>
+        <option value="doing">กำลังทำ</option><option value="terminated">ถูกยุติ</option>
+      </select>
+    </div>
+    <p class="muted" style="margin:8px 0 0">อัปเดตสดเมื่อมีนักเรียนเริ่ม/ส่ง • ตรวจคะแนนบนจอครู (นักเรียนไม่เห็นเฉลย)</p>
+  </div>
+  <div class="card">
+    <div class="tbl-wrap" style="max-height:62vh">
+      <table><thead><tr><th style="width:40px">#</th><th>ชั้น</th><th>เลขที่</th><th>ชื่อ-สกุล</th><th>คะแนน</th><th>หมายเหตุ</th><th>สถานะ</th><th>เวลา</th><th></th></tr></thead>
+      <tbody id="trRows"></tbody></table>
+    </div>
+  </div>
+  <div class="card">
+    <h3>🔎 วิเคราะห์รายข้อ <span class="muted" style="font-weight:400">(คิดจากคนที่ส่งแล้ว)</span></h3>
+    <div class="bars" id="trItems"></div>
+  </div>
+</section>
+
 </div><!-- /wrap -->
 </div><!-- /app -->
 <!-- ========== MODAL : MASTER PROMPT ========== -->
@@ -1299,6 +1492,8 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
             <option value="mix" selected>ผสม — 4 ตัวเลือก + ถูก/ผิด</option>
             <option value="mc">4 ตัวเลือก (mc) อย่างเดียว</option>
             <option value="tf">ถูก/ผิด (tf) อย่างเดียว</option>
+            <option value="mix3">ผสม — 4 ตัวเลือก + ถูก/ผิด + เรียงลำดับ</option>
+            <option value="ord">เรียงลำดับ (ord) อย่างเดียว</option>
           </select></div>
         <div class="grow field"><label>ระดับพฤติกรรมการคิด</label>
           <select id="pgLevel">
@@ -1463,6 +1658,47 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
   <div class="bc-flip"><div class="bc-back">?</div><div class="bc-front"><div class="bc-ic">💰</div><div class="bc-name">—</div></div></div>
   <div class="bc-desc">—</div></div></div>
 
+<!-- ===== แบบทดสอบ: กติกาก่อนเริ่ม ===== -->
+<div id="tkRules" class="ovl">
+  <div class="sheet"><div class="card">
+    <h2 style="margin-top:0">⚠️ อ่านก่อนเริ่มทำแบบทดสอบ</h2>
+    <div id="tkRulesBody"></div>
+    <div class="row" style="margin-top:16px">
+      <button class="btn-lg btn-ok grow" id="btnTkRulesOk">รับทราบ — เริ่มทำข้อสอบ</button>
+      <button class="btn-lg btn-ghost" id="btnTkRulesNo" style="flex:0 0 auto">ย้อนกลับ</button>
+    </div>
+  </div></div>
+</div>
+<!-- ===== แบบทดสอบ: เตือนออกนอกหน้า ===== -->
+<div id="tkWarn" class="tk-warn">
+  <div class="card center" style="max-width:480px;width:100%;border:2px solid #f87171">
+    <div style="font-size:64px;line-height:1">🚨</div>
+    <h2 style="margin:10px 0 4px">ตรวจพบการออกจากหน้าข้อสอบ</h2>
+    <p class="muted" id="tkWarnWhy" style="margin:0"></p>
+    <div style="font-family:'Mitr';font-size:46px;font-weight:700;color:#fde047;margin:8px 0" id="tkWarnN">1 / 3</div>
+    <p id="tkWarnMsg" style="margin:0 0 6px"></p>
+    <p class="muted" style="margin:0 0 14px">การกระทำนี้ถูกบันทึกไว้ และอาจถือเป็นการส่อทุจริตในการสอบ</p>
+    <button class="btn-lg btn-ok" id="btnTkWarnOk">กลับไปทำข้อสอบ</button>
+  </div>
+</div>
+<!-- ===== แบบทดสอบ: ลิงก์ / QR (ครู) ===== -->
+<div id="taskLinkModal" class="ovl">
+  <div class="sheet"><div class="card center">
+    <h2 style="margin-top:0">🔗 ลิงก์แบบทดสอบ</h2>
+    <p class="muted" id="tlTitle" style="margin-top:0"></p>
+    <div id="tlQr" style="margin:6px auto;display:inline-block;background:#fff;padding:10px;border-radius:14px;line-height:0"></div>
+    <input id="tlUrl" readonly style="text-align:center;margin-top:10px">
+    <div class="row" style="margin-top:10px">
+      <button class="btn-ok grow" id="btnTlCopy">📋 คัดลอกลิงก์</button>
+      <button class="btn-ghost grow" id="btnTlQrBig">🔍 QR เต็มจอ</button>
+      <button class="btn-ghost grow" id="btnTlOpen">↗ เปิดลิงก์</button>
+    </div>
+    <p class="muted" style="margin:10px 0 0">ส่งลิงก์ทาง LINE / Google Classroom หรือฉาย QR ให้นักเรียนสแกน<br>
+      (ถ้าครูเปิดลองทำเอง ผลของครูจะอยู่ในรายการ — กด “↺ สอบใหม่” เพื่อลบได้)</p>
+    <button class="btn-lg btn-ghost" id="btnTlClose" style="margin-top:12px">ปิด</button>
+  </div></div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1472,7 +1708,7 @@ import {
   getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc,
   onSnapshot, getDocs, query, where, writeBatch, serverTimestamp, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged }
+import { getAuth, signInAnonymously, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* =======================================================================
@@ -1806,6 +2042,10 @@ async function loadSets(){
   }catch(e){ console.warn('loadSets',e); toast('โหลดคลังข้อสอบไม่สำเร็จ: '+e.message); }
 }
 const countKind = (items,k) => items.filter(q=>q.t===k).length;
+const KIND_TXT = { mc:'4 ตัวเลือก', tf:'ถูก/ผิด', ord:'เรียงลำดับ' };
+// ข้อเรียงลำดับ: เก็บลำดับคำตอบเป็นตัวเลขเดียว เช่น [2,0,3,1] → 12031 (กฎความปลอดภัยเดิมตรวจเป็น int ได้)
+const ordCode = seq => parseInt('1'+seq.join(''),10);
+const ordSeq  = code => String(code??'').slice(1).split('').filter(x=>x!=='').map(Number);
 
 function renderSets(){
   $('#setCount').textContent = SETS.length;
@@ -1813,7 +2053,7 @@ function renderSets(){
   $('#setList').innerHTML = SETS.map(s=>`
     <div class="setcard">
       <h4>${esc(s.name)}</h4>
-      <div class="meta">${s.items.length} ข้อ • 4 ตัวเลือก ${countKind(s.items,'mc')} • ถูก/ผิด ${countKind(s.items,'tf')}
+      <div class="meta">${s.items.length} ข้อ • 4 ตัวเลือก ${countKind(s.items,'mc')} • ถูก/ผิด ${countKind(s.items,'tf')}${countKind(s.items,'ord')?` • เรียงลำดับ ${countKind(s.items,'ord')}`:''}
         ${s.desc?('<br>'+esc(s.desc)):''}</div>
       <div class="row">
         <button class="btn-sm" data-ed="${esc(s.id)}">✏️ แก้ไข</button>
@@ -1850,11 +2090,12 @@ function fillSetSelect(){
     : '<option value="">— ยังไม่มีชุดข้อสอบ —</option>';
   if(cur && SETS.some(s=>s.id===cur)) sel.value=cur;
   updateSetInfo();
+  fillTaskSetSelect();
 }
 function updateSetInfo(){
   const s=SETS.find(x=>x.id===$('#cfgSet').value);
   $('#cfgSetInfo').textContent = s
-    ? `ชุดนี้มี ${s.items.length} ข้อ — 4 ตัวเลือก ${countKind(s.items,'mc')} ข้อ, ถูก/ผิด ${countKind(s.items,'tf')} ข้อ`
+    ? `ชุดนี้มี ${s.items.length} ข้อ — 4 ตัวเลือก ${countKind(s.items,'mc')} ข้อ, ถูก/ผิด ${countKind(s.items,'tf')} ข้อ, เรียงลำดับ ${countKind(s.items,'ord')} ข้อ`
     : 'ยังไม่มีชุดข้อสอบ — สร้างหรือนำเข้า CSV ที่แท็บคลังข้อสอบก่อน';
 }
 $('#cfgSet').onchange = updateSetInfo;
@@ -1877,6 +2118,9 @@ function itemsToCsv(items){
   items.forEach(q=>{
     if(q.t==='tf'){
       rows.push([ 'tf', q.q, q.t0||'', q.t1||'', '', '', (q.c===1?2:1), q.x||'', q.time||'' ].map(csvCell).join(','));
+    } else if(q.t==='ord'){
+      const a=q.a||[];
+      rows.push([ 'ord', q.q, a[0]||'', a[1]||'', a[2]||'', a[3]||'', '', q.x||'', q.time||'' ].map(csvCell).join(','));
     } else {
       const a=q.a||[];
       rows.push([ 'mc', q.q, a[0]||'', a[1]||'', a[2]||'', a[3]||'', (q.c||0)+1, q.x||'', q.time||'' ].map(csvCell).join(','));
@@ -1918,6 +2162,7 @@ function csvToItems(text){
     let type = g(0).toLowerCase();
     if(/^(tf|t\/f|ถูก\/ผิด|ถูกผิด|truefalse|true-false|2)$/.test(type)) type='tf';
     else if(/^(mc|choice|4|ปรนัย|4ตัวเลือก|multiple)$/.test(type)) type='mc';
+    else if(/^(ord|order|ordering|seq|sort|puzzle|เรียง|เรียงลำดับ)$/.test(type)) type='ord';
     else type = ''; // เดาจากจำนวนตัวเลือก
     const qt = g(1);
     if(!qt){ errors.push(`บรรทัด ${line}: ไม่มีคำถาม`); return; }
@@ -1926,6 +2171,19 @@ function csvToItems(text){
     let raw = g(6);
     const x = g(7);
     const tsec = Math.max(0, parseInt(g(8),10) || 0);
+    if(type==='ord'){
+      let opts = a.filter(v=>v!=='');
+      if(opts.length<2){ errors.push(`บรรทัด ${line}: ข้อเรียงลำดับต้องมีอย่างน้อย 2 รายการ`); return; }
+      const dg = raw.replace(/[^0-9]/g,'');
+      if(dg){
+        const sq=[...dg].map(n=>+n-1);
+        if(sq.length!==opts.length || new Set(sq).size!==sq.length || sq.some(i=>i<0||i>=opts.length)){
+          errors.push(`บรรทัด ${line}: เฉลยข้อเรียงลำดับต้องเป็นลำดับเลข 1–${opts.length} ไม่ซ้ำกัน เช่น 3142 (พบ “${raw}”)`); return; }
+        opts = sq.map(i=>opts[i]);
+      }
+      items.push({ t:'ord', q:qt, a:opts, x, time:tsec });
+      return;
+    }
     if(type==='tf'){
       let c;
       if(/^(1|ข้อ1|ถูก|ใช่|จริง|true|t|y|yes)$/i.test(raw)) c=0;
@@ -1952,6 +2210,7 @@ function templateCsv(){
   rows.push(['mc','ข้อใดเขียนถูกต้อง','สะพาน','สพาน','สะะพาน','สพาณ','1','คำแผลงที่เพิ่มพยางค์หน้า สะ- ต้องประวิสรรชนีย์','20'].map(csvCell).join(','));
   rows.push(['tf','คำว่า “ขนม” ต้องประวิสรรชนีย์','','','','','2','“ขนม” ออกเสียง อะ กึ่งเสียง จึงไม่ประวิสรรชนีย์',''].map(csvCell).join(','));
   rows.push(['tf','คำว่า “ตะวัน” เกิดจากการกร่อนเสียงของคำว่า “ตาวัน”','ใช่','ไม่ใช่','','','1','ตาวัน → ตะวัน เป็นการกร่อนเสียง จึงประวิสรรชนีย์','15'].map(csvCell).join(','));
+  rows.push(['ord','เรียงลำดับขั้นตอนการเขียนเรียงความให้ถูกต้อง','กำหนดหัวเรื่องและวางโครงเรื่อง','เขียนคำนำ','เขียนเนื้อเรื่อง','เขียนสรุป','','เริ่มจากวางโครงเรื่อง แล้วเขียนคำนำ เนื้อเรื่อง และสรุปตามลำดับ','30'].map(csvCell).join(','));
   return rows.join('\r\n');
 }
 
@@ -1976,11 +2235,14 @@ function buildMasterPrompt(){
   const tf=($('#pgTf').value.trim() || 'ถูก / ผิด').split('/').map(x=>x.trim());
   const tfT=tf[0]||'ถูก', tfF=tf[1]||'ผิด';
 
-  const nMc = type==='mc' ? cnt : type==='tf' ? 0 : Math.round(cnt*0.6);
-  const nTf = cnt - nMc;
+  const nOrd = type==='ord' ? cnt : type==='mix3' ? Math.max(1, Math.round(cnt*0.2)) : 0;
+  const nMc = type==='mc' ? cnt : (type==='tf'||type==='ord') ? 0 : type==='mix3' ? Math.round(cnt*0.5) : Math.round(cnt*0.6);
+  const nTf = cnt - nMc - nOrd;
   const mixLine = type==='mix'
     ? `ข้อแบบ 4 ตัวเลือก (mc) จำนวน ${nMc} ข้อ และข้อแบบถูก/ผิด (tf) จำนวน ${nTf} ข้อ สลับลำดับคละกัน`
+    : type==='mix3' ? `ข้อแบบ 4 ตัวเลือก (mc) ${nMc} ข้อ, ถูก/ผิด (tf) ${nTf} ข้อ และเรียงลำดับ (ord) ${nOrd} ข้อ สลับลำดับคละกัน`
     : type==='mc' ? `ข้อแบบ 4 ตัวเลือก (mc) ทั้งหมด ${cnt} ข้อ`
+    : type==='ord' ? `ข้อแบบเรียงลำดับ (ord) ทั้งหมด ${cnt} ข้อ`
                   : `ข้อแบบถูก/ผิด (tf) ทั้งหมด ${cnt} ข้อ`;
   const timeLine = tsec ? `ใส่เลข ${tsec} ในคอลัมน์ "เวลา" ทุกข้อ` : 'ปล่อยคอลัมน์ "เวลา" ว่างไว้ทุกข้อ';
 
@@ -2002,6 +2264,7 @@ function buildMasterPrompt(){
 # รูปแบบข้อสอบ
 - ข้อแบบ mc: คำถาม 1 ข้อ + ตัวเลือก 4 ตัว เฉลย 1 ตัว
 - ข้อแบบ tf: เป็น "ข้อความให้ตัดสิน" โดยปุ่มตอบคือ "${tfT}" (ตัวเลือก 1) และ "${tfF}" (ตัวเลือก 2)
+- ข้อแบบ ord: คำสั่งให้เรียงลำดับ (เช่น ขั้นตอน เหตุการณ์ตามเวลา ลำดับขนาด) + รายการ 2–4 รายการ ที่มีลำดับถูกต้องเพียงแบบเดียวอย่างชัดเจน
 - ทุกข้อต้องมี **คำอธิบายเฉลยสั้น ๆ 1–2 บรรทัด** อธิบายว่าทำไมจึงถูก อิงหลักการ/หลักเกณฑ์จริง
 - ห้ามออกข้อซ้ำหรือถามเรื่องเดียวกันซ้ำหลายข้อ
 
@@ -2012,9 +2275,10 @@ function buildMasterPrompt(){
 กติกา CSV:
 - บรรทัดแรกต้องเป็นหัวตารางนี้ **เป๊ะทุกตัวอักษร**
 ประเภท,คำถาม,ตัวเลือก1,ตัวเลือก2,ตัวเลือก3,ตัวเลือก4,เฉลย,คำอธิบาย,เวลา
-- คอลัมน์ "ประเภท" ใช้ค่า \`mc\` หรือ \`tf\` เท่านั้น
+- คอลัมน์ "ประเภท" ใช้ค่า \`mc\`, \`tf\` หรือ \`ord\` เท่านั้น
 - ข้อ mc: กรอกตัวเลือก1–4 ให้ครบ • คอลัมน์ "เฉลย" ใส่ **เลข 1–4** ของตัวเลือกที่ถูก
 - ข้อ tf: ใส่ "${tfT}" ในตัวเลือก1 และ "${tfF}" ในตัวเลือก2 เว้นตัวเลือก3–4 ว่าง • คอลัมน์ "เฉลย" ใส่ 1 หรือ 2
+- ข้อ ord: กรอกรายการในตัวเลือก1–4 **เรียงตามลำดับที่ถูกต้อง** (ใช้ 2–4 รายการ) • คอลัมน์ "เฉลย" เว้นว่าง
 - คอลัมน์ "คำอธิบาย" คือคำอธิบายเฉลย
 - ${timeLine}
 - ถ้าข้อความมีเครื่องหมายจุลภาค (,) ให้ครอบด้วยเครื่องหมายคำพูด " " ตามมาตรฐาน CSV
@@ -2078,23 +2342,27 @@ $('#edName').oninput = ()=>ED.name=$('#edName').value;
 $('#edDesc').oninput = ()=>ED.desc=$('#edDesc').value;
 $('#edSearch').oninput = renderEd;
 $('#edType').onchange = ()=>{
-  const tf = $('#edType').value==='tf';
+  const v = $('#edType').value, tf = v==='tf', ord = v==='ord';
   $('#edMcBox').classList.toggle('hide', tf);
   $('#edTfBox').classList.toggle('hide', !tf);
+  $('#edCBox').classList.toggle('hide', ord);
+  $('#edOrdNote').classList.toggle('hide', !ord);
+  $$('.edAL').forEach(l=>l.textContent=(ord?'ลำดับที่ ':'ตัวเลือก ')+l.dataset.n);
 };
 
 function renderEd(){
   $('#edCount').textContent=ED.items.length;
   $('#edMc').textContent=countKind(ED.items,'mc');
   $('#edTf').textContent=countKind(ED.items,'tf');
+  $('#edOrd').textContent=countKind(ED.items,'ord');
   const kw=$('#edSearch').value.trim();
   const rows=ED.items.map((q,i)=>({q,i})).filter(o=>!kw || (o.q.q||'').includes(kw));
   $('#edRows').innerHTML = rows.map(o=>{
     const q=o.q;
-    const ansTxt = q.t==='tf' ? tfLabels(q)[q.c] : (q.a&&q.a[q.c])||'';
+    const ansTxt = q.t==='tf' ? tfLabels(q)[q.c] : q.t==='ord' ? (q.a||[]).join(' → ') : (q.a&&q.a[q.c])||'';
     return `<tr>
       <td>${o.i+1}</td>
-      <td><span class="badge ${q.t}">${q.t==='tf'?'ถูก/ผิด':'4 ตัวเลือก'}</span>${q.time?` <span class="badge">⏱ ${q.time}s</span>`:''}<br>
+      <td><span class="badge ${q.t}">${KIND_TXT[q.t]||'4 ตัวเลือก'}</span>${q.time?` <span class="badge">⏱ ${q.time}s</span>`:''}<br>
         ${esc(q.q)}<br><span class="muted">✅ ${esc(ansTxt)}</span></td>
       <td><div class="qrow-actions">
         <button class="btn-sm btn-ghost" data-up="${o.i}">▲</button>
@@ -2148,6 +2416,10 @@ $('#btnEdAdd').onclick = ()=>{
   let item;
   if(type==='tf'){
     item = { t:'tf', q:qt, c:+$('#edCtf').value, x, t0:$('#edT0').value.trim(), t1:$('#edT1').value.trim(), time:tsec };
+  } else if(type==='ord'){
+    const a=[0,1,2,3].map(k=>$('#edA'+k).value.trim()).filter(v=>v!=='');
+    if(a.length<2) return toast('ข้อเรียงลำดับต้องมีอย่างน้อย 2 รายการ');
+    item = { t:'ord', q:qt, a, x, time:tsec };
   } else {
     const a=[0,1,2,3].map(k=>$('#edA'+k).value.trim()).filter(v=>v!=='');
     if(a.length<2) return toast('ต้องมีตัวเลือกอย่างน้อย 2 ตัวเลือก');
@@ -2202,6 +2474,14 @@ function buildQuestions(items, opts){
       const L=tfLabels(q);
       return { type:'tf', prompt:'ข้อความนี้ถูกต้องหรือไม่ ?', word:q.q, time:+q.time||0,
                choices:[{t:L[0]},{t:L[1]}], correct: (q.c===1?1:0), explain:q.x||'' };
+    }
+    if(q.t==='ord'){
+      // สลับเสมอ และไม่ให้ออกมาเรียงถูกอยู่แล้ว
+      const a=(q.a||[]).map((t,i)=>({t,i}));
+      let s=shuffle(a);
+      for(let k=0;k<12 && a.length>1 && s.every((o,j)=>o.i===j);k++) s=shuffle(a);
+      return { type:'ord', prompt:`เรียงลำดับให้ถูกต้อง — แตะตามลำดับ 1 → ${a.length}`, word:q.q, time:+q.time||0,
+               choices:s.map(o=>({t:o.t})), correct:ordCode(a.map(o=>s.findIndex(x=>x.i===o.i))), explain:q.x||'' };
     }
     let a=(q.a||[]).map((t,i)=>({t,i}));
     if(opts.shuffleC) a=shuffle(a);
@@ -2414,6 +2694,8 @@ function renderQuestion(r){
     return `<button class="ans a${k}" data-i="${oi}"><span class="shape">${SHAPES[k]||''}</span><span class="txt">${esc(c.t)}</span></button>`;
   }).join('');
   box.querySelectorAll('.ans').forEach(b=> b.onclick=()=>answer(+b.dataset.i, b));
+  P.ord=null;
+  if(q.type==='ord') renderOrdPlayer(box, q, order);
 
   const card=$('#pWord').parentElement;
   card.style.filter=''; card.style.transform='';
@@ -2473,7 +2755,8 @@ function startTimer(limit, elapsed=0){
     el.style.setProperty('--p',(left/P.limitMs*100)+'%');
     el.classList.toggle('low', sec<=5);
     if(!P.locked && sec<=5 && sec>0 && sec!==P.lastSec){ P.lastSec=sec; sfx(sec===1?'tickend':'tick'); }
-    if(left<=0){ clearInterval(P.timer); if(!P.locked) lockOut(); }
+    if(left<=0){ clearInterval(P.timer);
+      if(!P.locked){ if(P.ord && P.ord.done()) answer(P.ord.code(), null); else lockOut(); } }
   };
   tick(); P.timer=setInterval(tick,120);
 }
@@ -2482,7 +2765,8 @@ async function answer(i, btn){
   if(P.locked) return;
   if(P.lockUntil && Date.now()<P.lockUntil) return toast('🔒 หน้าจอยังถูกล็อกอยู่'); P.locked=true; clearInterval(P.timer);
   const ms=Date.now()-P.t0; sfx('tap');
-  $('#pAnswers').querySelectorAll('.ans').forEach(b=>{ if(b!==btn) b.classList.add('dim'); });
+  $('#pAnswers').querySelectorAll('.ans').forEach(b=>{ if(btn && b!==btn) b.classList.add('dim'); });
+  ordLock();
   $('#pLockEmoji').textContent='✅';
   $('#pLocked').querySelector('h3').textContent='ส่งคำตอบแล้ว!';
   $('#pLocked').classList.remove('hide');
@@ -2495,8 +2779,47 @@ async function answer(i, btn){
     if(isDenied(e)){ $('#pLockEmoji').textContent='⏰'; $('#pLocked').querySelector('h3').textContent='ส่งคำตอบไม่ทัน — ข้อนี้ปิดแล้ว'; }
   }
 }
+/* ---------- ข้อเรียงลำดับ: แตะรายการตามลำดับ 1 → n (แตะซ้ำ = ยกเลิกตั้งแต่ลำดับนั้น) ---------- */
+function ordWidget(box, texts, order, onChange){
+  const st={ pick:[], n:texts.length, locked:false };
+  box.className='answers ord';
+  box.innerHTML = order.map(oi=>`<button class="ans a${oi%4} ordi" data-i="${oi}"><span class="onum"></span><span class="txt">${esc(texts[oi])}</span></button>`).join('');
+  const paint=()=>{
+    box.querySelectorAll('.ans').forEach(b=>{
+      const k=st.pick.indexOf(+b.dataset.i);
+      b.classList.toggle('picked', k>=0);
+      b.querySelector('.onum').textContent = k>=0 ? k+1 : '';
+    });
+    onChange && onChange(st);
+  };
+  box.querySelectorAll('.ans').forEach(b=> b.onclick=()=>{
+    if(st.locked) return;
+    const i=+b.dataset.i, k=st.pick.indexOf(i);
+    if(k>=0) st.pick.splice(k); else st.pick.push(i);
+    sfx('tap'); paint();
+  });
+  st.reset=()=>{ if(!st.locked){ st.pick=[]; paint(); } };
+  st.set=arr=>{ st.pick=arr.filter(i=>i>=0 && i<st.n); paint(); };
+  st.done=()=>st.pick.length===st.n;
+  st.code=()=>ordCode(st.pick);
+  paint();
+  return st;
+}
+function renderOrdPlayer(box, q, order){
+  P.ord = ordWidget(box, q.choices.map(c=>c.t), order, st=>{ const b=$('#pOrdSend'); if(b) b.disabled = !st.done() || P.locked; });
+  const bar=document.createElement('div'); bar.className='ordbar';
+  bar.innerHTML='<button class="btn-ghost" id="pOrdReset">↺ เรียงใหม่</button><button class="btn-ok" id="pOrdSend" disabled>ส่งคำตอบ ✔</button>';
+  box.appendChild(bar);
+  $('#pOrdReset').onclick=()=>P.ord && P.ord.reset();
+  $('#pOrdSend').onclick=()=>{ if(P.ord && P.ord.done()) answer(P.ord.code(), null); };
+}
+function ordLock(){
+  if(!P.ord) return;
+  P.ord.locked=true;
+  $$('#pAnswers .ordbar button').forEach(b=>b.disabled=true);
+}
 function lockOut(){
-  P.locked=true;
+  P.locked=true; ordLock();
   $('#pAnswers').querySelectorAll('.ans').forEach(b=>b.classList.add('dim'));
   $('#pLockEmoji').textContent='⏰'; $('#pLocked').querySelector('h3').textContent='หมดเวลา!';
   $('#pLocked').classList.remove('hide');
@@ -2550,8 +2873,11 @@ function renderReveal(r){
   else                        $('#fbGap').innerHTML = 'ตอบให้เร็วและถูกต้องเพื่อไต่อันดับขึ้นไป!';
 
   renderTeamLine($('#fbTeam'), r.teamBoard);
-  const cc = r.current.choices[r.correct];
-  $('#fbExplain').innerHTML = `<b>เฉลย: ${esc(cc?cc.t:'')}</b>${r.explain?('<br>'+esc(r.explain)):''}`;
+  const cur = r.current||{choices:[]};
+  const ccTxt = cur.type==='ord'
+    ? ordSeq(r.correct).map((i,k)=>`${k+1}) ${(cur.choices[i]||{}).t||''}`).join('  →  ')
+    : ((cur.choices[r.correct]||{}).t||'');
+  $('#fbExplain').innerHTML = `<b>เฉลย: ${esc(ccTxt)}</b>${r.explain?('<br>'+esc(r.explain)):''}`;
 
   if(!P.fxQ || P.fxQ!==r.qIndex){ P.fxQ=r.qIndex; bigFlash(ok); sfx(ok?'correct':'wrong'); }
 
@@ -2846,9 +3172,10 @@ $('#tgAuto').onclick=()=>{
 
 async function enterAdmin(){
   await loadSettings();
-  await loadSets();
-  renderSets(); fillSetSelect(); renderBrandForm(); renderSys();
+  await Promise.all([loadSets(), loadTasks(), loadAlerts()]);
+  renderSets(); fillSetSelect(); renderBrandForm(); renderSys(); renderTasks();
   show('scHostMenu');
+  if(ALERTS.length) toast(`🚨 มีนักเรียนถูกยุติการสอบ ${ALERTS.length} รายการ — ดูที่แท็บ “มอบหมายงาน”`);
 }
 /* เครื่องนี้ยืนยันเป็นครูแล้วหรือยัง (มีเอกสาร admins/{uid}) */
 async function checkAdmin(){
@@ -2885,6 +3212,7 @@ $('#btnBackMenu').onclick  = ()=>{ cancelAuto(); stopMusic(endmEl()); stopMusic(
 $$('.tabs button[data-tab]').forEach(b=> b.onclick=()=>{
   $$('.tabs button[data-tab]').forEach(x=>x.classList.remove('on')); b.classList.add('on');
   if(b.dataset.tab==='tabSafe') refreshSafeTab();
+  if(b.dataset.tab==='tabTask') loadAlerts();
   $$('.tabpane').forEach(p=>p.classList.add('hide'));
   $('#'+b.dataset.tab).classList.remove('hide');
 });
@@ -3198,9 +3526,13 @@ function renderHostQuestionUI(q){
   // โครงกราฟแท่ง (ยังไม่เผยตัวเลขจนกว่าจะเฉลย)
   const cols=$('#hCols');
   cols.className='cols hide '+(two?'two':'four');   // ซ่อนไว้ก่อน เผยตอนเฉลย
-  cols.innerHTML=q.choices.map((c,i)=>`<div class="col" data-i="${i}">
-    <div class="n">0</div><div class="trk"><div class="bar" style="background:var(--c${i+1})"></div></div>
-    <div class="base" style="background:var(--c${i+1})">${SHAPES[i]||''}</div></div>`).join('');
+  const cdefs = q.type==='ord'
+    ? [{bg:'#22c55e',s:'✔ ถูก'},{bg:'#ef4444',s:'✖ ผิด'},{bg:'#64748b',s:'⏰'}]
+    : q.choices.map((c,i)=>({bg:`var(--c${i+1})`, s:SHAPES[i]||''}));
+  if(q.type==='ord') cols.className='cols hide three';
+  cols.innerHTML=cdefs.map((d,i)=>`<div class="col" data-i="${i}">
+    <div class="n">0</div><div class="trk"><div class="bar" style="background:${d.bg}"></div></div>
+    <div class="base" style="background:${d.bg}">${d.s}</div></div>`).join('');
   $('#hAnsCount').textContent=0; $('#hPlayerCount').textContent=H.players.size;
   $('#hBars2').innerHTML=''; $('#hExplain').classList.add('hide');
   $('#scHostGame').classList.remove('rv');
@@ -3470,7 +3802,15 @@ async function doReveal(){
   saveHostState();
 
   const total=H.players.size||1;
-  $('#hAnswers').querySelectorAll('.ans').forEach(el=>{
+  const isOrd = q.type==='ord', oseq = isOrd ? ordSeq(q.correct) : null;
+  const answeredN = results.filter(r=>r.c!==-1).length;
+  const colVals = isOrd ? [correctN, Math.max(0,answeredN-correctN), Math.max(0,H.players.size-answeredN)] : counts;
+  const winCol = i => isOrd ? i===0 : i===q.correct;
+  if(isOrd){
+    // แสดงรายการเรียงตามลำดับที่ถูกต้อง
+    $('#hAnswers').innerHTML = oseq.map((ci,k)=>`<div class="ans a${ci%4} right shown" data-i="${ci}">
+      <span class="mk">✔️</span><span class="shape">${k+1}.</span><span class="txt">${esc((q.choices[ci]||{}).t||'')}</span></div>`).join('');
+  } else $('#hAnswers').querySelectorAll('.ans').forEach(el=>{
     const i=+el.dataset.i;
     el.classList.toggle('right', i===q.correct);
     el.classList.toggle('wrong', i!==q.correct);
@@ -3479,27 +3819,32 @@ async function doReveal(){
   });
   sfx('reveal'); setTimeout(()=>sfx(correctN>0?'correct':'wrong'),320);
   if(correctN>0) confetti(30);
-  $('#hBars2').innerHTML=q.choices.map((c,i)=>{
+  $('#hBars2').innerHTML= isOrd
+    ? ['✅ เรียงถูกต้อง','❌ เรียงผิด','⏰ ไม่ได้ตอบ'].map((lb,i)=>{ const v=colVals[i], pc=Math.round(v/total*100);
+        return `<div class="bar"><i class="${i===0?'win':''}" style="background:${['#22c55e','#ef4444','#64748b'][i]};width:${pc}%"></i>
+          <span><span>${lb}</span><span>${v} คน (${pc}%)</span></span></div>`; }).join('')
+    : q.choices.map((c,i)=>{
     const pc=Math.round((counts[i]||0)/total*100);
     return `<div class="bar"><i class="${i===q.correct?'win':''}" style="background:var(--c${i+1});width:${pc}%"></i>
       <span><span>${i===q.correct?'✅ ':''}${SHAPES[i]||''} ${esc(c.t)}</span><span>${counts[i]||0} คน (${pc}%)</span></span></div>`;
   }).join('');
   // กราฟแท่งแนวตั้งบนหน้าคำถาม (สไตล์ Kahoot)
-  const maxN=Math.max(1, ...counts);
+  const maxN=Math.max(1, ...colVals);
   $('#scHostGame').classList.add('rv');
   $('#hCols').classList.remove('hide');
   $('#hCols').querySelectorAll('.col').forEach(el=>{
-    const i=+el.dataset.i, v=counts[i]||0;
+    const i=+el.dataset.i, v=colVals[i]||0;
     el.classList.add('shown');
-    el.classList.toggle('win', i===q.correct);
-    el.classList.toggle('lose', i!==q.correct);
+    el.classList.toggle('win', winCol(i));
+    el.classList.toggle('lose', !winCol(i));
     const pc=Math.round(v/total*100);
-    el.querySelector('.n').innerHTML = (i===q.correct?'<span class="tick">✔</span>':'')+v+`<small>(${pc}%)</small>`;
+    el.querySelector('.n').innerHTML = (winCol(i)?'<span class="tick">✔</span>':'')+v+`<small>(${pc}%)</small>`;
     // ความสูงเทียบกับตัวเลือกที่มีคนตอบมากสุด (มากสุด = เต็มราง) ข้อที่ไม่มีใครตอบเหลือเส้นบาง ๆ
     const h = v ? Math.max(6, v/maxN*100) : 2;
     setTimeout(()=>{ el.querySelector('.bar').style.height = h+'%'; }, 60);
   });
-  $('#hExplain').innerHTML=`<b>เฉลย: ${esc(q.choices[q.correct].t)}</b>${q.explain?('<br>'+esc(q.explain)):''}`;
+  const keyTxt = isOrd ? oseq.map((ci,k)=>`${k+1}) ${(q.choices[ci]||{}).t||''}`).join('  →  ') : ((q.choices[q.correct]||{}).t||'');
+  $('#hExplain').innerHTML=`<b>เฉลย: ${esc(keyTxt)}</b>${q.explain?('<br>'+esc(q.explain)):''}`;
   $('#hExplain').classList.remove('hide');
   $('#revealBtns').classList.remove('hide');
   $('#revealBtns3').classList.remove('hide');
@@ -3933,8 +4278,598 @@ initAudioUI();
 applyBrand();
 loadSettings();
 
+/* =======================================================================
+   📝 มอบหมายงานแบบทดสอบ — นักเรียนทำเองผ่านลิงก์ (ครูไม่ต้องคุม)
+   assigns/{aid}              : ข้อมูลที่นักเรียนอ่านได้ (คำถาม+ตัวเลือก — ไม่มีเฉลย) + ตั้งค่า
+   assigns/{aid}/private/key  : เฉลย + คำอธิบาย (ครูเท่านั้น) → ตรวจคะแนนบนจอครู
+   assigns/{aid}/subs/{uid}   : คำตอบของนักเรียน 1 คน/เครื่อง
+   alerts/{id}                : แจ้งเตือนครูเมื่อยุติการสอบเพราะออกจากหน้าข้อสอบเกินกำหนด
+   ประหยัดโควตา: นักเรียน 1 คน ≈ 3 reads + 3–8 writes (บันทึกทุก 5 ข้อ / ตอนออกนอกหน้า / ตอนส่ง)
+   ======================================================================= */
+const TK_MAX_LEAVE  = 3;   // ออกนอกหน้าข้อสอบได้ไม่เกินกี่ครั้ง (ครั้งถัดไป = ยุติการสอบ)
+const TK_SAVE_EVERY = 5;   // บันทึกความคืบหน้าขึ้นเซิร์ฟเวอร์ทุกกี่ข้อ
+const TK = { aid:null, a:null, info:null, me:null, order:[], co:{}, idx:0, ans:{}, sw:0, status:'',
+             guard:false, away:false, timer:null, qStart:0, sel:null, ord:null, skipArm:-1, busy:false };
+const taskUrl = aid => location.origin + location.pathname + '#task=' + aid;
+const tsMs  = t => (t && t.toMillis) ? t.toMillis() : (typeof t==='number' ? t : 0);
+const fmtDT = ms => ms ? new Date(ms).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'}) : '-';
+const tkName = i => `${(i&&i.pre)||''}${(i&&i.fn)||''} ${(i&&i.ln)||''}`.trim();
+function tkAnsText(q, v){
+  if(!q || v===undefined || v===null) return '';
+  if(q.type==='ord') return ordSeq(v).map(i=>q.choices[i]??'?').join(' → ');
+  return q.choices[v] ?? '';
+}
+
+/* ---------------- ฝั่งครู ---------------- */
+let TASKS = [], ALERTS = [];
+async function loadTasks(){
+  try{
+    const s=await getDocs(collection(db,'assigns'));
+    TASKS=[]; s.forEach(d=>TASKS.push({ id:d.id, ...(d.data()||{}) }));
+    TASKS.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  }catch(e){ console.warn('loadTasks',e); }
+}
+function fillTaskSetSelect(){
+  const sel=$('#taSet'); if(!sel) return; const cur=sel.value;
+  sel.innerHTML = SETS.length
+    ? SETS.map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${s.items.length} ข้อ)</option>`).join('')
+    : '<option value="">— ยังไม่มีชุดข้อสอบ —</option>';
+  if(cur && SETS.some(s=>s.id===cur)) sel.value=cur;
+}
+function taskBadges(t){
+  return [ t.timer ? `⏱ จับเวลา${t.tsec?` ${t.tsec} วิ/ข้อ`:''}` : '⏱ ไม่จับเวลา',
+           t.cheat ? '🛡️ ตรวจจับทุจริต' : '🛡️ ไม่ตรวจจับ',
+           (t.shQ||t.shC) ? '🔀 สลับ'+[t.shQ?'ข้อ':'', t.shC?'ตัวเลือก':''].filter(Boolean).join('/') : '🔀 ไม่สลับ' ]
+    .map(x=>`<span class="badge">${x}</span>`).join(' ');
+}
+const openBadge = t => t.open ? '<span class="badge ok">🟢 เปิดรับคำตอบ</span>' : '<span class="badge no">🔴 ปิดรับแล้ว</span>';
+function renderTasks(){
+  const box=$('#taList'); if(!box) return;
+  $('#taEmpty').style.display = TASKS.length ? 'none' : 'block';
+  box.innerHTML = TASKS.map(t=>`
+    <div class="setcard">
+      <h4>${esc(t.title||'(ไม่มีชื่อ)')}</h4>
+      <div class="meta">${openBadge(t)} ${t.n||0} ข้อ • ชุด ${esc(t.setName||'-')}<br>สร้างเมื่อ ${fmtDT(t.createdAt)}
+        <div style="margin-top:6px;line-height:2">${taskBadges(t)}</div></div>
+      <div class="row">
+        <button class="btn-sm btn-ok" data-tr="${esc(t.id)}">📊 ดูผล</button>
+        <button class="btn-sm btn-ghost" data-tl="${esc(t.id)}">🔗 ลิงก์</button>
+        <button class="btn-sm btn-ghost" data-to="${esc(t.id)}">${t.open?'⏸ ปิดรับ':'▶ เปิดรับ'}</button>
+        <button class="btn-sm btn-no" data-td="${esc(t.id)}">🗑</button>
+      </div>
+    </div>`).join('');
+  box.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>openTaskRes(b.dataset.tr));
+  box.querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>{ const t=TASKS.find(x=>x.id===b.dataset.tl); if(t) openTaskLink(t); });
+  box.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>toggleTaskOpen(b.dataset.to));
+  box.querySelectorAll('[data-td]').forEach(b=>b.onclick=()=>deleteTask(b.dataset.td));
+}
+async function toggleTaskOpen(aid){
+  const t = TASKS.find(x=>x.id===aid) || (TR.aid===aid ? { id:aid, ...TR.a } : null);
+  if(!t) return;
+  const nv=!t.open;
+  try{
+    await updateDoc(doc(db,'assigns',aid), { open:nv });
+    t.open=nv; const x=TASKS.find(y=>y.id===aid); if(x) x.open=nv;
+    if(TR.aid===aid){ TR.a.open=nv; renderTaskRes(); }
+    renderTasks();
+    toast(nv ? 'เปิดรับคำตอบแล้ว' : 'ปิดรับคำตอบแล้ว — นักเรียนที่ยังไม่เริ่มจะเข้าทำไม่ได้');
+  }catch(e){ toast('เปลี่ยนสถานะไม่สำเร็จ: '+e.message); }
+}
+async function deleteTask(aid){
+  const t=TASKS.find(x=>x.id===aid); if(!t) return;
+  if(!confirm(`ลบแบบทดสอบ “${t.title}” พร้อมผลการสอบทั้งหมดถาวร?\n\nแนะนำ: กด “ดูผล” แล้วดาวน์โหลด Excel เก็บไว้ก่อน`)) return;
+  try{
+    const subs=await getDocs(collection(db,'assigns',aid,'subs'));
+    let bt=writeBatch(db), n=0;
+    for(const d of subs.docs){ bt.delete(d.ref); if(++n>=450){ await bt.commit(); bt=writeBatch(db); n=0; } }
+    bt.delete(doc(db,'assigns',aid,'private','key')); bt.delete(doc(db,'assigns',aid));
+    await bt.commit();
+    TASKS=TASKS.filter(x=>x.id!==aid); renderTasks(); toast('ลบแบบทดสอบแล้ว');
+  }catch(e){ toast('ลบไม่สำเร็จ: '+e.message); }
+}
+function openTaskLink(t){
+  const url=taskUrl(t.id);
+  $('#tlTitle').textContent=t.title||'';
+  $('#tlUrl').value=url;
+  makeQR($('#tlQr'), url, 220);
+  $('#taskLinkModal').classList.add('on');
+}
+$('#btnTlClose').onclick=()=>$('#taskLinkModal').classList.remove('on');
+$('#btnTlOpen').onclick=()=>window.open($('#tlUrl').value,'_blank','noopener');
+$('#btnTlCopy').onclick=async()=>{
+  const u=$('#tlUrl').value;
+  try{ await navigator.clipboard.writeText(u); }catch(e){ $('#tlUrl').select(); document.execCommand('copy'); }
+  toast('คัดลอกลิงก์แล้ว ✅');
+};
+$('#btnTlQrBig').onclick=()=>{
+  const u=$('#tlUrl').value; if(!u) return;
+  $('#taskLinkModal').classList.remove('on');
+  const side=Math.round(Math.min(window.innerHeight*0.62, window.innerWidth*0.86));
+  makeQR($('#qrFullBox'), u, Math.max(240, side));
+  $('#qrFullPin').textContent = '📝 '+($('#tlTitle').textContent||'แบบทดสอบ');
+  $('#qrFullUrl').textContent = u.replace(/^https?:\/\//,'');
+  $('#qrFull').classList.add('on');
+};
+
+$('#taTimerOn').onchange = ()=>$('#taTimeBox').classList.toggle('hide', !$('#taTimerOn').checked);
+$('#btnTaCreate').onclick = async ()=>{
+  const set=SETS.find(s=>s.id===$('#taSet').value);
+  if(!set) return toast('ยังไม่ได้เลือกชุดข้อสอบ');
+  const kind=$('#taKind').value, count=+$('#taCount').value;
+  const timer=$('#taTimerOn').checked, tsec=+$('#taTime').value||0;
+  const cheat=$('#taCheat').checked, shQ=$('#taShQ').checked, shC=$('#taShC').checked;
+  const title=$('#taTitle').value.trim() || set.name;
+  const quiz=buildQuestions(set.items, { kind, count, shuffleQ: count>0, shuffleC:false });
+  if(!quiz.length) return toast('ไม่มีข้อสอบตามเงื่อนไขที่เลือก');
+  const btn=$('#btnTaCreate'); btn.disabled=true; btn.textContent='กำลังสร้าง…';
+  try{
+    const qs=quiz.map(q=>({ type:q.type, word:String(q.word??''), choices:q.choices.map(c=>String(c.t??'')),
+                            time: timer ? (+q.time>0 ? +q.time : tsec) : 0 }));
+    const ref=doc(collection(db,'assigns'));
+    // เฉลยเก็บแยก (นักเรียนอ่านไม่ได้)
+    await setDoc(doc(db,'assigns',ref.id,'private','key'), { key:quiz.map(q=>q.correct), exp:quiz.map(q=>q.explain||'') });
+    const data={ title, setName:set.name, n:qs.length, qs, timer, tsec:timer?tsec:0, cheat, shQ, shC, open:true,
+      maxLeave:TK_MAX_LEAVE, createdAt:Date.now(),
+      brand:{ name:BRAND.name||'', sub:BRAND.sub||'', logo:BRAND.logo||'', favicon:BRAND.favicon||'', credit:BRAND.credit||'' } };
+    await setDoc(ref, data);
+    TASKS.unshift({ id:ref.id, ...data }); renderTasks();
+    $('#taTitle').value='';
+    openTaskLink({ id:ref.id, ...data });
+    toast('สร้างแบบทดสอบแล้ว ✅ ส่งลิงก์ให้นักเรียนได้เลย');
+  }catch(e){ console.error(e); toast(isDenied(e)?'ไม่มีสิทธิ์ — ตรวจว่าอัปเดต firestore.rules แล้ว':'สร้างไม่สำเร็จ: '+e.message); }
+  btn.disabled=false; btn.textContent='📝 สร้างลิงก์แบบทดสอบ';
+};
+
+/* ---- แจ้งเตือนการยุติการสอบ ---- */
+async function loadAlerts(){
+  try{
+    const s=await getDocs(collection(db,'alerts'));
+    ALERTS=[]; s.forEach(d=>ALERTS.push({ id:d.id, ...(d.data()||{}) }));
+    ALERTS.sort((a,b)=>(b.at||0)-(a.at||0));
+  }catch(e){ console.warn('alerts',e); ALERTS=[]; }
+  renderAlerts();
+}
+function renderAlerts(){
+  const n=ALERTS.length;
+  $('#taAlertN').textContent=n; $('#taAlertN').classList.toggle('hide', !n);
+  $('#taAlertCard').classList.toggle('hide', !n);
+  $('#taAlerts').innerHTML = ALERTS.map(a=>`
+    <div class="row between" style="padding:10px 0;border-bottom:1px solid rgba(255,255,255,.14)">
+      <span>⛔ <b>${esc(a.name||'-')}</b> ชั้น ${esc(a.cls||'-')} เลขที่ ${esc(a.no||'-')}<br>
+        <span class="muted">“${esc(a.title||'-')}” • ออกจากหน้าข้อสอบ ${a.sw||0} ครั้ง • ${fmtDT(a.at)}</span></span>
+      <span class="row" style="gap:6px">
+        ${a.aid?`<button class="btn-sm btn-ghost" data-av="${esc(a.aid)}">📊 ดูผล</button>`:''}
+        <button class="btn-sm" data-ak="${esc(a.id)}">✔ รับทราบ</button></span>
+    </div>`).join('');
+  $('#taAlerts').querySelectorAll('[data-av]').forEach(b=>b.onclick=()=>openTaskRes(b.dataset.av));
+  $('#taAlerts').querySelectorAll('[data-ak]').forEach(b=>b.onclick=()=>ackAlerts([b.dataset.ak]));
+}
+async function ackAlerts(ids){
+  try{
+    const bt=writeBatch(db); ids.forEach(id=>bt.delete(doc(db,'alerts',id))); await bt.commit();
+    ALERTS=ALERTS.filter(a=>!ids.includes(a.id)); renderAlerts();
+  }catch(e){ toast('ไม่สำเร็จ: '+e.message); }
+}
+$('#btnTaAckAll').onclick=()=>{ if(ALERTS.length && confirm(`รับทราบการแจ้งเตือนทั้งหมด ${ALERTS.length} รายการ?`)) ackAlerts(ALERTS.slice(0,450).map(a=>a.id)); };
+$('#btnTaReload').onclick=async()=>{ await Promise.all([loadTasks(), loadAlerts()]); renderTasks(); toast('โหลดใหม่แล้ว'); };
+
+/* ---- หน้าผลแบบทดสอบ (อัปเดตสด) ---- */
+const TR = { aid:null, a:null, key:[], exp:[], subs:new Map(), unsub:null };
+const ST_TXT = { doing:'⏳ กำลังทำ', done:'✅ ส่งแล้ว', terminated:'⛔ ยุติ (ทุจริต)' };
+async function openTaskRes(aid){
+  let a,k;
+  try{ [a,k]=await Promise.all([getDoc(doc(db,'assigns',aid)), getDoc(doc(db,'assigns',aid,'private','key'))]); }
+  catch(e){ return toast(isDenied(e)?'ไม่มีสิทธิ์ — ลองออกจากระบบแล้วเข้าใหม่':'เปิดผลไม่สำเร็จ: '+e.message); }
+  if(!a.exists()) return toast('ไม่พบแบบทดสอบนี้ (อาจถูกลบไปแล้ว)');
+  TR.unsub && TR.unsub();
+  TR.aid=aid; TR.a=a.data(); TR.subs=new Map();
+  TR.key=(k.exists() && k.data().key) || []; TR.exp=(k.exists() && k.data().exp) || [];
+  $('#trFilter').value='all';
+  renderTaskRes(); show('scTaskRes');
+  TR.unsub = onSnapshot(collection(db,'assigns',aid,'subs'), s=>{
+    s.docChanges().forEach(c=>{
+      if(c.type==='removed') TR.subs.delete(c.doc.id);
+      else {
+        const d={ id:c.doc.id, ...c.doc.data() };
+        const old=TR.subs.get(d.id);
+        if(old && old.status==='doing' && d.status==='terminated'){ sfx('wrong'); toast(`⛔ ${tkName(d)} ถูกยุติการสอบ (ออกนอกหน้า ${d.sw||0} ครั้ง)`); }
+        TR.subs.set(d.id, d);
+      }
+    });
+    renderTaskRes();
+  }, e=>toast('ติดตามผลไม่สำเร็จ: '+e.message));
+}
+$('#btnTrBack').onclick=()=>{ TR.unsub && TR.unsub(); TR.unsub=null; TR.aid=null; show('scHostMenu'); renderTasks(); loadAlerts(); };
+function gradeSub(s){
+  const qs=(TR.a&&TR.a.qs)||[], ans=s.ans||{};
+  let score=0, done=0; const marks=[];
+  qs.forEach((q,i)=>{
+    const v=ans[i], has=(v!==undefined && v!==null), ok=has && v===TR.key[i];
+    if(has) done++; if(ok) score++;
+    marks.push({ v, has, ok });
+  });
+  return { score, done, marks };
+}
+function subsSorted(){
+  return [...TR.subs.values()].sort((a,b)=>
+    String(a.cls||'').localeCompare(String(b.cls||''),'th',{numeric:true})
+    || (parseInt(a.no,10)||0)-(parseInt(b.no,10)||0)
+    || String(a.fn||'').localeCompare(String(b.fn||''),'th'));
+}
+function renderTaskRes(){
+  if(!TR.a) return;
+  const a=TR.a, qs=a.qs||[], n=qs.length;
+  $('#trTitle').textContent='📊 '+(a.title||'ผลแบบทดสอบ');
+  $('#trMeta').innerHTML=`${openBadge(a)} ชุด ${esc(a.setName||'-')} • ${n} ข้อ • สร้างเมื่อ ${fmtDT(a.createdAt)}
+    <div style="margin-top:6px;line-height:2">${taskBadges(a)}</div>`;
+  $('#btnTrToggle').textContent = a.open ? '⏸ ปิดรับคำตอบ' : '▶ เปิดรับคำตอบ';
+  const all=subsSorted(), g=new Map(all.map(s=>[s.id, gradeSub(s)]));
+  const cnt=k=>all.filter(s=>s.status===k).length;
+  const done=all.filter(s=>s.status==='done'), sc=done.map(s=>g.get(s.id).score);
+  $('#trDone').textContent=cnt('done'); $('#trDoing').textContent=cnt('doing'); $('#trTerm').textContent=cnt('terminated');
+  $('#trAvg').textContent = sc.length ? (sc.reduce((x,y)=>x+y,0)/sc.length).toFixed(2) : '-';
+  $('#trMax').textContent = sc.length ? `${Math.max(...sc)} / ${Math.min(...sc)}` : '-';
+  const f=$('#trFilter').value;
+  const rows=all.filter(s=>f==='all' || s.status===f);
+  $('#trRows').innerHTML = rows.map((s,i)=>{
+    const r=g.get(s.id), t0=tsMs(s.startAt), t1=tsMs(s.endAt);
+    const dur = (t0 && t1) ? `ใช้ ${Math.max(1,Math.round((t1-t0)/60000))} นาที` : '';
+    const note = [ s.status!=='done' ? `ตอบ ${r.done}/${n}` : '', s.sw ? `<span class="badge no">ออกนอกหน้า ${s.sw} ครั้ง</span>` : '' ].filter(Boolean).join(' ');
+    return `<tr class="${s.status==='terminated'?'trterm':''}">
+      <td>${i+1}</td><td>${esc(s.cls||'')}</td><td>${esc(s.no||'')}</td>
+      <td>${esc(tkName(s))}</td>
+      <td style="font-family:Mitr;font-weight:700;color:#fde047;white-space:nowrap">${r.score}/${n}</td>
+      <td>${note}</td>
+      <td><span class="badge ${s.status==='done'?'ok':s.status==='terminated'?'no':''}">${ST_TXT[s.status]||esc(s.status||'')}</span></td>
+      <td class="muted" style="white-space:nowrap">${fmtDT(t1||t0)}${dur?'<br>'+dur:''}</td>
+      <td><button class="btn-sm btn-ghost" data-rt="${esc(s.id)}" title="ลบผลนี้เพื่อให้นักเรียนสอบใหม่" style="white-space:nowrap">↺ สอบใหม่</button></td></tr>`;
+  }).join('') || `<tr><td colspan="9"><p class="muted center" style="margin:14px 0">ยังไม่มีนักเรียนทำแบบทดสอบ</p></td></tr>`;
+  $('#trRows').querySelectorAll('[data-rt]').forEach(b=>b.onclick=async()=>{
+    const s=TR.subs.get(b.dataset.rt); if(!s) return;
+    if(!confirm(`ลบผลของ ${tkName(s)} (${s.cls||''} เลขที่ ${s.no||''}) เพื่อให้สอบใหม่?\n\nนักเรียนเปิดลิงก์เดิมบนเครื่องเดิมแล้วเริ่มทำใหม่ได้ทันที`)) return;
+    try{ await deleteDoc(doc(db,'assigns',TR.aid,'subs',s.id)); toast('ลบผลแล้ว — นักเรียนสอบใหม่ได้'); }
+    catch(e){ toast('ไม่สำเร็จ: '+e.message); }
+  });
+  $('#trItems').innerHTML = qs.map((q,i)=>{
+    const ok=done.filter(s=>g.get(s.id).marks[i].ok).length, pc=done.length?Math.round(ok/done.length*100):0;
+    const col = pc>=80 ? '#22c55e' : pc>=50 ? '#f59e0b' : '#ef4444';
+    const w=String(q.word||'');
+    return `<div class="bar tkitem"><i style="background:${col};width:${pc}%"></i>
+      <div class="tki"><div class="tkq">ข้อ ${i+1} <em class="badge ${q.type}">${KIND_TXT[q.type]||''}</em> ${esc(w.slice(0,80))}${w.length>80?'…':''}
+        <small>เฉลย: ${esc(tkAnsText(q, TR.key[i]))}</small></div>
+      <b>${ok}/${done.length} (${pc}%)</b></div></div>`;
+  }).join('');
+}
+$('#trFilter').onchange=renderTaskRes;
+$('#btnTrToggle').onclick=()=>{ if(TR.aid) toggleTaskOpen(TR.aid); };
+$('#btnTrLink').onclick=()=>{ if(TR.aid) openTaskLink({ id:TR.aid, ...TR.a }); };
+
+const taskExName = ext => `ผลแบบทดสอบ_${String((TR.a&&TR.a.title)||'KrunonQuizz').replace(/[\\/:*?"<>|]/g,'_')}_${stamp()}.${ext}`;
+function taskTable(){
+  const qs=TR.a.qs||[], n=qs.length;
+  const head=['ลำดับ','ชั้น','เลขที่','คำนำหน้า','ชื่อ','นามสกุล','คะแนน','คะแนนเต็ม','ร้อยละ','ตอบแล้ว (ข้อ)','ออกนอกหน้าข้อสอบ (ครั้ง)','สถานะ','เริ่มทำ','ส่ง/ยุติ','ใช้เวลา (นาที)'];
+  const rows=subsSorted().map((s,i)=>{
+    const r=gradeSub(s), t0=tsMs(s.startAt), t1=tsMs(s.endAt);
+    return [ i+1, s.cls||'', s.no||'', s.pre||'', s.fn||'', s.ln||'', r.score, n, n?+(r.score/n*100).toFixed(2):0, r.done, s.sw||0,
+             ({doing:'กำลังทำ/ยังไม่ส่ง', done:'ส่งแล้ว', terminated:'ยุติ (ออกนอกหน้าเกินกำหนด)'})[s.status]||s.status||'',
+             fmtDT(t0), t1?fmtDT(t1):'', (t0&&t1)?+((t1-t0)/60000).toFixed(1):'' ];
+  });
+  return { head, rows, qs };
+}
+$('#btnTrCsv').onclick=()=>{
+  if(!TR.a) return;
+  const { head, rows }=taskTable();
+  download(taskExName('csv'), [head,...rows].map(r=>r.map(csvCell).join(',')).join('\r\n'), 'text/csv');
+};
+$('#btnTrXlsx').onclick=async()=>{
+  if(!TR.a) return;
+  const btn=$('#btnTrXlsx'); btn.disabled=true;
+  try{
+    const X=await loadXlsx(); const { head, rows, qs }=taskTable();
+    const wb=X.utils.book_new();
+    const s1=X.utils.aoa_to_sheet([head,...rows]);
+    s1['!cols']=[6,8,7,10,16,18,8,10,8,12,22,24,16,16,13].map(w=>({wch:w}));
+    X.utils.book_append_sheet(wb,s1,'ผลคะแนน');
+    const subs=subsSorted();
+    const h2=['ชั้น','เลขที่','ชื่อ-สกุล','คะแนน', ...qs.map((q,i)=>'ข้อ '+(i+1))];
+    const r2=[['','','เฉลย','', ...qs.map((q,i)=>tkAnsText(q, TR.key[i]))]];
+    subs.forEach(s=>{ const g=gradeSub(s);
+      r2.push([ s.cls||'', s.no||'', tkName(s), g.score, ...g.marks.map((m,i)=>!m.has ? '-' : (m.ok?'✓ ':'✗ ')+tkAnsText(qs[i], m.v)) ]); });
+    const s2=X.utils.aoa_to_sheet([h2,...r2]);
+    s2['!cols']=[{wch:8},{wch:7},{wch:26},{wch:8}, ...qs.map(()=>({wch:20}))];
+    X.utils.book_append_sheet(wb,s2,'คำตอบรายข้อ');
+    const done=subs.filter(s=>s.status==='done').map(gradeSub);
+    const h3=['ข้อ','ประเภท','คำถาม','เฉลย','ตอบถูก (คน)','ส่งแล้ว (คน)','ร้อยละตอบถูก','คำอธิบายเฉลย'];
+    const r3=qs.map((q,i)=>{ const ok=done.filter(g=>g.marks[i].ok).length;
+      return [ i+1, KIND_TXT[q.type]||q.type, q.word, tkAnsText(q, TR.key[i]), ok, done.length, done.length?+(ok/done.length*100).toFixed(2):0, TR.exp[i]||'' ]; });
+    const s3=X.utils.aoa_to_sheet([h3,...r3]);
+    s3['!cols']=[{wch:6},{wch:12},{wch:50},{wch:34},{wch:12},{wch:12},{wch:14},{wch:44}];
+    X.utils.book_append_sheet(wb,s3,'วิเคราะห์รายข้อ');
+    X.writeFile(wb, taskExName('xlsx'));
+    toast('ดาวน์โหลดไฟล์ Excel แล้ว');
+  }catch(e){ toast(e.message+' — ลองกด CSV แทน'); }
+  btn.disabled=false;
+};
+
+/* ---------------- ฝั่งนักเรียน ---------------- */
+const tkLocalKey = () => 'kqt_'+TK.aid+'_'+(UID||'');
+function tkSaveLocal(){
+  try{ localStorage.setItem(tkLocalKey(), JSON.stringify({ order:TK.order, co:TK.co, idx:TK.idx, ans:TK.ans,
+         sw:TK.sw, qStart:TK.qStart, status:TK.status })); }catch(e){}
+}
+function tkLoadLocal(){ try{ return JSON.parse(localStorage.getItem(tkLocalKey())||'null'); }catch(e){ return null; } }
+function tkClearLocal(){ try{ localStorage.removeItem(tkLocalKey()); }catch(e){} }
+function tkMsg(ic, h, sub){
+  const box=$('#tkMsg');
+  box.classList.toggle('hide', !h);
+  box.innerHTML = h ? `<div style="font-size:54px;line-height:1.1">${ic}</div><h3 style="margin:10px 0 4px">${esc(h)}</h3><p class="muted" style="margin:0">${esc(sub||'')}</p>` : '';
+}
+function tkRulesHtml(a){
+  const max=a.maxLeave||TK_MAX_LEAVE, qs=a.qs||[];
+  const li=[
+    `📄 มีทั้งหมด <b>${qs.length} ข้อ</b> ทำทีละข้อ ตอบแล้วกด “ข้อถัดไป” — <b>ย้อนกลับไปแก้ข้อก่อนหน้าไม่ได้</b>`,
+    a.timer ? '⏱ แต่ละข้อมีเวลาจำกัด เมื่อหมดเวลาระบบจะไปข้อถัดไปให้อัตโนมัติ' : '⏱ ไม่จำกัดเวลาในแต่ละข้อ',
+    qs.some(q=>q.type==='ord') ? '🔢 ข้อ “เรียงลำดับ” ให้แตะรายการตามลำดับ 1, 2, 3 … (แตะรายการเดิมซ้ำเพื่อยกเลิก)' : '',
+    a.cheat ? `🚫 <b>ห้ามสลับแท็บ สลับแอป หรือออกจากหน้านี้</b> ระบบตรวจจับและบันทึกทุกครั้ง — ออกได้ไม่เกิน <b>${max} ครั้ง</b> หากเกิน ระบบจะ<b>ยุติการสอบทันที</b>และแจ้งครูผู้สอน` : '',
+    a.cheat ? '🔄 การรีเฟรชหรือปิดหน้าเว็บระหว่างสอบ นับเป็นการออกจากหน้าข้อสอบ 1 ครั้ง' : '',
+    '📨 ทำครบทุกข้อแล้ว ระบบจะส่งคำตอบให้ครูอัตโนมัติ'
+  ].filter(Boolean);
+  return '<b>กติกาการสอบ</b><ul style="margin:6px 0 0;padding-left:20px;line-height:1.85">'+li.map(x=>`<li>${x}</li>`).join('')+'</ul>';
+}
+async function openTaskStudent(aid){
+  TK.aid=aid; show('scTaskInfo');
+  $('#tkForm').classList.add('hide'); $('#tkResumeBox').classList.add('hide');
+  tkMsg('⏳','กำลังโหลดแบบทดสอบ…','');
+  try{
+    await ensureAuth();
+    const s=await getDoc(doc(db,'assigns',aid));
+    if(!s.exists()) return tkMsg('🔍','ไม่พบแบบทดสอบนี้','ลิงก์อาจไม่ถูกต้อง หรือครูลบแบบทดสอบไปแล้ว');
+    TK.a=s.data();
+  }catch(e){ return tkMsg('⚠️','โหลดแบบทดสอบไม่สำเร็จ', e.message||''); }
+  const a=TK.a;
+  if(a.brand){ BRAND={...BRAND, ...a.brand}; applyBrand(); }
+  $('#tkTitle').textContent=a.title||'แบบทดสอบ';
+  document.title=(a.title||'แบบทดสอบ')+' • '+(BRAND.name||'KrunonQuizz');
+  let mine=null;
+  try{ const m=await getDoc(doc(db,'assigns',aid,'subs',UID)); if(m.exists()) mine=m.data(); }catch(e){ console.warn('mine',e); }
+  if(mine){
+    TK.me=mine; TK.info={ pre:mine.pre, fn:mine.fn, ln:mine.ln, cls:mine.cls, no:mine.no };
+    if(mine.status==='done') return tkShowDone('done');
+    if(mine.status==='terminated') return tkShowDone('terminated');
+    return tkResume(mine);
+  }
+  if(!a.open) return tkMsg('🔒','แบบทดสอบนี้ปิดรับคำตอบแล้ว','กรุณาติดต่อครูผู้สอน');
+  tkMsg('','','');
+  $('#tkMetaN').textContent=`${(a.qs||[]).length} ข้อ`;
+  $('#tkRuleList').innerHTML=tkRulesHtml(a);
+  $('#tkForm').classList.remove('hide');
+}
+$('#btnTkStart').onclick=()=>{
+  const pre=$('#tkPre').value, fn=$('#tkFn').value.trim(), ln=$('#tkLn').value.trim(),
+        cls=$('#tkCls').value.trim(), no=$('#tkNo').value.trim();
+  if(!pre) return toast('กรุณาเลือกคำนำหน้า');
+  if(!fn || !ln) return toast('กรุณากรอกชื่อและนามสกุล');
+  if(!cls) return toast('กรุณากรอกชั้น');
+  if(!/^\d{1,3}$/.test(no)) return toast('กรุณากรอกเลขที่เป็นตัวเลข');
+  TK.info={ pre, fn, ln, cls, no };
+  $('#tkRulesBody').innerHTML = tkRulesHtml(TK.a)
+    + `<p style="margin:14px 0 0;padding:10px 12px;background:rgba(0,0,0,.25);border-radius:12px">ผู้สอบ: <b>${esc(tkName(TK.info))}</b> ชั้น ${esc(cls)} เลขที่ ${esc(no)}</p>`;
+  $('#tkRules').classList.add('on');
+};
+$('#btnTkRulesNo').onclick=()=>$('#tkRules').classList.remove('on');
+$('#btnTkRulesOk').onclick=async()=>{
+  const b=$('#btnTkRulesOk'); if(b.disabled) return; b.disabled=true;
+  try{ await tkBegin(); $('#tkRules').classList.remove('on'); }
+  catch(e){ console.warn(e); toast(isDenied(e) ? 'เริ่มทำไม่ได้ — แบบทดสอบอาจปิดรับแล้ว หรือเครื่องนี้เคยทำไปแล้ว' : 'เริ่มทำไม่สำเร็จ: '+e.message); }
+  b.disabled=false;
+};
+async function tkBegin(){
+  const a=TK.a, n=(a.qs||[]).length;
+  let order=[...Array(n).keys()]; if(a.shQ) order=shuffle(order);
+  const co={};
+  a.qs.forEach((q,i)=>{ const k=[...q.choices.keys()]; co[i] = (a.shC && q.type==='mc') ? shuffle(k) : k; });
+  const i=TK.info;
+  await setDoc(doc(db,'assigns',TK.aid,'subs',UID), { uid:UID, pre:i.pre, fn:i.fn, ln:i.ln, cls:i.cls, no:i.no,
+    status:'doing', sw:0, ans:{}, cur:0, startAt:serverTimestamp(), ua:navigator.userAgent.slice(0,120) });
+  Object.assign(TK, { order, co, idx:0, ans:{}, sw:0, qStart:0, me:{...i, status:'doing'} });
+  tkEnterPlay();
+}
+function tkResume(mine){
+  const a=TK.a, n=(a.qs||[]).length, L=tkLoadLocal();
+  if(L && Array.isArray(L.order) && L.order.length===n){
+    Object.assign(TK, { order:L.order, co:L.co||{}, idx:Math.min(n, L.idx||0), ans:L.ans||{}, qStart:L.qStart||0 });
+  } else {
+    // เปลี่ยนเครื่อง/ล้างข้อมูลเบราว์เซอร์ → ใช้ความคืบหน้าจากเซิร์ฟเวอร์ (บันทึกทุก 5 ข้อ)
+    TK.order=[...Array(n).keys()]; TK.co={}; a.qs.forEach((q,i)=>TK.co[i]=[...q.choices.keys()]);
+    TK.idx=Math.min(n, mine.cur||0); TK.ans={}; TK.qStart=0;
+  }
+  Object.entries(mine.ans||{}).forEach(([k,v])=>{ if(TK.ans[k]===undefined) TK.ans[k]=v; });
+  TK.sw=Math.max(mine.sw||0, (L&&L.sw)||0);
+  if(L && L.status==='terminated'){ TK.status='doing'; TK.guard=true; return tkTerminate(); }
+  tkMsg('↩️','มีการทำแบบทดสอบค้างอยู่', `${tkName(mine)} — ทำไปแล้ว ${TK.idx}/${n} ข้อ`
+    + (a.cheat ? ` • การกลับเข้ามาใหม่นับเป็นการออกจากหน้าข้อสอบ 1 ครั้ง (ตอนนี้ ${TK.sw}/${a.maxLeave||TK_MAX_LEAVE})` : ''));
+  $('#tkResumeBox').classList.remove('hide');
+}
+$('#btnTkResume').onclick=()=>{
+  $('#tkResumeBox').classList.add('hide');
+  tkEnterPlay();
+  if(TK.a.cheat) setTimeout(()=>tkRegisterLeave('มีการรีเฟรช / ปิดแล้วเปิดหน้าข้อสอบใหม่'), 350);
+};
+function tkUpdSw(){ $('#tkSw').textContent=`🚫 ออกนอกหน้า ${TK.sw}/${TK.a.maxLeave||TK_MAX_LEAVE}`; }
+function tkEnterPlay(){
+  const i=TK.info;
+  $('#tkWho').textContent=`${tkName(i)} • ${i.cls} เลขที่ ${i.no}`;
+  TK.status='doing'; TK.guard=!!TK.a.cheat; TK.away=false; TK.busy=false;
+  $('#tkSw').classList.toggle('hide', !TK.guard); tkUpdSw();
+  $('#tkGuardNote').textContent = TK.guard ? `🛡️ ระบบกำลังตรวจจับการออกจากหน้าข้อสอบ (ออกได้ไม่เกิน ${TK.a.maxLeave||TK_MAX_LEAVE} ครั้ง)` : '';
+  ac();
+  show('scTaskPlay');
+  if(TK.idx >= TK.a.qs.length) return tkFinish();
+  tkRenderQ(true);
+}
+function tkNextState(){ $('#btnTkNext').classList.toggle('btn-ok', TK.sel!==null); }
+function tkRenderQ(resume){
+  clearInterval(TK.timer);
+  const a=TK.a, n=a.qs.length, qi=TK.order[TK.idx], q=a.qs[qi];
+  $('#tkQn').textContent=TK.idx+1; $('#tkQt').textContent=n;
+  $('#tkBar').style.width=(TK.idx/n*100)+'%';
+  $('#tkPrompt').textContent = q.type==='tf' ? 'ข้อความนี้ถูกต้องหรือไม่ ?'
+    : q.type==='ord' ? `เรียงลำดับให้ถูกต้อง — แตะรายการตามลำดับ 1 → ${q.choices.length}` : 'เลือกคำตอบที่ถูกต้อง';
+  $('#tkWord').textContent=q.word;
+  TK.sel=null; TK.ord=null; TK.skipArm=-1;
+  const box=$('#tkAns');
+  box.classList.remove('has');
+  const co=(TK.co && TK.co[qi]) || [...q.choices.keys()];
+  if(q.type==='ord'){
+    TK.ord=ordWidget(box, q.choices, co, st=>{ TK.sel = st.done() ? st.code() : null; tkNextState(); });
+    const bar=document.createElement('div'); bar.className='ordbar';
+    bar.innerHTML='<button class="btn-ghost" id="tkOrdReset">↺ เรียงใหม่</button>';
+    box.appendChild(bar);
+    $('#tkOrdReset').onclick=()=>TK.ord && TK.ord.reset();
+  } else {
+    box.className='answers '+(q.choices.length<=2?'two':'four')+(q.type==='tf'?' tf':'');
+    box.innerHTML=co.map((oi,pos)=>{ const k=q.type==='tf'?oi:pos;
+      return `<button class="ans a${k}" data-i="${oi}"><span class="shape">${SHAPES[k]||''}</span><span class="txt">${esc(q.choices[oi])}</span></button>`; }).join('');
+    box.querySelectorAll('.ans').forEach(b=>b.onclick=()=>{
+      if(TK.status!=='doing') return;
+      TK.sel=+b.dataset.i; sfx('tap');
+      box.classList.add('has');
+      box.querySelectorAll('.ans').forEach(x=>x.classList.toggle('sel', x===b));
+      tkNextState();
+    });
+  }
+  $('#btnTkNext').textContent = TK.idx>=n-1 ? '📨 ส่งคำตอบ' : 'ข้อถัดไป ▶';
+  tkNextState();
+  const lim=+q.time||0;
+  $('#tkTimer').classList.toggle('hide', !lim);
+  if(!(resume && TK.qStart)) TK.qStart = lim ? Date.now() : 0;
+  tkSaveLocal();
+  if(lim){
+    const el=$('#tkTimer'), ms=lim*1000;
+    const tick=()=>{
+      const left=Math.max(0, ms-(Date.now()-TK.qStart)), sec=Math.ceil(left/1000);
+      el.querySelector('span').textContent=sec;
+      el.style.setProperty('--p',(left/ms*100)+'%');
+      el.classList.toggle('low', sec<=5);
+      if(sec<=5 && sec>0 && sec!==TK.lastSec){ TK.lastSec=sec; sfx(sec===1?'tickend':'tick'); }
+      if(left<=0){ clearInterval(TK.timer); if(TK.status==='doing') tkNext(true); }
+    };
+    tick(); TK.timer=setInterval(tick,200);
+  }
+  window.scrollTo({top:0,behavior:'instant'});
+}
+$('#btnTkNext').onclick=()=>tkNext(false);
+function tkNext(auto){
+  if(TK.status!=='doing' || TK.busy) return;
+  const qi=TK.order[TK.idx];
+  if(!auto && TK.sel===null && TK.skipArm!==TK.idx){
+    TK.skipArm=TK.idx;
+    return toast(TK.ord ? 'ยังเรียงลำดับไม่ครบ — กดอีกครั้งเพื่อข้ามข้อนี้' : 'ยังไม่ได้เลือกคำตอบ — กดอีกครั้งเพื่อข้ามข้อนี้');
+  }
+  clearInterval(TK.timer);
+  if(TK.sel!==null) TK.ans[qi]=TK.sel;
+  TK.idx++; TK.qStart=0; tkSaveLocal();
+  if(TK.idx>=TK.a.qs.length) return tkFinish();
+  if(TK.idx % TK_SAVE_EVERY===0) tkPush();
+  sfx('q'); tkRenderQ(false);
+}
+async function tkPush(extra){
+  try{
+    await updateDoc(doc(db,'assigns',TK.aid,'subs',UID), { ans:TK.ans, cur:TK.idx, sw:TK.sw, ...(extra||{}) });
+    return true;
+  }catch(e){ console.warn('tkPush',e); return false; }
+}
+async function tkFinish(){
+  if(TK.busy) return;
+  TK.busy=true; clearInterval(TK.timer); TK.guard=false; TK.status='sending';
+  $('#tkBar').style.width='100%';
+  const ok=await tkPush({ status:'done', endAt:serverTimestamp() });
+  TK.busy=false;
+  if(!ok) return tkShowDone('retry');
+  TK.status='done'; tkClearLocal(); tkShowDone('done');
+}
+
+/* ---- ตรวจจับการออกจากหน้าข้อสอบ (สลับแท็บ / สลับแอป / ย่อหน้าต่าง) ---- */
+function tkAwayStart(){ if(!TK.guard || TK.status!=='doing' || TK.away) return; TK.away=true; tkSaveLocal(); }
+function tkAwayEnd(){ if(!TK.away) return; TK.away=false; tkRegisterLeave(); }
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) tkAwayStart();
+  else if(document.hasFocus()) tkAwayEnd();
+});
+window.addEventListener('blur', ()=>{
+  if(!TK.guard) return;
+  clearTimeout(TK.blurT);
+  // หน้าต่างเสียโฟกัสเกิน 1.5 วินาที (เช่น คลิกไปโปรแกรมอื่น / แยกหน้าจอ) นับเป็นการออกนอกหน้า
+  TK.blurT=setTimeout(()=>{ if(!document.hasFocus()) tkAwayStart(); }, 1500);
+});
+window.addEventListener('focus', ()=>{ clearTimeout(TK.blurT); if(!document.hidden) tkAwayEnd(); });
+window.addEventListener('beforeunload', e=>{ if(TK.status==='doing'){ tkSaveLocal(); e.preventDefault(); e.returnValue=''; } });
+function tkRegisterLeave(why){
+  if(!TK.guard || TK.status!=='doing') return;
+  const max=TK.a.maxLeave||TK_MAX_LEAVE;
+  TK.sw++; tkSaveLocal(); tkUpdSw(); sfx('wrong');
+  if(TK.sw>max) return tkTerminate();
+  tkPush();
+  $('#tkWarnN').textContent=`ครั้งที่ ${TK.sw} / ${max}`;
+  $('#tkWarnWhy').textContent = why || 'ระบบตรวจพบการสลับแท็บ สลับแอป หรือออกจากหน้าข้อสอบ';
+  $('#tkWarnMsg').innerHTML = TK.sw>=max
+    ? '<b style="color:#fde047">นี่คือครั้งสุดท้าย!</b> หากออกจากหน้าข้อสอบอีก ระบบจะยุติการสอบทันที'
+    : `ออกได้อีก <b>${max-TK.sw}</b> ครั้ง — หากเกิน ${max} ครั้ง ระบบจะยุติการสอบและแจ้งครูผู้สอน`;
+  $('#tkWarn').classList.add('on');
+}
+$('#btnTkWarnOk').onclick=()=>$('#tkWarn').classList.remove('on');
+async function tkTerminate(){
+  TK.status='terminated'; TK.guard=false; clearInterval(TK.timer);
+  tkSaveLocal();
+  $('#tkWarn').classList.remove('on'); $('#tkRules').classList.remove('on');
+  tkShowDone('terminated');
+  const ok=await tkPush({ status:'terminated', endAt:serverTimestamp() });
+  const i=TK.info||{};
+  try{ await addDoc(collection(db,'alerts'), { aid:TK.aid, title:(TK.a&&TK.a.title)||'', name:tkName(i),
+         cls:i.cls||'', no:i.no||'', sw:TK.sw, uid:UID, at:Date.now() }); }catch(e){ console.warn('alert',e); }
+  if(ok) tkClearLocal();
+}
+function tkShowDone(kind){
+  clearInterval(TK.timer);
+  const i=TK.info||{}, a=TK.a||{};
+  const n=(a.qs||[]).length;
+  const answered=Math.max(Object.keys(TK.ans||{}).length, Object.keys((TK.me&&TK.me.ans)||{}).length);
+  const who=`<p style="margin:0 0 6px;font-size:18px"><b>${esc(tkName(i))}</b>${i.cls?` • ชั้น ${esc(i.cls)} เลขที่ ${esc(i.no||'')}`:''}</p>
+    <p class="muted" style="margin:0 0 6px">แบบทดสอบ “${esc(a.title||'')}”</p>`;
+  $('#btnTkRetrySend').classList.toggle('hide', kind!=='retry');
+  $('#btnTkNextUser').classList.toggle('hide', kind==='retry');
+  document.body.classList.remove('fbok','fbno');
+  if(kind==='terminated'){
+    $('#tkDoneIc').textContent='⛔'; $('#tkDoneH').textContent='การสอบถูกยุติ';
+    $('#tkDoneSub').textContent='ระบบตรวจพบการออกจากหน้าข้อสอบเกินจำนวนที่กำหนด';
+    $('#tkDoneCard').innerHTML = who + `<p style="margin:10px 0 0;color:#fca5a5;font-size:20px;font-weight:700">กรุณาติดต่อครูผู้สอน</p>
+      <p class="muted" style="margin:6px 0 0">ระบบบันทึกข้อมูลและแจ้งครูผู้สอนเรียบร้อยแล้ว</p>`;
+    document.body.classList.add('fbno');
+  } else if(kind==='retry'){
+    $('#tkDoneIc').textContent='📶'; $('#tkDoneH').textContent='ยังส่งไม่สำเร็จ';
+    $('#tkDoneSub').textContent='ตรวจสอบอินเทอร์เน็ต แล้วกด “ลองส่งอีกครั้ง”';
+    $('#tkDoneCard').innerHTML = who + '<p style="margin:8px 0 0">คำตอบของคุณยังเก็บอยู่ในเครื่องนี้ — <b>ห้ามปิดหน้านี้</b></p>';
+  } else {
+    $('#tkDoneIc').textContent='✅'; $('#tkDoneH').textContent='ส่งคำตอบเรียบร้อย';
+    $('#tkDoneSub').textContent='ขอบคุณที่ตั้งใจทำแบบทดสอบ';
+    $('#tkDoneCard').innerHTML = who + (answered?`<p style="margin:6px 0 0">ตอบ ${answered}/${n} ข้อ</p>`:'')
+      + '<p class="muted" style="margin:6px 0 0">ครูผู้สอนจะแจ้งผลคะแนนภายหลัง</p>';
+    document.body.classList.add('fbok');
+    if(TK.status==='done'){ sfx('correct'); confetti(36); }
+  }
+  show('scTaskDone');
+}
+$('#btnTkRetrySend').onclick=()=>tkFinish();
+$('#btnTkNextUser').onclick=async()=>{
+  if(!confirm('เริ่มใหม่สำหรับนักเรียนคนถัดไปบนเครื่องนี้?')) return;
+  try{ await signOut(auth); }catch(e){}
+  location.reload();
+};
+
 function route(){
   const h=location.hash||'';
+  const tm=h.match(/#task=([A-Za-z0-9_-]{6,40})/);
+  if(tm){ openTaskStudent(tm[1]); return; }
   const m=h.match(/#join=(\d{6})/);
   if(m){ $('#inPin').value=m[1]; show('scHome'); setTimeout(()=>$('#btnGoJoin').click(),400); return; }
   if(h==='#play'){ show('scHome'); return; }
@@ -3949,6 +4884,7 @@ function route(){
 route();
 window.addEventListener('hashchange', ()=>{
   if(P.pin && P.id) return;
+  if(TK.aid && TK.status==='doing') return;
   if(H.pin && H.qIndex>=0) return;
   route();
 });
