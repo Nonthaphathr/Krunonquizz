@@ -498,6 +498,39 @@ body.fbok .card,body.fbno .card{background:rgba(0,0,0,.22);border-color:rgba(255
 /* ---------- floating controls ---------- */
 .fixctl{position:fixed;right:12px;top:calc(10px + env(safe-area-inset-top,0px));z-index:60;display:flex;gap:8px}
 .fixctl button{font-size:18px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.42);box-shadow:none;border:1px solid rgba(255,255,255,.2)}
+/* มือถือ/iPad: เว้นที่มุมขวาบนให้ปุ่มเต็มจอ+เพลง ไม่ให้บังปุ่มของหน้า (เช่น ยกเลิกห้อง) */
+@media(max-width:1320px){
+  .screen > .row.between:first-child, .screen > .qtop{padding-right:112px}
+}
+@media(max-width:430px){
+  .fixctl{gap:6px;right:8px}
+  .fixctl button{font-size:16px;padding:6px 9px}
+  .screen > .row.between:first-child, .screen > .qtop{padding-right:92px}
+}
+/* ===== ตัวเลือกแบบรายการยาว (แทน dropdown ที่เลื่อนยาก) ===== */
+.pk-ov{position:fixed;inset:0;z-index:200;background:rgba(10,2,30,.72);display:none;align-items:center;justify-content:center;padding:16px}
+.pk-ov.on{display:flex}
+.pk-box{width:min(560px,100%);max-height:min(78vh,640px);display:flex;flex-direction:column;background:#2a1459;border:1px solid rgba(255,255,255,.22);border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden}
+.pk-head{display:flex;gap:8px;align-items:center;padding:12px 12px 10px;border-bottom:1px solid rgba(255,255,255,.14)}
+.pk-head input{padding:10px 13px;font-size:16px}
+.pk-list{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:6px}
+.pk-list button{display:block;width:100%;text-align:left;background:transparent;box-shadow:none;border-radius:11px;padding:12px 14px;font-size:16px;font-weight:500;line-height:1.45;color:#fff;margin:0}
+.pk-list button:hover{background:rgba(255,255,255,.1)}
+.pk-list button.sel{background:rgba(34,197,94,.3);font-weight:700}
+.pk-list button:disabled{opacity:.45}
+.pk-empty{padding:16px;text-align:center;color:var(--muted)}
+/* ===== สลับคะแนน ===== */
+.swapbar{border:2px solid #38bdf8 !important;background:rgba(56,189,248,.14) !important}
+.swapt b{font-family:'Mitr';color:#fde047}
+/* ===== หมอกบังบนจอครู ===== */
+#hgQ.hfog > .card:first-child, #hgQ.hfog #hAnswers{filter:blur(16px);transition:filter .4s}
+.hfog-tag{position:fixed;left:50%;top:24%;transform:translateX(-50%);z-index:70;background:rgba(15,23,42,.9);border:2px solid #94a3b8;border-radius:16px;padding:12px 20px;font-family:'Mitr';font-size:clamp(16px,2.6vw,24px);text-align:center;display:none;max-width:92vw}
+.hfog-tag.on{display:block}
+/* ===== รายการเพลง ===== */
+.mlist{display:grid;gap:6px}
+.mlist .row{flex-wrap:nowrap;align-items:center;gap:6px}
+.mlist .mn{flex:none;width:26px;text-align:center;color:var(--muted);font-size:14px}
+.mlist input{padding:9px 12px;font-size:15px}
 .toggle{display:flex;align-items:center;gap:9px;background:rgba(0,0,0,.26);border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer;user-select:none}
 .toggle .sw{width:44px;height:24px;border-radius:999px;background:rgba(255,255,255,.24);position:relative;transition:background .2s;flex:none}
 .toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
@@ -642,6 +675,7 @@ em.badge{font-style:normal}
     <div class="gapline" id="fbGap"></div>
     <div class="teamline" id="fbTeam" style="display:none"></div>
   </div>
+  <div class="swapslot"></div>
   <div class="card">
     <div class="explain" id="fbExplain" style="margin-top:0"></div>
   </div>
@@ -656,6 +690,17 @@ em.badge{font-style:normal}
     <p class="muted" id="prankDone" style="margin:8px 0 0;display:none"></p>
   </div>
 </section>
+
+<!-- ===== 🔄 swap modal ===== -->
+<div id="swapModal" style="position:fixed;inset:0;z-index:85;background:rgba(10,2,30,.94);overflow-y:auto;padding:18px;display:none">
+  <div style="max-width:560px;margin:0 auto">
+    <div class="center" style="font-size:52px;line-height:1.1">🔄</div>
+    <h2 class="center" style="margin:6px 0 4px">เลือกเพื่อนที่จะสลับคะแนนรวม</h2>
+    <p class="muted center" id="swMeLine" style="margin:0 0 12px"></p>
+    <div class="lb" id="swTargets"></div>
+    <button class="btn-lg btn-ghost" id="swClose" style="margin-top:14px">ยังไม่ใช้ตอนนี้</button>
+  </div>
+</div>
 
 <!-- ===== prank modal ===== -->
 <div id="prankModal" class="screen" style="position:fixed;inset:0;z-index:80;background:rgba(10,2,30,.93);overflow-y:auto;padding:18px;display:none">
@@ -717,6 +762,7 @@ em.badge{font-style:normal}
   </div>
   <div class="bigcount" id="wpRing"><span id="wpCount">25</span></div>
   <p class="muted center" id="wpNote">ข้อถัดไปจะเริ่มพร้อมกันเมื่อหมดเวลา</p>
+  <div class="swapslot" style="margin-top:14px"></div>
 </section>
 
 <!-- ========== PLAYER FINAL ========== -->
@@ -846,6 +892,17 @@ em.badge{font-style:normal}
             ทีมที่ตอบถูกถึง 70% ได้ 🤝 โบนัสพร้อมใจ +200 ทั้งทีม • แกล้งเพื่อนร่วมทีมไม่ได้</p></div>
       </div>
       <div class="row">
+        <div class="grow field"><label>🔄 สิทธิ์สลับคะแนน (ตอบถูกติดกัน)</label>
+          <select id="cfgSwap">
+            <option value="0">ปิด</option>
+            <option value="2">ตอบถูกติดกัน 2 ข้อ</option>
+            <option value="3" selected>ตอบถูกติดกัน 3 ข้อ</option>
+            <option value="4">ตอบถูกติดกัน 4 ข้อ</option>
+            <option value="5">ตอบถูกติดกัน 5 ข้อ</option>
+            <option value="6">ตอบถูกติดกัน 6 ข้อ</option>
+          </select>
+          <p class="muted" style="margin:6px 0 0">ครบจำนวน → ได้สิทธิ์เลือก “สลับคะแนนรวม” กับเพื่อน 1 คน (เก็บสิทธิ์สะสมได้สูงสุด 3 ครั้ง) •
+            คนที่ถูกสลับ ถ้าตอบถูกครบจำนวนเดียวกัน (ไม่ต้องติดกัน) ได้สิทธิ์ “สลับคืน” กับคนที่สลับตน • คะแนนสลับกันตอนเฉลยข้อถัดไป • 🛡️ โล่กันแกล้งกันการสลับได้</p></div>
         <div class="grow field"><label>🏅 ฉายาท้ายเกม</label>
           <select id="cfgAwards">
             <option value="1" selected>แสดง — มือไว / แม่นยำ / จอมป่วน / ดาวรุ่ง ฯลฯ</option>
@@ -905,6 +962,10 @@ em.badge{font-style:normal}
         <span>🔀 สลับลำดับข้อ<small>นักเรียนแต่ละคนได้ลำดับข้อไม่เหมือนกัน</small></span></label>
       <label class="chk"><input type="checkbox" id="taShC" checked>
         <span>🔀 สลับตัวเลือก<small>สลับตัวเลือกของข้อ 4 ตัวเลือกแยกแต่ละคน (ข้อเรียงลำดับสลับให้เสมอ)</small></span></label>
+      <label class="chk"><input type="checkbox" id="taShow">
+        <span>👁 ให้นักเรียนเห็นคะแนนของตนเองหลังส่ง<small>เห็นทันทีเมื่อส่งคำตอบ และเปิดลิงก์เดิมดูซ้ำได้ • เปิด/ปิดภายหลังได้จากรายการแบบทดสอบ (เช่น ปิดไว้ก่อน แล้วเปิดเมื่อทุกคนสอบเสร็จ)</small></span></label>
+      <div class="field hide" id="taShowBox" style="margin-left:34px;max-width:380px"><label>สิ่งที่นักเรียนเห็น</label>
+        <select id="taShowLv"><option value="1">คะแนนรวมอย่างเดียว</option><option value="2" selected>คะแนน + เฉลยรายข้อ (คำตอบของฉัน / คำตอบที่ถูก)</option></select></div>
       <button class="btn-lg btn-ok" id="btnTaCreate" style="margin-top:8px">📝 สร้างลิงก์แบบทดสอบ</button>
     </div>
     <div class="card">
@@ -981,12 +1042,12 @@ em.badge{font-style:normal}
       <h3>🎵 เพลงประกอบ</h3>
       <p class="muted">วาง <b>direct link</b> ของไฟล์เสียง (.mp3 / .m4a / .ogg) เช่นลิงก์จาก GitHub raw หรือเว็บโฮสต์ไฟล์เสียงที่เปิดตรงได้<br>
         ⚠️ ลิงก์แชร์ของ Google Drive / YouTube ใช้ไม่ได้</p>
-      <div class="field"><label>เพลงห้องรอผู้เล่น (Lobby)</label>
-        <div class="row"><input class="grow" id="inLobby" placeholder="https://.../lobby.mp3">
-          <button class="btn-sm btn-ghost" id="btnTestLobby">▶ ทดสอบ</button></div></div>
-      <div class="field"><label>เพลงพื้นหลังระหว่างเล่นเกม</label>
-        <div class="row"><input class="grow" id="inBgm" placeholder="https://.../background.mp3">
-          <button class="btn-sm btn-ghost" id="btnTestBgm">▶ ทดสอบ</button></div></div>
+      <div class="field"><label>🎶 เพลงห้องรอผู้เล่น (Lobby) — ใส่ได้สูงสุด 10 เพลง</label>
+        <div class="mlist" id="mlLobby"></div></div>
+      <div class="field"><label>🎮 เพลงพื้นหลังระหว่างเล่นเกม — ใส่ได้สูงสุด 10 เพลง</label>
+        <div class="mlist" id="mlBgm"></div></div>
+      <div class="field"><label>ลำดับการเล่นเพลง (เมื่อใส่มากกว่า 1 เพลง จะเล่นต่อกันเป็นเพลย์ลิสต์)</label>
+        <select id="inShuf"><option value="0" selected>เรียงตามลำดับ 1 → 10 แล้ววนใหม่</option><option value="1">สุ่มเพลง</option></select></div>
       <div class="field"><label>เพลงหน้าสรุปอันดับ / ประกาศผล</label>
         <div class="row"><input class="grow" id="inEndm" placeholder="https://.../victory.mp3">
           <button class="btn-sm btn-ghost" id="btnTestEnd">▶ ทดสอบ</button></div></div>
@@ -1645,6 +1706,17 @@ em.badge{font-style:normal}
   <button id="btnFs" title="เต็มหน้าจอ">⛶</button>
   <button id="btnMute" title="เปิด/ปิดเสียง">🔊</button>
 </div>
+<!-- ===== ตัวเลือกรายการยาว (แทน dropdown) ===== -->
+<div class="pk-ov" id="selPkOv">
+  <div class="pk-box">
+    <div class="pk-head"><b id="selPkTitle" class="grow" style="font-family:'Mitr'">เลือกรายการ</b>
+      <button class="btn-sm btn-ghost" id="selPkClose" type="button">✕</button></div>
+    <div class="pk-head" id="selPkQBox"><input id="selPkQ" placeholder="🔎 พิมพ์เพื่อค้นหา" autocomplete="off"></div>
+    <div class="pk-list" id="selPkList"></div>
+  </div>
+</div>
+<!-- ===== หมอกบังบนจอครู ===== -->
+<div class="hfog-tag" id="hFogTag"></div>
 <audio id="bgm" loop playsinline preload="none"></audio>
 <audio id="endm" loop playsinline preload="none"></audio>
 <audio id="sfxa" playsinline preload="none"></audio>
@@ -1753,6 +1825,7 @@ const isDenied = e => /permission|insufficient/i.test((e && (e.code||e.message))
 
 const BASE_SCORE   = 1000;        // คะแนนเต็มต่อข้อ
 const STREAK_BONUS = 100;         // โบนัสต่อสตรีค (สูงสุด 5)
+const SWAP_MAX_TOK = 3;           // สิทธิ์สลับคะแนนสะสมได้สูงสุดกี่ครั้ง
 const REVENGE_MIN  = 3;           // ถูกแกล้งสะสมตลอดเกมครบกี่ครั้ง (นับต่อจากการสวนครั้งล่าสุด) จึงได้สิทธิ์ "สวนสักหมัด" ในรอบที่ครบ
 const LOCK_RATIO   = 0.75;        // สวนสักหมัด: ล็อกจอผู้ที่แกล้ง = 3/4 ของเวลาข้อนั้น
 const CUT_POINTS   = 300;         // คะแนนที่ถูกหักเมื่อโดนไอเทม "ตัดแต้ม"
@@ -1948,11 +2021,34 @@ function sfx(name){
 }
 const bgmEl=()=>document.getElementById('bgm');
 const endmEl=()=>document.getElementById('endm');
+// el._want = เพลงที่ "ควรเล่นอยู่" (จำไว้แม้ตอนปิดเสียง เพื่อเปิดเสียงแล้วเล่นต่อได้)
 function playMusic(el,url){
-  if(!url || SND.muted) return;
+  if(!url) return;
+  el._want=url;
+  if(SND.muted) return;
   try{ if(el.src!==url) el.src=url; el.volume=SND.vol; el.play().catch(()=>{}); }catch(e){}
 }
-function stopMusic(el){ try{ el.pause(); }catch(e){} }
+function stopMusic(el){ el._want=''; el._list=null; try{ el.pause(); }catch(e){} }
+/* ---- เพลย์ลิสต์ (สูงสุด 10 เพลง) ---- */
+const normList = v => (Array.isArray(v)?v:[v]).map(s=>String(s||'').trim()).filter(Boolean).slice(0,10);
+function playList(el, list, shuf){
+  list=normList(list); if(!list.length) return;
+  const same = el._list && el._list.join('|')===list.join('|');
+  el._list=list; el._shuf=!!shuf;
+  el.loop = list.length===1;
+  if(same && el._want && list.includes(el._want)){ if(el.paused) playMusic(el, el._want); return; }
+  playMusic(el, shuf ? list[rnd(list.length)] : list[0]);
+}
+function nextInList(el){
+  const L=el._list||[]; if(L.length<2 || !el._want) return;
+  let i=L.indexOf(el._want), n;
+  if(el._shuf){ do{ n=rnd(L.length); }while(n===i); } else n=(i+1)%L.length;
+  playMusic(el, L[n]);
+}
+['bgm','endm'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('ended', ()=>nextInList(el)); });
+// อ่านรายการเพลงจากการตั้งค่า (รองรับค่าเก่าแบบลิงก์เดียว)
+const lobbyListOf = s => normList((s && s.lobbyL && s.lobbyL.length) ? s.lobbyL : (s && s.lobby));
+const bgmListOf   = s => normList((s && s.bgmL && s.bgmL.length) ? s.bgmL : (s && s.bgm));
 const sfxaEl=()=>document.getElementById('sfxa');
 function playSfxUrl(url, dur){
   if(!url || SND.muted || !SND.sfxOn) return;
@@ -1982,7 +2078,9 @@ function initAudioUI(){
   updateMuteBtn();
   b.onclick=()=>{
     SND.muted=!SND.muted; localStorage.setItem('kq_mute', SND.muted?'1':'0'); updateMuteBtn();
-    if(SND.muted){ stopMusic(bgmEl()); stopMusic(endmEl()); stopSfxUrl(); } else { ac(); }
+    // ปิดเสียง = พักเพลงไว้ (ไม่ล้างเพลงที่ต้องเล่น) • เปิดเสียง = เล่นเพลงเดิมต่อทันที
+    if(SND.muted){ [bgmEl(),endmEl()].forEach(el=>{ try{ el.pause(); }catch(e){} }); stopSfxUrl(); }
+    else { ac(); [bgmEl(),endmEl()].forEach(el=>{ if(el._want) playMusic(el, el._want); }); }
   };
 }
 
@@ -2624,10 +2722,12 @@ function listenRoom(){
     P.roster = r.roster||[];
     if(r.brand && !P.brandSet){ P.brandSet=true; BRAND={...BRAND,...r.brand}; applyBrand(); }
     if(r.snd && !P.sndSet){ P.sndSet=true; SND.vol=(r.snd.vol||30)/100; SND.sfxOn=!!(+((r.snd.sfx)??1));
-      P.bgmUrl=r.snd.bgm||''; P.endUrl=r.snd.endm||''; P.lobbyUrl=r.snd.lobby||''; P.wheelUrl=r.snd.wheel||''; }
+      P.bgmL=bgmListOf(r.snd); P.endUrl=r.snd.endm||''; P.lobbyL=lobbyListOf(r.snd); P.mShuf=!!r.snd.shuf; P.wheelUrl=r.snd.wheel||''; }
     P.stage = r.status + ':' + r.qIndex;
     // ผลคะแนน / สิทธิ์ไอเทม / ทีม มากับเอกสารห้อง (ไม่ต้องอ่านเอกสารผู้เล่นเพิ่ม)
     if(r.res && r.res[P.id]){ P.res=r.res[P.id]; P.resQ=r.resQ; P.total=P.res.t||0; $('#pScore').textContent=P.total.toLocaleString(); }
+    if(r.res){ P.scores=r.res; }
+    P.swapN = r.swapN||0; P.qTotal = r.qTotal||0;
     if(Array.isArray(r.tokens) && r.tokens.includes(P.id) && r.tokenQ > P.hexUsed) P.hexToken=r.tokenQ;
     P.teamN = r.teamN||0; P.teams = r.teams||[];
     const rt = (P.roster.find(x=>x.id===P.id)||{}).t || (r.tmap||{})[P.id] || null;
@@ -2635,7 +2735,7 @@ function listenRoom(){
     P.teamBoard = r.teamBoard || null;
     if(r.status==='lobby'){
       $('#waitCount').textContent = Math.max(r.playerCount||0, 1);
-      if(P.lobbyUrl) playMusic(bgmEl(), P.lobbyUrl);
+      if(P.lobbyL && P.lobbyL.length) playList(bgmEl(), P.lobbyL, P.mShuf);
       show('scWait');
     }
     else if(r.status==='question'){
@@ -2654,6 +2754,7 @@ function listenRoom(){
 
 function renderQuestion(r){
   P.qIndex = r.qIndex; P.locked=false;
+  $('#swapModal').style.display='none';
   $('#playerBonus').classList.remove('on');
   closePrankUI();
   document.body.classList.remove('fbok','fbno');
@@ -2704,7 +2805,7 @@ function renderQuestion(r){
 
   show('scPlay'); requestAnimationFrame(fitPlayerQuestion);
   hideFlash(); sfx(hex?'hex':'q');
-  if(P.bgmUrl) playMusic(bgmEl(), P.bgmUrl);
+  if(P.bgmL && P.bgmL.length) playList(bgmEl(), P.bgmL, P.mShuf);
   const elapsed = r.startAt ? Math.max(0, Date.now()-r.startAt) : 0;
   startTimer(limit, elapsed);
   P.qLimit = limit; P.qStartAt = r.startAt || Date.now();
@@ -2863,6 +2964,17 @@ function renderReveal(r){
   if(last&&last.x2)  notes.push('⚡ ไอเทมแต้ม x2 ทำงาน — คะแนนข้อนี้คูณสอง');
   if(last&&last.sh)  notes.push('🛡️ โล่กันแกล้งทำงาน — บล็อกไอเทมของเพื่อนได้');
   if(last&&last.cut) notes.push(`💸 ถูก ${esc(last.cut.by||'เพื่อน')} ตัดแต้ม −${(last.cut.amt||0).toLocaleString()}`);
+  if(L && L.swp) L.swp.forEach(x=>{
+    const who=`${esc(x.e||'')} ${esc(x.n||'เพื่อน')}`, ft=`${(x.f||0).toLocaleString()} → ${(x.to||0).toLocaleString()}`;
+    if(x.k==='sw1') notes.push(`🔄 คุณสลับคะแนนกับ ${who} สำเร็จ! (${ft})`);
+    else if(x.k==='sw2') notes.push(`🔄 ${who} สลับคะแนนกับคุณ! (${ft}) — ตอบถูกอีก ${L.bk?L.bk.left:P.swapN} ข้อ เพื่อได้สิทธิ์สลับคืน`);
+    else if(x.k==='bk1') notes.push(`↩️ คุณสลับคะแนนคืนกับ ${who} สำเร็จ! (${ft})`);
+    else if(x.k==='bk2') notes.push(`↩️ ${who} สลับคะแนนคืนจากคุณ (${ft})`);
+    else if(x.k==='blk') notes.push(`🛡️ ${who} มีโล่ — การสลับคะแนนไม่สำเร็จ`);
+    else if(x.k==='shd') notes.push(`🛡️ โล่ของคุณกันการสลับคะแนนจาก ${who} ได้`);
+  });
+  if(L && L.swn) notes.push(`🔥 ตอบถูกติดกันครบ ${P.swapN} ข้อ — ได้สิทธิ์ 🔄 สลับคะแนน!`);
+  if(L && L.bkn && L.bt) notes.push(`↩️ ได้สิทธิ์สลับคะแนนคืนกับ ${esc(L.bt.e||'')} ${esc(L.bt.n||'')} แล้ว!`);
   const fi=$('#fbItems');
   fi.style.display = notes.length?'block':'none';
   fi.innerHTML = notes.join('<br>');
@@ -2891,7 +3003,73 @@ function renderReveal(r){
     $('#btnPrank').disabled=false;
     if(P.hexAnnounced!==r.qIndex){ P.hexAnnounced=r.qIndex; sfx('prank'); }
   }
+  renderSwapSlots();
   show('scFb');
+}
+
+/* ---------- 🔄 สลับคะแนน (ฝั่งผู้เล่น) ---------- */
+const swapNextQ = () => P.stage.startsWith('prank') && P.prankFor!==undefined ? P.prankFor : P.qIndex+1;
+function renderSwapSlots(){
+  const L=P.res||{}, n=P.swapN||0, nq=swapNextQ();
+  const open = n && P.qTotal && nq < P.qTotal && (P.stage.startsWith('reveal') || P.stage.startsWith('prank'));
+  let html='';
+  if(open){
+    const sent = P.swapSent===nq;
+    const parts=[];
+    if(sent) parts.push(`<p style="margin:0">✅ ส่งคำขอสลับคะแนนกับ <b>${esc(P.swapSentTo||'เพื่อน')}</b> แล้ว — คะแนนจะสลับตอนเฉลยข้อถัดไป</p>`);
+    else {
+      if(+L.sw>0) parts.push(`<div class="row between"><div><h3 style="margin:0">🔄 สิทธิ์สลับคะแนน × ${+L.sw}</h3>
+        <span class="muted">เลือกเพื่อน 1 คน เพื่อสลับ “คะแนนรวม” กัน (สลับตอนเฉลยข้อถัดไป)</span></div>
+        <button class="btn-sm btn-warn" data-swk="swap">เลือกเพื่อน</button></div>`);
+      if(L.bt) parts.push(`<div class="row between" style="${+L.sw>0?'margin-top:10px':''}"><div><h3 style="margin:0">↩️ สลับคืนได้แล้ว!</h3>
+        <span class="muted">สลับคะแนนรวมคืนกับ ${esc(L.bt.e||'')} <b>${esc(L.bt.n||'')}</b>${P.scores&&P.scores[L.bt.id]?` (ตอนนี้ ${(P.scores[L.bt.id].t||0).toLocaleString()} คะแนน)`:''}</span></div>
+        <button class="btn-sm btn-warn" data-swk="swapback">สลับคืน</button></div>`);
+    }
+    if(!parts.length){
+      if(L.bk) parts.push(`<p class="muted" style="margin:0">🔄 คุณถูก <b>${esc(L.bk.n||'เพื่อน')}</b> สลับคะแนน — ตอบถูกอีก <b style="color:#fde047">${L.bk.left}</b> ข้อ เพื่อได้สิทธิ์สลับคืน</p>`);
+      else { const st=+L.s||0, left=n-(st%n);
+        parts.push(`<p class="muted" style="margin:0">🔄 ตอบถูกติดกันอีก <b style="color:#fde047">${left}</b> ข้อ รับสิทธิ์สลับคะแนนกับเพื่อน</p>`); }
+    }
+    html=`<div class="card swapbar" style="margin-top:12px">${parts.join('')}</div>`;
+  }
+  $$('.swapslot').forEach(el=>{ el.innerHTML=html; });
+  $$('.swapslot [data-swk]').forEach(b=>b.onclick=()=>{
+    if(b.dataset.swk==='swapback'){ const t=(P.res||{}).bt; if(t) confirmSwap('swapback', t.id, t.n, t.e); }
+    else openSwapModal();
+  });
+}
+function openSwapModal(){
+  const my=(P.scores&&P.scores[P.id]&&P.scores[P.id].t) ?? P.total ?? 0;
+  $('#swMeLine').textContent=`คะแนนรวมของคุณตอนนี้ ${my.toLocaleString()} คะแนน`;
+  const list=(P.roster||[]).filter(x=>x.id!==P.id && !(P.team && x.t===P.team))
+    .map(x=>({ ...x, sc:(P.scores&&P.scores[x.id]&&P.scores[x.id].t)||0 }))
+    .sort((a,b)=>b.sc-a.sc);
+  $('#swTargets').innerHTML = list.length ? list.map((x,i)=>`
+    <div class="lb-item" data-sw="${esc(x.id)}" style="cursor:pointer"><div class="rk">${i+1}</div><div class="e">${esc(x.e||'')}</div>
+      <div class="nm">${esc(x.n||'')}</div><div class="sc">${x.sc.toLocaleString()}</div></div>`).join('')
+    : '<p class="muted center">ยังไม่มีเพื่อนที่เลือกได้</p>';
+  $('#swTargets').querySelectorAll('[data-sw]').forEach(el=>el.onclick=()=>{
+    const x=list.find(y=>y.id===el.dataset.sw); if(x) confirmSwap('swap', x.id, x.n, x.e);
+  });
+  $('#swapModal').style.display='block'; $('#swapModal').scrollTop=0;
+}
+$('#swClose').onclick=()=>{ $('#swapModal').style.display='none'; };
+async function confirmSwap(kind, to, name, emo){
+  const my=(P.scores&&P.scores[P.id]&&P.scores[P.id].t) ?? P.total ?? 0;
+  const their=(P.scores&&P.scores[to]&&P.scores[to].t) || 0;
+  if(!confirm(`${kind==='swap'?'🔄 สลับคะแนนรวม':'↩️ สลับคะแนนคืน'}กับ ${emo||''} ${name||''} ?\n\nตอนนี้: คุณ ${my.toLocaleString()} ⇄ ${name||''} ${their.toLocaleString()}\nคะแนนจะสลับตอนเฉลยข้อถัดไป (คะแนนอาจเปลี่ยนก่อนถึงตอนนั้น)`)) return;
+  const nq=swapNextQ();
+  try{
+    await setDoc(doc(db,'rooms',P.pin,'items',`q${nq}_${P.id}_swap`),
+      { q:nq, t:kind, to, from:P.id, by:P.name, e:P.emoji, uid:UID, at:Date.now() });
+    P.swapSent=nq; P.swapSentTo=name||'เพื่อน';
+    $('#swapModal').style.display='none';
+    sfx('prank'); toast(kind==='swap'?'🔄 ส่งคำขอสลับคะแนนแล้ว!':'↩️ ส่งคำขอสลับคืนแล้ว!');
+    renderSwapSlots();
+  }catch(e){
+    console.warn(e);
+    toast(isDenied(e) ? 'สลับไม่สำเร็จ — ใช้สิทธิ์ของรอบนี้ไปแล้ว หรือครูยังไม่ได้อัปเดต firestore.rules' : 'สลับไม่สำเร็จ: '+e.message);
+  }
 }
 
 function renderMyTeam(){
@@ -3039,6 +3217,7 @@ function renderPrankWindow(r){
     show('scWaitPrank');
   }
   startPrankCountdown(end);
+  renderSwapSlots();
 }
 async function useSelfItem(id){
   if(itemUsed()) return toast('ใช้ไอเทมของข้อนี้ไปแล้ว');
@@ -3273,6 +3452,7 @@ $('#btnCreateRoom').onclick = async ()=>{
       picked.forEach(i=>{ quiz[i].bonus = BONUSES[rnd(BONUSES.length)].id; });
     }
     H.awardsOn = $('#cfgAwards').value==='1';
+    H.swapN = +$('#cfgSwap').value || 0;
     H.teamN = +$('#cfgTeams').value || 0;
     H.teamOf = new Map();
     H.autoPlay = au>0; H.autoDelay = au>0?au:6;
@@ -3281,11 +3461,11 @@ $('#btnCreateRoom').onclick = async ()=>{
     H.prevRank=new Map(); H.prevScore=new Map(); H.setName=set.name; H.bonusShown=-1; H.startTs=null;
     H.pin = await genPin();
     await setDoc(roomRef(), { status:'lobby', qTotal:quiz.length, qIndex:-1, timeLimit:tl,
-      prankOn:pe!==0, prankEvery:pe, awardsOn:H.awardsOn, banned:[],
+      prankOn:pe!==0, prankEvery:pe, awardsOn:H.awardsOn, swapN:H.swapN, banned:[],
       teamN:H.teamN, teams:TEAMS.slice(0,H.teamN), tmap:{},
       playerCount:0, roster:[], setName:set.name, createdAt:Date.now(),
       brand:{ name:BRAND.name, sub:BRAND.sub, logo:BRAND.logo, favicon:BRAND.favicon, credit:BRAND.credit },
-      snd:{ bgm:SYS.bgm||'', endm:SYS.endm||'', lobby:SYS.lobby||'', wheel:(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel)||'',
+      snd:{ bgm:bgmListOf(SYS)[0]||'', endm:SYS.endm||'', lobby:lobbyListOf(SYS)[0]||'', bgmL:bgmListOf(SYS), lobbyL:lobbyListOf(SYS), shuf:SYS.shuf?1:0, wheel:(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel)||'',
             vol:SYS.vol||30, sfx:+SYS.sfx } });
     await setDoc(doc(db,'rooms',H.pin,'private','quiz'), { items:H.quiz, timeLimit:tl, prankEvery:pe });
     ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
@@ -3308,10 +3488,11 @@ $('#btnResume').onclick = async ()=>{
   H.pin=pin; H.itemHist=null; const d=r.data();
   H.quiz = q.exists()? q.data().items : [];
   H.awardsOn = d.awardsOn!==false;
+  H.swapN = d.swapN||0;
   H.startTs = (d.startTs && d.startTs.toMillis) ? d.startTs.toMillis() : null;
   H.bonusShown = d.qIndex??-1;
   H.timeLimit=d.timeLimit||DEF_TIME; H.prankOn=!!d.prankOn; H.prankEvery=(d.prankEvery===undefined?(d.prankOn?1:0):d.prankEvery); H.qIndex=d.qIndex??-1; H.setName=d.setName||'';
-  if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, lobby:d.snd.lobby||'', wheel:d.snd.wheel||'',
+  if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, lobby:d.snd.lobby||'', bgmL:d.snd.bgmL||[], lobbyL:d.snd.lobbyL||[], shuf:d.snd.shuf||0, wheel:d.snd.wheel||'',
                    vol:d.snd.vol, sfx:d.snd.sfx}; SND.vol=(d.snd.vol||30)/100; SND.sfxOn=!!(+d.snd.sfx); }
   ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
   H.teamN = d.teamN||0;
@@ -3335,7 +3516,7 @@ function openLobby(){
   makeQR($('#qrBox'), joinUrl(H.pin), 200);
   $('#qrBox2').dataset.pin='';
   H.players.clear(); renderHostPlayers();
-  if(SYS.lobby){ ac(); playMusic(bgmEl(), SYS.lobby); }
+  if(lobbyListOf(SYS).length){ ac(); playList(bgmEl(), lobbyListOf(SYS), SYS.shuf); }
   H.unsubPlayers && H.unsubPlayers();
   H.unsubPlayers = onSnapshot(collection(db,'rooms',H.pin,'players'), snap=>{
     snap.docChanges().forEach(c=>{
@@ -3441,7 +3622,7 @@ async function startGameNow(){
   H.unsubPlayers && H.unsubPlayers(); H.unsubPlayers=null;
   clearTimeout(H.lobbyT); H.lobbyT=null;
   H.players.forEach(p=>{
-    p.score=0; p.streak=0; p.best=0; p.correct=0;
+    p.score=0; p.streak=0; p.best=0; p.correct=0; p.swT=0; p.bk=null; p.bkT=null;
     if(H.teamN){ if(!H.teamOf.has(p.id)) H.teamOf.set(p.id, smallestTeam()); p.team=H.teamOf.get(p.id); }
   });
   await updateDoc(roomRef(), { roster:buildRoster(), playerCount:H.players.size,
@@ -3495,11 +3676,12 @@ async function nextQuestionInner(){
   cancelAuto(); clearInterval(H.prankT); H.prankT=null;
   H.unsubItems && H.unsubItems(); H.unsubItems=null;
   renderHostQuestionUI(q);
+  hostFog(q);
   $$('.htabs button').forEach((b,i)=>b.classList.toggle('on', i===0));
   $$('.hgpane').forEach((x,i)=>x.classList.toggle('hide', i!==0));
   show('scHostGame'); syncAutoUI();
   sfx('q');
-  if(SYS.bgm) playMusic(bgmEl(), SYS.bgm);
+  if(bgmListOf(SYS).length) playList(bgmEl(), bgmListOf(SYS), SYS.shuf);
   H.unsubAns && H.unsubAns();
   H.unsubAns = onSnapshot(query(collection(db,'rooms',H.pin,'answers'), where('q','==',H.qIndex)), s=>{
     s.docChanges().forEach(c=>{ if(c.type!=='removed') H.answers.set(c.doc.data().pid, c.doc.data()); });
@@ -3510,6 +3692,21 @@ async function nextQuestionInner(){
   startHostTimer();
 }
 
+/* 🌫️ หมอกบัง: ถ้ามีผู้เล่นโดนหมอกในข้อนี้ จอครูก็บังคำถาม+ตัวเลือกด้วย (กันเหลือบดูจอหน้าห้อง) */
+const FOG_MS = 4000;
+function hostFog(q){
+  const pane=$('#hgQ'), tag=$('#hFogTag');
+  clearTimeout(H.fogT); pane.classList.remove('hfog'); tag.classList.remove('on');
+  if(!q || q.bonus==='truce') return;
+  const cur=(H.itemHist||[]).filter(v=>v && v.q===H.qIndex);
+  const shielded=new Set(cur.filter(v=>v.t==='shield').map(v=>v.to||v.from));
+  const fogs=cur.filter(v=>v.t==='fog' && v.to && v.to!==v.from && !shielded.has(v.to));
+  if(!fogs.length) return;
+  const who=[...new Set(fogs.map(v=>(H.players.get(v.to)||{}).name).filter(Boolean))];
+  tag.innerHTML=`🌫️ หมอกบัง! <small style="display:block;font-size:.7em;opacity:.85">${who.length?esc(who.join(', '))+' ถูกบังคำถาม — จอหน้าห้องบังด้วย':'จอหน้าห้องถูกบังชั่วคราว'}</small>`;
+  pane.classList.add('hfog'); tag.classList.add('on');
+  H.fogT=setTimeout(()=>{ pane.classList.remove('hfog'); tag.classList.remove('on'); }, FOG_MS);
+}
 function renderHostQuestionUI(q){
   if(!q) return;
   $('#hQn').textContent=H.qIndex+1; $('#hQt').textContent=H.quiz.length; $('#hPin').textContent=H.pin;
@@ -3566,7 +3763,9 @@ $('#btnNextQ2').onclick = ()=>{ cancelAuto(); goNext(); };
 $('#btnSkipPrank').onclick = ()=>{ endPrankWindow(); };
 
 const SHAPES = ['▲','◆','●','■'];
-const itemDef = id => [...PRANKS,...SELF_ITEMS,{id:'revenge',e:'👊',n:'สวนสักหมัด'}].find(x=>x.id===id) || {e:'🎁',n:'ไอเทม'};
+const itemDef = id => [...PRANKS,...SELF_ITEMS,{id:'revenge',e:'👊',n:'สวนสักหมัด'},
+  {id:'swap',e:'🔄',n:'สลับคะแนน'},{id:'swapback',e:'↩️',n:'สลับคะแนนคืน'}].find(x=>x.id===id) || {e:'🎁',n:'ไอเทม'};
+const isSwapItem = v => v && (v.t==='swap' || v.t==='swapback');
 
 /* เปิด "ช่วงเวลาแห่งการกลั่นแกล้ง" ก่อนขึ้นข้อถัดไป */
 async function goNext(){
@@ -3604,10 +3803,11 @@ async function goNext(){
       updateDoc(doc(db,'rooms',H.pin,'players',tid),
         { revenge:{ q:nq, n:ev.length, from:[...m.keys()], names:[...m.values()] } }).catch(e=>console.warn(e));
     });
-    $('#pkUsed').textContent=s.size;
+    const used=cur.filter(v=>!isSwapItem(v)).length;   // คำขอสลับคะแนนไม่นับเป็นการใช้ไอเทม
+    $('#pkUsed').textContent=used;
     const need=(H.lastWinners||[]).length + H.revGrant.size;
     $('#pkTotal').textContent=need;
-    if(need && s.size>=need && H.prankT){        // ใช้ครบทุกคนแล้ว ไม่ต้องรอเวลาหมด
+    if(need && used>=need && H.prankT){        // ใช้ครบทุกคนแล้ว ไม่ต้องรอเวลาหมด
       clearInterval(H.prankT); H.prankT=null;
       $('#pkCount').textContent='0';
       setTimeout(()=>endPrankWindow(), 1400);
@@ -3615,6 +3815,7 @@ async function goNext(){
     $('#pkFeed').innerHTML = s.docs.map(d=>{
       const v=d.data()||{}, it=itemDef(v.t);
       const to = v.t==='revenge' ? (v.names||[]).join(', ')
+               : isSwapItem(v) ? ((H.players.get(v.to)||{}).name||'เพื่อน')
                : (v.to && v.to!==v.from) ? ((H.players.get(v.to)||{}).name||'เพื่อน') : null;
       return `<div class="lb-item"><div class="e">${it.e}</div>
         <div class="nm">${esc(v.by||'ผู้เล่น')} ใช้ <b>${esc(it.n)}</b>${to?` ใส่ ${esc(to)}`:' กับตัวเอง'}</div></div>`;
@@ -3648,9 +3849,11 @@ function buildRoster(){
 }
 /* สถานะคะแนน (สำหรับกู้คืนจอครู) — 1 write ต่อข้อ */
 const packState = p => ({ s:p.score||0, st:p.streak||0, b:p.best||0, c:p.correct||0, ms:p.msSum||0, n:p.okN||0,
-                          w:p.worst||0, r:p.lastRank||0, ...(p.team?{t:p.team}:{}) });
+                          w:p.worst||0, r:p.lastRank||0, ...(p.team?{t:p.team}:{}),
+                          ...(p.swT?{sw:p.swT}:{}), ...(p.bk?{bk:p.bk}:{}), ...(p.bkT?{bt:p.bkT}:{}) });
 const unpackState = v => ({ score:v.s||0, streak:v.st||0, best:v.b||0, correct:v.c||0, msSum:v.ms||0, okN:v.n||0,
-                            worst:v.w||0, lastRank:v.r||0, ...(v.t?{team:v.t}:{}) });
+                            worst:v.w||0, lastRank:v.r||0, ...(v.t?{team:v.t}:{}),
+                            swT:v.sw||0, bk:v.bk||null, bkT:v.bt||null });
 function saveHostState(){
   const pl={}; H.players.forEach(p=>pl[p.id]=packState(p));
   setDoc(doc(db,'rooms',H.pin,'private','state'), { pl, q:H.qIndex, at:Date.now() }).catch(e=>console.warn('state',e));
@@ -3676,6 +3879,7 @@ function teamBarsHtml(board){
 
 async function doReveal(){
   if(H.revealed) return; H.revealed=true;
+  clearTimeout(H.fogT); $('#hgQ').classList.remove('hfog'); $('#hFogTag').classList.remove('on');
   clearInterval(H.timer); H.unsubAns && H.unsubAns(); H.unsubAns=null;
   H.prevScore = new Map([...H.players.values()].map(p=>[p.id, p.score||0]));
   const q=H.quiz[H.qIndex], limitMs=qTime(q)*1000;
@@ -3696,7 +3900,7 @@ async function doReveal(){
   }
 
   // ---- ไอเทมที่ผู้เล่นใช้สำหรับข้อนี้ ----
-  const boosts=new Set(), shields=new Set(), cuts=new Map();
+  const boosts=new Set(), shields=new Set(), cuts=new Map(), swaps=[];
   try{
     const isnap=await getDocs(query(collection(db,'rooms',H.pin,'items'), where('q','==',H.qIndex)));
     isnap.forEach(d=>{
@@ -3704,8 +3908,38 @@ async function doReveal(){
       if(v.t==='x2') boosts.add(v.to);
       else if(v.t==='shield') shields.add(v.to);
       else if(v.t==='cut') cuts.set(v.to, [...(cuts.get(v.to)||[]), v.by||'เพื่อน']);
+      else if(v.t==='swap' || v.t==='swapback') swaps.push(v);
     });
   }catch(e){ console.warn('items',e); }
+
+  // ---- 🔄 สลับคะแนน (ส่งคำขอไว้ตั้งแต่ข้อก่อน) — สลับก่อนบวกคะแนนข้อนี้ ----
+  const swapNote=new Map(), swapLog=[];
+  const addNote=(id,o)=>swapNote.set(id, [...(swapNote.get(id)||[]), o]);
+  if(H.swapN){
+    swaps.sort((a,b)=>(a.at||0)-(b.at||0)).forEach(v=>{
+      const a=H.players.get(v.from), b=H.players.get(v.to);
+      if(!a || !b || a.id===b.id) return;
+      if(v.t==='swap'){
+        if(!((a.swT||0)>0)) return;
+        if(H.teamN && a.team && a.team===b.team) return;
+        a.swT--;
+        if(shields.has(b.id)){ addNote(a.id,{k:'blk',n:b.name,e:b.emoji}); addNote(b.id,{k:'shd',n:a.name,e:a.emoji}); return; }
+      } else {
+        if(a.bkT!==b.id) return;
+        a.bkT=null; a.bk=null;
+      }
+      const sa=a.score||0, sb=b.score||0;
+      a.score=sb; b.score=sa;
+      if(v.t==='swap'){ b.bk={ pid:a.id, n:a.name, got:0 }; b.bkT=null; }
+      else if(b.bk && b.bk.pid===a.id) b.bk=null;
+      const back = v.t==='swapback';
+      addNote(a.id,{k:back?'bk1':'sw1', n:b.name, e:b.emoji, f:sa, to:sb});
+      addNote(b.id,{k:back?'bk2':'sw2', n:a.name, e:a.emoji, f:sb, to:sa});
+      swapLog.push(`${a.emoji} ${a.name} ${back?'↩️ สลับคืนกับ':'🔄 สลับคะแนนกับ'} ${b.emoji} ${b.name}`);
+    });
+  }
+  H.lastSwaps=swapLog;
+  if(swapLog.length) toast(swapLog.join(' • '));
 
   const results=[], fastList=[];
   H.players.forEach(p=>{
@@ -3731,6 +3965,11 @@ async function doReveal(){
       if(x2) pts *= 2;
       p.best=Math.max(p.best||0, p.streak);
       p.correct=(p.correct||0)+1;
+      if(H.swapN && H.qIndex < H.quiz.length-1){
+        if(p.streak % H.swapN===0 && (p.swT||0)<SWAP_MAX_TOK){ p.swT=(p.swT||0)+1; p.swNew=1; }
+        if(p.bk){ p.bk.got=(p.bk.got||0)+1;
+          if(p.bk.got>=H.swapN){ if(H.players.has(p.bk.pid)){ p.bkT=p.bk.pid; p.bkNew=1; } p.bk=null; } }
+      }
       p.msSum=(p.msSum||0)+ms; p.okN=(p.okN||0)+1;
       fastList.push({id:p.id, ms});
       if(!fastest || ms<fastest.ms) fastest={n:p.name,e:p.emoji,ms};
@@ -3791,6 +4030,14 @@ async function doReveal(){
     const o={ ok:r.ok?1:0, p:r.pts, c:r.c, s:r.st, t:p.score, rk:p.lastRank, cr:p.correct||0, b:p.best||0 };
     if(r.x2) o.x2=1; if(r.sh) o.sh=1; if(r.cut) o.cut=r.cut; if(r.loss) o.l=r.loss; if(r.tb) o.tb=r.tb;
     const ah=aheadOf.get(p.id); if(ah) o.ah=ah;
+    if(H.swapN){
+      if(p.swT) o.sw=p.swT;
+      if(p.swNew){ o.swn=1; delete p.swNew; }
+      if(p.bkT){ const tp=H.players.get(p.bkT); if(tp) o.bt={ id:tp.id, n:tp.name, e:tp.emoji }; else p.bkT=null; }
+      if(p.bkNew){ o.bkn=1; delete p.bkNew; }
+      if(p.bk) o.bk={ n:p.bk.n||'', left:Math.max(0, H.swapN-(p.bk.got||0)) };
+      const sn=swapNote.get(p.id); if(sn) o.swp=sn;
+    }
     res[p.id]=o;
   }
   const teamBoard = H.teamN ? calcTeamBoard(syncTeams) : null;
@@ -3945,10 +4192,12 @@ function showScoreboard(){
   const rows=$('#sbRows').querySelectorAll('.sc[data-to]');
   rows.forEach((el,i)=>{ tally(el, +el.dataset.from, +el.dataset.to, 1100, 320 + i*90); });
   if(rows.length && SYS.wheel) playSfxUrl(SYS.wheel, 320 + (rows.length-1)*90 + 1250);
-  if(H.prankOn && H.lastWinners && H.lastWinners.length){
-    $('#sbHexNote').style.display='block';
-    $('#sbHexNote').innerHTML = `🎁 ผู้ได้รับไอเทมสำหรับข้อถัดไป (⚡ x2 / 🛡️ โล่ / 😈 แกล้งเพื่อน): <b>${H.lastWinners.map(esc).join(' • ')}</b>`;
-  } else $('#sbHexNote').style.display='none';
+  const sbN=[];
+  if(H.prankOn && H.lastWinners && H.lastWinners.length)
+    sbN.push(`🎁 ผู้ได้รับไอเทมสำหรับข้อถัดไป (⚡ x2 / 🛡️ โล่ / 😈 แกล้งเพื่อน): <b>${H.lastWinners.map(esc).join(' • ')}</b>`);
+  if(H.lastSwaps && H.lastSwaps.length) sbN.push(`🔄 สลับคะแนนข้อนี้: <b>${H.lastSwaps.map(esc).join(' • ')}</b>`);
+  $('#sbHexNote').style.display = sbN.length ? 'block' : 'none';
+  $('#sbHexNote').innerHTML = sbN.join('<br>');
   H.prevRank=new Map(arr.map((p,i)=>[p.id,i+1]));
   show('scHostScore'); syncAutoUI();
   startAutoCountdown('score');
@@ -4116,26 +4365,38 @@ $('#btnExGo').onclick=async()=>{
 
 /* ---------- sound settings ---------- */
 function renderSys(){
-  $('#inBgm').value=SYS.bgm||''; $('#inEndm').value=SYS.endm||'';
-  $('#inLobby').value=SYS.lobby||''; $('#inWheel').value=(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel);
+  buildMList('mlLobby', lobbyListOf(SYS), 'lobby.mp3');
+  buildMList('mlBgm', bgmListOf(SYS), 'background.mp3');
+  $('#inShuf').value=SYS.shuf?'1':'0';
+  $('#inEndm').value=SYS.endm||''; $('#inWheel').value=(SYS.wheel===undefined?DEF_WHEEL:SYS.wheel);
   $('#inVol').value=String(SYS.vol||30); $('#inSfx').value=String(+SYS.sfx);
 }
-$('#btnTestBgm').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
-  SND.vol=(+$('#inVol').value)/100; const u=$('#inBgm').value.trim();
-  if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(endmEl()); playMusic(bgmEl(),u); toast('กำลังทดสอบเพลงพื้นหลัง'); };
+const MUSIC_MAX=10;
+function buildMList(id, list, ph){
+  const box=$('#'+id); if(!box) return;
+  box.innerHTML=[...Array(MUSIC_MAX).keys()].map(i=>`<div class="row"><span class="mn">${i+1}</span>
+    <input class="grow" data-m="${i}" placeholder="https://.../${i===0?ph:'song'+(i+1)+'.mp3'}" value="${esc(list[i]||'')}">
+    <button class="btn-sm btn-ghost" data-mt="${i}" title="ทดสอบเพลงนี้">▶</button></div>`).join('');
+  box.querySelectorAll('[data-mt]').forEach(b=>b.onclick=()=>{
+    const u=box.querySelector(`[data-m="${b.dataset.mt}"]`).value.trim();
+    ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
+    SND.vol=(+$('#inVol').value)/100;
+    if(!u) return toast('ช่องนี้ยังไม่ได้วางลิงก์เพลง');
+    stopMusic(endmEl()); stopMusic(bgmEl()); playMusic(bgmEl(),u); toast('กำลังทดสอบเพลงที่ '+(+b.dataset.mt+1));
+  });
+}
+const readMList = id => normList([...document.querySelectorAll('#'+id+' [data-m]')].map(x=>x.value));
 $('#btnTestEnd').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
   SND.vol=(+$('#inVol').value)/100; const u=$('#inEndm').value.trim();
   if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(bgmEl()); playMusic(endmEl(),u); toast('กำลังทดสอบเพลงสรุปผล'); };
-$('#btnTestLobby').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('kq_mute','0'); updateMuteBtn();
-  SND.vol=(+$('#inVol').value)/100; const u=$('#inLobby').value.trim();
-  if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(endmEl()); playMusic(bgmEl(),u); toast('กำลังทดสอบเพลงห้องรอ'); };
 $('#btnTestWheel').onclick=()=>{ ac(); SND.muted=false; SND.sfxOn=true; localStorage.setItem('kq_mute','0'); updateMuteBtn();
   SND.vol=(+$('#inVol').value)/100; const u=$('#inWheel').value.trim();
   if(!u) return toast('ยังไม่ได้วางลิงก์เสียง'); playSfxUrl(u, 4000); toast('กำลังทดสอบเสียงคะแนนวิ่ง'); };
 $('#btnStopTest').onclick=()=>{ stopMusic(bgmEl()); stopMusic(endmEl()); stopSfxUrl(); };
 $('#btnSaveSys').onclick=async ()=>{
-  SYS={ bgm:$('#inBgm').value.trim(), endm:$('#inEndm').value.trim(),
-        lobby:$('#inLobby').value.trim(), wheel:$('#inWheel').value.trim(),
+  const lobbyL=readMList('mlLobby'), bgmL=readMList('mlBgm');
+  SYS={ bgm:bgmL[0]||'', bgmL, endm:$('#inEndm').value.trim(),
+        lobby:lobbyL[0]||'', lobbyL, shuf:+$('#inShuf').value, wheel:$('#inWheel').value.trim(),
         vol:+$('#inVol').value, sfx:+$('#inSfx').value };
   SND.vol=SYS.vol/100; SND.sfxOn=!!SYS.sfx;
   try{ await setDoc(doc(db,'bank','settings'),{...SYS,updatedAt:Date.now()}); toast('บันทึกการตั้งค่าเรียบร้อย ✅'); }
@@ -4275,6 +4536,44 @@ $('#btnCleanRooms').onclick = async ()=>{
    ======================================================================= */
 buildEmojiGrid();
 initAudioUI();
+
+/* ---------- dropdown ที่มีตัวเลือกเยอะ → เปิดเป็นรายการเต็มจอ เลื่อนง่าย ค้นหาได้ ----------
+   ใช้ <select> เดิมเก็บค่า (โค้ดส่วนอื่นทำงานเหมือนเดิม) แค่เปลี่ยนหน้าต่างเลือก */
+const PICK_MIN = 8;
+const bigSel = t => t && t.tagName==='SELECT' && !t.multiple && !t.disabled && t.options.length>=PICK_MIN;
+function openPicker(sel){
+  const opts=[...sel.options], list=$('#selPkList'), q=$('#selPkQ');
+  const fl=sel.closest('.field'), lb=fl && fl.querySelector('label');
+  $('#selPkTitle').textContent = (lb && lb.textContent.trim()) || 'เลือกรายการ';
+  $('#selPkQBox').classList.toggle('hide', opts.length<12);
+  const draw=()=>{
+    const k=q.value.trim().toLowerCase();
+    const items=opts.map((o,i)=>({o,i})).filter(x=>!k || x.o.text.toLowerCase().includes(k));
+    list.innerHTML = items.length
+      ? items.map(x=>`<button type="button" data-i="${x.i}" class="${x.i===sel.selectedIndex?'sel':''}" ${x.o.disabled?'disabled':''}>${x.i===sel.selectedIndex?'✔ ':''}${esc(x.o.text)}</button>`).join('')
+      : '<div class="pk-empty">ไม่พบรายการที่ค้นหา</div>';
+    list.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{
+      const changed = sel.selectedIndex!==+b.dataset.i;
+      sel.selectedIndex=+b.dataset.i; closePicker();
+      if(changed){ sel.dispatchEvent(new Event('input',{bubbles:true})); sel.dispatchEvent(new Event('change',{bubbles:true})); }
+    });
+  };
+  q.value=''; q.oninput=draw; draw();
+  $('#selPkOv').classList.add('on');
+  const cur=list.querySelector('.sel'); if(cur) cur.scrollIntoView({block:'center'});
+}
+function closePicker(){ $('#selPkOv').classList.remove('on'); }
+$('#selPkClose').onclick=closePicker;
+$('#selPkOv').addEventListener('click', e=>{ if(e.target.id==='selPkOv') closePicker(); });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && $('#selPkOv').classList.contains('on')) closePicker(); });
+document.addEventListener('mousedown', e=>{ if(bigSel(e.target)){ e.preventDefault(); openPicker(e.target); } }, true);
+let pkT=null;   // แตะบนจอสัมผัส (แยก "แตะ" กับ "ลากเลื่อนหน้า")
+document.addEventListener('touchstart', e=>{ const t=e.target;
+  pkT = bigSel(t) ? { t, x:e.touches[0].clientX, y:e.touches[0].clientY, mv:false } : null; }, { capture:true, passive:true });
+document.addEventListener('touchmove', e=>{ if(!pkT) return; const p=e.touches[0];
+  if(Math.abs(p.clientX-pkT.x)>8 || Math.abs(p.clientY-pkT.y)>8) pkT.mv=true; }, { capture:true, passive:true });
+document.addEventListener('touchend', e=>{ if(pkT && e.target===pkT.t && !pkT.mv){ e.preventDefault(); openPicker(pkT.t); } pkT=null; },
+  { capture:true, passive:false });
 applyBrand();
 loadSettings();
 
@@ -4319,7 +4618,8 @@ function fillTaskSetSelect(){
 function taskBadges(t){
   return [ t.timer ? `⏱ จับเวลา${t.tsec?` ${t.tsec} วิ/ข้อ`:''}` : '⏱ ไม่จับเวลา',
            t.cheat ? '🛡️ ตรวจจับทุจริต' : '🛡️ ไม่ตรวจจับ',
-           (t.shQ||t.shC) ? '🔀 สลับ'+[t.shQ?'ข้อ':'', t.shC?'ตัวเลือก':''].filter(Boolean).join('/') : '🔀 ไม่สลับ' ]
+           (t.shQ||t.shC) ? '🔀 สลับ'+[t.shQ?'ข้อ':'', t.shC?'ตัวเลือก':''].filter(Boolean).join('/') : '🔀 ไม่สลับ',
+           (+t.showScore===2) ? '👁 นักเรียนเห็นคะแนน+เฉลย' : (+t.showScore===1) ? '👁 นักเรียนเห็นคะแนน' : '🙈 ซ่อนคะแนน' ]
     .map(x=>`<span class="badge">${x}</span>`).join(' ');
 }
 const openBadge = t => t.open ? '<span class="badge ok">🟢 เปิดรับคำตอบ</span>' : '<span class="badge no">🔴 ปิดรับแล้ว</span>';
@@ -4335,12 +4635,14 @@ function renderTasks(){
         <button class="btn-sm btn-ok" data-tr="${esc(t.id)}">📊 ดูผล</button>
         <button class="btn-sm btn-ghost" data-tl="${esc(t.id)}">🔗 ลิงก์</button>
         <button class="btn-sm btn-ghost" data-to="${esc(t.id)}">${t.open?'⏸ ปิดรับ':'▶ เปิดรับ'}</button>
+        <button class="btn-sm btn-ghost" data-ts="${esc(t.id)}">${+t.showScore?'🙈 ซ่อนคะแนน':'👁 ให้เห็นคะแนน'}</button>
         <button class="btn-sm btn-no" data-td="${esc(t.id)}">🗑</button>
       </div>
     </div>`).join('');
   box.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>openTaskRes(b.dataset.tr));
   box.querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>{ const t=TASKS.find(x=>x.id===b.dataset.tl); if(t) openTaskLink(t); });
   box.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>toggleTaskOpen(b.dataset.to));
+  box.querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>toggleTaskShow(b.dataset.ts));
   box.querySelectorAll('[data-td]').forEach(b=>b.onclick=()=>deleteTask(b.dataset.td));
 }
 async function toggleTaskOpen(aid){
@@ -4354,6 +4656,19 @@ async function toggleTaskOpen(aid){
     renderTasks();
     toast(nv ? 'เปิดรับคำตอบแล้ว' : 'ปิดรับคำตอบแล้ว — นักเรียนที่ยังไม่เริ่มจะเข้าทำไม่ได้');
   }catch(e){ toast('เปลี่ยนสถานะไม่สำเร็จ: '+e.message); }
+}
+async function toggleTaskShow(aid){
+  const t = TASKS.find(x=>x.id===aid); if(!t) return;
+  let nv=0;
+  if(!+t.showScore){
+    nv = confirm('ให้นักเรียนเห็นคะแนนของตนเอง\n\nกด OK = เห็นคะแนน + เฉลยรายข้อ\nกด Cancel = เห็นคะแนนรวมอย่างเดียว') ? 2 : 1;
+  }
+  try{
+    await updateDoc(doc(db,'assigns',aid), { showScore:nv });
+    t.showScore=nv; if(TR.aid===aid && TR.a) TR.a.showScore=nv;
+    renderTasks();
+    toast(nv ? (nv===2?'นักเรียนเห็นคะแนน + เฉลยรายข้อแล้ว (เปิดลิงก์เดิมเพื่อดู)':'นักเรียนเห็นคะแนนรวมแล้ว (เปิดลิงก์เดิมเพื่อดู)') : 'ซ่อนคะแนนจากนักเรียนแล้ว');
+  }catch(e){ toast('เปลี่ยนไม่สำเร็จ: '+e.message); }
 }
 async function deleteTask(aid){
   const t=TASKS.find(x=>x.id===aid); if(!t) return;
@@ -4392,12 +4707,14 @@ $('#btnTlQrBig').onclick=()=>{
 };
 
 $('#taTimerOn').onchange = ()=>$('#taTimeBox').classList.toggle('hide', !$('#taTimerOn').checked);
+$('#taShow').onchange = ()=>$('#taShowBox').classList.toggle('hide', !$('#taShow').checked);
 $('#btnTaCreate').onclick = async ()=>{
   const set=SETS.find(s=>s.id===$('#taSet').value);
   if(!set) return toast('ยังไม่ได้เลือกชุดข้อสอบ');
   const kind=$('#taKind').value, count=+$('#taCount').value;
   const timer=$('#taTimerOn').checked, tsec=+$('#taTime').value||0;
   const cheat=$('#taCheat').checked, shQ=$('#taShQ').checked, shC=$('#taShC').checked;
+  const showScore = $('#taShow').checked ? (+$('#taShowLv').value||1) : 0;
   const title=$('#taTitle').value.trim() || set.name;
   const quiz=buildQuestions(set.items, { kind, count, shuffleQ: count>0, shuffleC:false });
   if(!quiz.length) return toast('ไม่มีข้อสอบตามเงื่อนไขที่เลือก');
@@ -4408,7 +4725,7 @@ $('#btnTaCreate').onclick = async ()=>{
     const ref=doc(collection(db,'assigns'));
     // เฉลยเก็บแยก (นักเรียนอ่านไม่ได้)
     await setDoc(doc(db,'assigns',ref.id,'private','key'), { key:quiz.map(q=>q.correct), exp:quiz.map(q=>q.explain||'') });
-    const data={ title, setName:set.name, n:qs.length, qs, timer, tsec:timer?tsec:0, cheat, shQ, shC, open:true,
+    const data={ title, setName:set.name, n:qs.length, qs, timer, tsec:timer?tsec:0, cheat, shQ, shC, showScore, open:true,
       maxLeave:TK_MAX_LEAVE, createdAt:Date.now(),
       brand:{ name:BRAND.name||'', sub:BRAND.sub||'', logo:BRAND.logo||'', favicon:BRAND.favicon||'', credit:BRAND.credit||'' } };
     await setDoc(ref, data);
@@ -4853,13 +5170,49 @@ function tkShowDone(kind){
     $('#tkDoneIc').textContent='✅'; $('#tkDoneH').textContent='ส่งคำตอบเรียบร้อย';
     $('#tkDoneSub').textContent='ขอบคุณที่ตั้งใจทำแบบทดสอบ';
     $('#tkDoneCard').innerHTML = who + (answered?`<p style="margin:6px 0 0">ตอบ ${answered}/${n} ข้อ</p>`:'')
-      + '<p class="muted" style="margin:6px 0 0">ครูผู้สอนจะแจ้งผลคะแนนภายหลัง</p>';
+      + (+a.showScore && TK.status!=='sending' ? '<div id="tkScoreBox" style="margin-top:12px"></div>'
+                        : '<p class="muted" style="margin:6px 0 0">ครูผู้สอนจะแจ้งผลคะแนนภายหลัง</p>');
     document.body.classList.add('fbok');
     if(TK.status==='done'){ sfx('correct'); confetti(36); }
   }
   show('scTaskDone');
+  if(kind==='done' && +a.showScore) tkShowScore();
 }
 $('#btnTkRetrySend').onclick=()=>tkFinish();
+/* 👁 นักเรียนดูคะแนนตนเอง (ครูตั้งค่าให้เห็น) — อ่านเฉลยได้เฉพาะเครื่องที่ส่งแล้วเท่านั้น (กำหนดใน firestore.rules) */
+async function tkShowScore(){
+  const a=TK.a||{}, lv=+a.showScore||0, box=$('#tkScoreBox');
+  if(!lv || !box) return;
+  box.innerHTML='<p class="muted" style="margin:0">⏳ กำลังโหลดคะแนน…</p>';
+  let key=[], exp=[];
+  try{
+    const k=await getDoc(doc(db,'assigns',TK.aid,'private','key'));
+    if(k.exists()){ key=k.data().key||[]; exp=k.data().exp||[]; }
+  }catch(e){
+    console.warn('score',e);
+    box.innerHTML='<p class="muted" style="margin:0">ยังดูคะแนนไม่ได้ในขณะนี้ — ครูผู้สอนจะแจ้งผลคะแนนภายหลัง</p>';
+    return;
+  }
+  const qs=a.qs||[], mine=(TK.me&&TK.me.ans)||{};
+  const ans = Object.keys(TK.ans||{}).length ? TK.ans : mine;
+  let sc=0;
+  const rows=qs.map((q,i)=>{ const v=ans[i], has=(v!==undefined && v!==null), ok=has && v===key[i]; if(ok) sc++; return { q, i, v, has, ok }; });
+  const pc = qs.length ? Math.round(sc/qs.length*100) : 0;
+  let html=`<div style="background:rgba(0,0,0,.25);border-radius:16px;padding:14px">
+    <div class="muted">คะแนนของคุณ</div>
+    <div style="font-family:'Mitr';font-weight:700;font-size:clamp(40px,11vw,64px);line-height:1.15;color:#fde047">${sc}<span style="font-size:.5em;color:#fff"> / ${qs.length}</span></div>
+    <div class="muted">คิดเป็น ${pc}%</div></div>`;
+  if(lv===2){
+    html += `<div style="text-align:left;margin-top:12px">` + rows.map(r=>`
+      <div style="padding:10px 12px;margin-top:8px;border-radius:12px;background:${r.ok?'rgba(34,197,94,.18)':'rgba(239,68,68,.16)'}">
+        <b>${r.ok?'✅':'❌'} ข้อ ${r.i+1}.</b> ${esc(r.q.word||'')}
+        <div style="font-size:14px;margin-top:4px">คำตอบของคุณ: <b>${r.has?esc(tkAnsText(r.q, r.v)):'— ไม่ได้ตอบ —'}</b></div>
+        ${r.ok?'':`<div style="font-size:14px">คำตอบที่ถูก: <b style="color:#86efac">${esc(tkAnsText(r.q, key[r.i]))}</b></div>`}
+        ${exp[r.i]?`<div class="muted" style="font-size:13px;margin-top:2px">💡 ${esc(exp[r.i])}</div>`:''}
+      </div>`).join('') + `</div>`;
+  }
+  box.innerHTML=html;
+}
 $('#btnTkNextUser').onclick=async()=>{
   if(!confirm('เริ่มใหม่สำหรับนักเรียนคนถัดไปบนเครื่องนี้?')) return;
   try{ await signOut(auth); }catch(e){}
