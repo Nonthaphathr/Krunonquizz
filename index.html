@@ -1484,6 +1484,7 @@ em.badge{font-style:normal}
       <button class="btn-sm btn-ok" id="btnTrXlsx">⬇ ดาวน์โหลด Excel</button>
       <button class="btn-sm btn-ghost" id="btnTrCsv">⬇ CSV</button>
       <button class="btn-sm btn-ghost" id="btnTrLink">🔗 ลิงก์/QR</button>
+      <button class="btn-sm btn-ghost" id="btnTrPaper">🧾 กระดาษคำตอบ/สแกน</button>
       <button class="btn-sm btn-warn" id="btnTrToggle">⏸ ปิดรับคำตอบ</button>
       <select id="trFilter" style="width:auto;flex:0 0 auto;padding:8px 12px">
         <option value="all">แสดงทั้งหมด</option><option value="done">ส่งแล้ว</option>
@@ -1754,6 +1755,49 @@ em.badge{font-style:normal}
   </div>
 </div>
 <!-- ===== แบบทดสอบ: ลิงก์ / QR (ครู) ===== -->
+<!-- กระดาษคำตอบ / สแกนตรวจ (โหมดมอบหมายงาน) -->
+<div id="mPaper" class="ovl"><div class="sheet" style="max-width:900px">
+  <div class="row between" style="align-items:center"><h2 style="margin:0">🧾 กระดาษคำตอบ / สแกนตรวจ</h2><button class="btn-sm btn-ghost" id="ppClose">✕ ปิด</button></div>
+  <p class="muted" id="ppSub" style="margin:6px 0 12px"></p>
+  <div id="ppMenu">
+    <div class="card" style="margin:0 0 12px"><h3 style="margin-top:0">1) พิมพ์</h3>
+      <p class="muted" style="margin-top:0">สำหรับนักเรียนที่ไม่มีมือถือ — ข้อสอบกระดาษเรียงข้อ/ตัวเลือกตามต้นฉบับ (ไม่สลับ) ไม่รวมข้อเรียงลำดับ</p>
+      <div class="row"><button class="btn-ghost grow" id="ppBook">📄 ข้อสอบ .docx</button><button class="btn-ok grow" id="ppSheet">🖨 พิมพ์กระดาษคำตอบ</button></div>
+      <label style="display:block;margin-top:10px">จำนวนแผ่นกระดาษคำตอบ <input type="number" id="ppCopies" value="1" min="1" max="60" style="width:90px;display:inline-block"></label></div>
+    <div class="card" style="margin:0"><h3 style="margin-top:0">2) สแกนตรวจ</h3>
+      <p class="muted" style="margin-top:0">เปิดกล้อง ถ่ายให้เห็น <b>สี่เหลี่ยมดำครบ 4 มุม</b> วางกระดาษบนพื้นเรียบ แสงสว่างพอ — หรืออัปโหลดไฟล์สแกน PDF/รูปภาพ หลายแผ่นได้</p>
+      <div class="field"><label>ชั้น (ใช้กับทุกแผ่นที่สแกน)</label><input id="ppCls" placeholder="ม. ..."></div>
+      <button class="btn-lg btn-ok" id="ppScan">📷 เปิดกล้องสแกน</button>
+      <button class="btn-lg btn-ghost" id="ppPdf" style="margin-top:8px">📄 อัปโหลดไฟล์สแกน PDF / รูปภาพ (หลายแผ่นได้)</button>
+      <input type="file" id="ppFile" accept="application/pdf,.pdf,image/*" multiple class="hide"></div>
+    <p class="muted" style="margin-top:10px">รองรับสูงสุด 100 ข้อ · ข้อ ถูก/ผิด ให้ฝนช่อง ก = ข้อแรก (ถูก), ข = ข้อสอง (ผิด) · ผลบันทึกเข้า “ดูผล” ของแบบทดสอบนี้ (ติดป้าย 🧾 กระดาษ)</p>
+  </div>
+  <div id="ppCam" class="hide">
+    <div style="position:relative;background:#000;border-radius:16px;overflow:hidden">
+      <video id="ppVid" playsinline muted style="width:100%;display:block;max-height:65vh;object-fit:contain"></video>
+      <canvas id="ppOv" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+      <div id="ppHint" style="position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#fff;text-shadow:0 1px 4px #000">กำลังค้นหาสี่เหลี่ยม 4 มุม...</div>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn-ok grow" id="ppShot">📸 ตรวจแผ่นนี้</button><button class="btn-ghost" id="ppStop">⏹ ปิดกล้อง</button></div>
+    <label style="display:block;margin-top:8px">ความไวการตรวจรอยฝน <input type="range" id="ppSens" min="5" max="40" value="14" style="width:160px;display:inline-block;vertical-align:middle"></label>
+  </div>
+  <div id="ppRes" class="hide" style="margin-top:12px">
+    <div class="row" style="align-items:flex-start;gap:14px;flex-wrap:wrap">
+      <div style="flex:1 1 320px"><canvas id="ppImg" style="width:100%;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:#fff"></canvas></div>
+      <div style="flex:1 1 320px">
+        <div class="stat"><div><b id="ppScore">-</b><small>คะแนน (ตรวจอัตโนมัติ)</small></div></div>
+        <div class="row" style="margin-top:10px"><div class="grow field"><label>เลขที่ (อ่านจากกระดาษ)</label><input id="ppNo" type="number"></div><div class="grow field"><label>ชั้น</label><input id="ppCls2" placeholder="ม. ..."></div></div>
+        <div class="field"><label>ชื่อ-สกุล</label><input id="ppName" placeholder="พิมพ์ชื่อนักเรียน"></div>
+        <p id="ppQ" style="font-weight:600;margin:0 0 6px"></p>
+        <p id="ppWarn" style="color:#fca5a5;margin:0 0 8px"></p>
+        <div class="row"><button class="btn-ok grow" id="ppSave">💾 บันทึกคะแนนเข้าระบบ</button><button class="btn-ghost" id="ppAgain">📷 สแกนใหม่</button></div>
+      </div>
+    </div>
+    <h4 style="margin:12px 0 6px">คำตอบที่อ่านได้ (แก้ไขได้ก่อนบันทึก)</h4>
+    <div id="ppAns" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px"></div>
+  </div>
+</div></div>
+
 <div id="taskLinkModal" class="ovl">
   <div class="sheet"><div class="card center">
     <h2 style="margin-top:0">🔗 ลิงก์แบบทดสอบ</h2>
@@ -4634,6 +4678,7 @@ function renderTasks(){
       <div class="row">
         <button class="btn-sm btn-ok" data-tr="${esc(t.id)}">📊 ดูผล</button>
         <button class="btn-sm btn-ghost" data-tl="${esc(t.id)}">🔗 ลิงก์</button>
+        <button class="btn-sm btn-ghost" data-tp="${esc(t.id)}">🧾 กระดาษคำตอบ</button>
         <button class="btn-sm btn-ghost" data-to="${esc(t.id)}">${t.open?'⏸ ปิดรับ':'▶ เปิดรับ'}</button>
         <button class="btn-sm btn-ghost" data-ts="${esc(t.id)}">${+t.showScore?'🙈 ซ่อนคะแนน':'👁 ให้เห็นคะแนน'}</button>
         <button class="btn-sm btn-no" data-td="${esc(t.id)}">🗑</button>
@@ -4641,6 +4686,7 @@ function renderTasks(){
     </div>`).join('');
   box.querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>openTaskRes(b.dataset.tr));
   box.querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>{ const t=TASKS.find(x=>x.id===b.dataset.tl); if(t) openTaskLink(t); });
+  box.querySelectorAll('[data-tp]').forEach(b=>b.onclick=()=>window.kqOpenPaper(b.dataset.tp));
   box.querySelectorAll('[data-to]').forEach(b=>b.onclick=()=>toggleTaskOpen(b.dataset.to));
   box.querySelectorAll('[data-ts]').forEach(b=>b.onclick=()=>toggleTaskShow(b.dataset.ts));
   box.querySelectorAll('[data-td]').forEach(b=>b.onclick=()=>deleteTask(b.dataset.td));
@@ -4831,7 +4877,7 @@ function renderTaskRes(){
   $('#trRows').innerHTML = rows.map((s,i)=>{
     const r=g.get(s.id), t0=tsMs(s.startAt), t1=tsMs(s.endAt);
     const dur = (t0 && t1) ? `ใช้ ${Math.max(1,Math.round((t1-t0)/60000))} นาที` : '';
-    const note = [ s.status!=='done' ? `ตอบ ${r.done}/${n}` : '', s.sw ? `<span class="badge no">ออกนอกหน้า ${s.sw} ครั้ง</span>` : '' ].filter(Boolean).join(' ');
+    const note = [ s.status!=='done' ? `ตอบ ${r.done}/${n}` : '', s.sw ? `<span class="badge no">ออกนอกหน้า ${s.sw} ครั้ง</span>` : '', s.paper ? '<span class="badge">🧾 กระดาษ</span>' : '' ].filter(Boolean).join(' ');
     return `<tr class="${s.status==='terminated'?'trterm':''}">
       <td>${i+1}</td><td>${esc(s.cls||'')}</td><td>${esc(s.no||'')}</td>
       <td>${esc(tkName(s))}</td>
@@ -4860,6 +4906,295 @@ function renderTaskRes(){
 $('#trFilter').onchange=renderTaskRes;
 $('#btnTrToggle').onclick=()=>{ if(TR.aid) toggleTaskOpen(TR.aid); };
 $('#btnTrLink').onclick=()=>{ if(TR.aid) openTaskLink({ id:TR.aid, ...TR.a }); };
+$('#btnTrPaper').onclick=()=>{ if(TR.aid) window.kqOpenPaper(TR.aid); };
+
+/* =======================================================================
+   🧾 กระดาษคำตอบ / กระดาษคำถาม + สแกนตรวจด้วยกล้อง (OMR) — โหมดมอบหมายงาน
+   สำหรับนักเรียนที่ไม่มีมือถือ: ครูพิมพ์ข้อสอบ + กระดาษคำตอบ → นักเรียนฝนวง → ครูสแกน (กล้อง/ไฟล์ PDF-รูป)
+   → ระบบตรวจกับเฉลยของแบบทดสอบ แล้วบันทึกเข้า assigns/{aid}/subs (ติด paper:true) รวมในหน้าผลเดียวกับนักเรียนที่ทำผ่านลิงก์
+   พิกัดบนกระดาษ A4 หน่วย mm · สี่เหลี่ยมอ้างอิง 4 มุม (12mm) · วงกลม 5mm · รองรับสูงสุด 100 ข้อ
+   ข้อชนิด "เรียงลำดับ" ฝนบนกระดาษไม่ได้ จึงไม่อยู่ในกระดาษ (นับเป็นไม่ได้ตอบ)
+   ======================================================================= */
+{
+const OMR={ fid:[[14,14],[196,14],[14,283],[196,283]], rowsPerCol:25, maxQ:100 };
+const thNum=['ก','ข','ค','ง'];
+const PP={ a:null, aid:null, key:[], items:[], skipped:0, stream:null, raf:null, last:null, q:[], qi:0, res:null, saved:0, skip:[] };
+const libP={};
+const loadLib=(url,test)=>{ if(test()) return Promise.resolve(); return libP[url] ||= new Promise((ok,no)=>{
+  const s=document.createElement('script'); s.src=url; s.onload=()=>ok(); s.onerror=()=>{ delete libP[url]; no(new Error('โหลดไลบรารีไม่สำเร็จ ตรวจอินเทอร์เน็ต')); }; document.head.appendChild(s); }); };
+const nOpt=it=>it.q.type==='tf'?2:Math.min(4,(it.q.choices||[]).length||4);
+const logoOf=()=>{ const l=(PP.a&&PP.a.brand&&PP.a.brand.logo)||BRAND.logo||''; return /^(https?:|data:)/i.test(l)?l:''; };
+const schoolOf=()=>(PP.a&&PP.a.brand&&PP.a.brand.name)||BRAND.name||'';
+const openM=id=>$('#'+id).classList.add('on'), closeM=id=>$('#'+id).classList.remove('on');
+
+function omrLayout(n){
+  const q=[]; for(let i=0;i<Math.min(n,OMR.maxQ);i++){ const c=Math.floor(i/OMR.rowsPerCol), r=i%OMR.rowsPerCol, x0=24+c*45, y=87+r*7.4;
+    q.push({i,x0,y,b:[0,1,2,3].map(j=>[x0+11+j*7.5,y])}); }
+  const num=[0,1].map(row=>[...Array(10).keys()].map(d=>[122+d*6.7,54+row*8]));
+  return {q,num};
+}
+
+async function openPaper(aid){
+  let a=(TR.aid===aid&&TR.a)?TR.a:(TASKS.find(x=>x.id===aid)||null);
+  if(!a){ try{ const s=await getDoc(doc(db,'assigns',aid)); if(s.exists()) a=s.data(); }catch(e){} }
+  if(!a) return toast('ไม่พบแบบทดสอบนี้ (อาจถูกลบไปแล้ว)');
+  let key=(TR.aid===aid&&TR.key&&TR.key.length)?TR.key:null;
+  if(!key){ try{ const k=await getDoc(doc(db,'assigns',aid,'private','key')); key=(k.exists()&&k.data().key)||[]; }
+    catch(e){ return toast(isDenied(e)?'ไม่มีสิทธิ์อ่านเฉลย — ลองออกจากระบบแล้วเข้าใหม่':'โหลดเฉลยไม่สำเร็จ: '+e.message); } }
+  const qs=a.qs||[]; PP.a=a; PP.aid=aid; PP.key=key; PP.items=[];
+  qs.forEach((q,i)=>{ if(q.type!=='ord') PP.items.push({ai:i,q,k:key[i]}); });
+  PP.skipped=qs.length-PP.items.length;
+  if(!PP.items.length) return toast('แบบทดสอบนี้มีแต่ข้อเรียงลำดับ — ทำกระดาษคำตอบไม่ได้');
+  $('#ppSub').textContent=`${a.title||''} · ${a.setName||''} · ${PP.items.length} ข้อ`
+    +(PP.items.length>OMR.maxQ?' (กระดาษคำตอบรองรับ 100 ข้อแรก)':'')
+    +(PP.skipped?` · ไม่รวมข้อเรียงลำดับ ${PP.skipped} ข้อ (ฝนบนกระดาษไม่ได้ — นับเป็นไม่ได้ตอบ)`:'');
+  ['ppCam','ppRes'].forEach(x=>$('#'+x).classList.add('hide')); $('#ppMenu').classList.remove('hide'); openM('mPaper');
+}
+window.kqOpenPaper=openPaper;
+$('#ppClose').onclick=()=>{ stopCam(); PP.q=[]; closeM('mPaper'); };
+
+function printHTML(title, body){
+  const w=window.open('','_blank'); if(!w) return toast('เบราว์เซอร์บล็อกหน้าต่างใหม่ — อนุญาต pop-up ก่อน');
+  w.document.write(`<!DOCTYPE html><html lang="th"><head><meta charset="utf-8"><title>${esc(title)}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>addEventListener('load',()=>document.fonts.ready.then(()=>setTimeout(()=>print(),400)))<\/script>
+  <style>@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;font-family:Sarabun,sans-serif;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{margin:0;padding:0}.pg{position:relative;width:210mm;height:295.5mm;overflow:hidden}.pg+.pg{break-before:page;page-break-before:always}.a{position:absolute}
+  .f{position:absolute;width:12mm;height:12mm;background:#000}.bb{position:absolute;width:5mm;height:5mm;border:.35mm solid #222;border-radius:50%;transform:translate(-50%,-50%)}
+  .t{position:absolute;transform:translate(-50%,-50%);font-size:9pt}</style></head><body>${body}</body></html>`); w.document.close();
+}
+function sheetPage(){
+  const a=PP.a, L=omrLayout(PP.items.length), lg=logoOf(); let h='<div class="pg">';
+  OMR.fid.forEach(([x,y])=>h+=`<div class="f" style="left:${x-6}mm;top:${y-6}mm"></div>`);
+  h+=(lg?`<img class="a" src="${esc(lg)}" style="left:22mm;top:21mm;width:13mm;height:13mm;object-fit:contain">`:'')+`
+    <div class="a" style="left:${lg?38:22}mm;top:20mm;font-size:17pt;font-weight:700;line-height:1.2">กระดาษคำตอบ</div>
+    <div class="a" style="left:${lg?38:22}mm;top:28.5mm;width:150mm;font-size:11pt;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.title||'')}${a.setName?' · '+esc(a.setName):''}</div>
+    <div class="a" style="left:22mm;top:37mm;width:166mm;height:36mm;border:.35mm solid #444;border-radius:2.5mm"></div>
+    <div class="a" style="left:104mm;top:37mm;width:0;height:36mm;border-left:.3mm solid #999"></div>
+    <div class="a" style="left:25mm;top:40mm;width:77mm;font-size:12pt;line-height:1.2;white-space:nowrap">ชื่อ-สกุล ...............................................</div>
+    <div class="a" style="left:25mm;top:48.5mm;width:77mm;font-size:12pt;line-height:1.2;white-space:nowrap">ชั้น ม. ........ / ........ &nbsp; เลขที่ ..........</div>
+    <div class="a" style="left:25mm;top:57mm;width:77mm;font-size:9.5pt;line-height:1.35;color:#333">• ใช้ดินสอ 2B ฝนให้เต็มวง ลบให้สะอาด<br>• ข้อถูก/ผิด ฝน ก = ถูก , ข = ผิด<br>• ห้ามพับ/ขีดเขียนบริเวณสี่เหลี่ยมดำ</div>
+    <div class="a" style="left:107mm;top:39.5mm;font-size:10.5pt;font-weight:700;line-height:1.2">ฝนเลขที่</div>
+    <div class="a" style="left:107mm;top:51.8mm;font-size:10pt;line-height:1.2">สิบ</div>
+    <div class="a" style="left:107mm;top:59.8mm;font-size:10pt;line-height:1.2">หน่วย</div>
+    <div class="a" style="left:107mm;top:66.5mm;font-size:8pt;color:#555;line-height:1.2">เช่น เลขที่ 7 ฝน สิบ = 0 , หน่วย = 7</div>`;
+  [...Array(10).keys()].forEach(d=>h+=`<div class="t" style="left:${122+d*6.7}mm;top:47.5mm;font-weight:700">${d}</div>`);
+  L.num.flat().forEach(([x,y])=>h+=`<div class="bb" style="left:${x}mm;top:${y}mm"></div>`);
+  const cols=Math.ceil(L.q.length/OMR.rowsPerCol);
+  for(let c=0;c<cols;c++) ['ก','ข','ค','ง'].forEach((k,j)=>h+=`<div class="t" style="left:${24+c*45+11+j*7.5}mm;top:80.5mm;font-weight:700">${k}</div>`);
+  L.q.forEach(q=>{ const n=nOpt(PP.items[q.i]);
+    h+=`<div class="t" style="left:${q.x0+3}mm;top:${q.y}mm;font-weight:700;font-size:10pt">${q.i+1}</div>`;
+    q.b.forEach(([x,y],j)=>{ if(j<n) h+=`<div class="bb" style="left:${x}mm;top:${y}mm"></div>`; }); });
+  return h+'</div>';
+}
+$('#ppSheet').onclick=()=>{ const n=Math.max(1,Math.min(60,+$('#ppCopies').value||1)); printHTML('กระดาษคำตอบ-'+(PP.a.title||''),sheetPage().repeat(n)); };
+
+/* ---------- ข้อสอบฉบับพิมพ์ (.docx) — TH SarabunPSK 16 ---------- */
+const TH_FONT="TH SarabunPSK", TH_PT=16;
+const dclean=s=>String(s??"").replace(/ /g," ").replace(/‌/g,"").replace(/ {2,}/g," ").trim();
+const DX=()=>{ if(!window.docx||!window.JSZip) throw new Error('โหลดไลบรารี Word ไม่สำเร็จ'); return window.docx; };
+const dT=(text,o={})=>new (DX().TextRun)({ text:dclean(text), ...o, ...(o.size?{sizeComplexScript:o.size}:{}) });
+const dP=(text,o={})=>{ const {run,...rest}=o; return new (DX().Paragraph)({ children:[dT(text,run||{})], ...rest }); };
+const dTab=(text,o={})=>new (DX().TextRun)({ children:[new (DX().Tab)(), dclean(text)], ...o, ...(o.size?{sizeComplexScript:o.size}:{}) });
+function dBuild(children, extra={}){
+  const {Document,AlignmentType}=DX();
+  return new Document({ styles:{ default:{ document:{
+      run:{ font:{ascii:TH_FONT,hAnsi:TH_FONT,cs:TH_FONT,eastAsia:TH_FONT}, size:TH_PT*2, sizeComplexScript:TH_PT*2, language:{value:'th-TH',eastAsia:'th-TH',bidirectional:'th-TH'} },
+      paragraph:{ alignment:AlignmentType.THAI_DISTRIBUTE, spacing:{before:0,after:0,line:240} } } } },
+    sections:[{ properties:{ page:{ margin:extra.margin||{top:1440,bottom:1134,left:1701,right:1134} } }, ...(extra.headers?{headers:extra.headers}:{}), ...(extra.footers?{footers:extra.footers}:{}), children }] });
+}
+async function addThaiCs(blob){
+  const zip=await JSZip.loadAsync(blob); const THAI=/[฀-๿]/;
+  for(const name of Object.keys(zip.files).filter(n=>/^word\/(document|header\d*|footer\d*|footnotes|endnotes)\.xml$/.test(n))){
+    let xml=await zip.file(name).async('string');
+    xml=xml.replace(/<w:r(?:\s[^>]*)?>[\s\S]*?<\/w:r>/g, r=>{
+      if(!THAI.test(r.replace(/<[^>]+>/g,''))||/<w:cs\b/.test(r)) return r;
+      const e=r.indexOf('</w:rPr>');
+      if(e<0){ if(r.includes('<w:rPr/>')) return r.replace('<w:rPr/>','<w:rPr><w:cs/></w:rPr>'); return r.replace(/^(<w:r(?:\s[^>]*)?>)/,'$1<w:rPr><w:cs/></w:rPr>'); }
+      const m=r.slice(0,e).match(/<w:(em|lang|eastAsianLayout|specVanish|oMath|rPrChange)\b/); const at=m?m.index:e;
+      return r.slice(0,at)+'<w:cs/>'+r.slice(at); });
+    zip.file(name,xml);
+  }
+  return zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+function bookDocx(){
+  const a=PP.a, items=PP.items, n=items.length;
+  const {Paragraph,Header,Footer,AlignmentType,PageNumber,Table,TableRow,TableCell,WidthType,BorderStyle,TabStopType}=DX();
+  const C={alignment:AlignmentType.CENTER}, L=AlignmentType.LEFT, keep={keepNext:true,keepLines:true};
+  const nb={style:BorderStyle.NONE,size:0,color:'FFFFFF'}, box={style:BorderStyle.SINGLE,size:6,color:'555555'};
+  const info=new Table({ width:{size:100,type:WidthType.PERCENTAGE}, borders:{top:box,bottom:box,left:box,right:box,insideHorizontal:nb,insideVertical:nb},
+    rows:[ new TableRow({children:[ new TableCell({width:{size:62,type:WidthType.PERCENTAGE},margins:{top:80,bottom:40,left:120},children:[dP('ชื่อ-สกุล ..................................................',{alignment:L})]}),
+                                   new TableCell({width:{size:38,type:WidthType.PERCENTAGE},margins:{top:80,bottom:40},children:[dP('ชั้น ม. ...../..... เลขที่ .......',{alignment:L})]}) ]}),
+           new TableRow({children:[ new TableCell({columnSpan:2,margins:{top:0,bottom:80,left:120},children:[dP(`จำนวน ${n} ข้อ   คะแนนเต็ม ${n} คะแนน`,{alignment:L})]}) ]}) ]});
+  const title=a.title||'';
+  const ch=[
+    dP(/^แบบทดสอบ/.test(title)?title:'แบบทดสอบ '+title,{...C,run:{bold:true,size:40}}),
+    ...(a.setName?[dP(`ชุดข้อสอบ ${a.setName}`,{...C,run:{bold:true,size:34}})]:[]),
+    ...(schoolOf()?[dP(schoolOf(),{...C,spacing:{after:160}})]:[]),
+    info,
+    new Paragraph({spacing:{before:160},alignment:L,children:[dT('คำชี้แจง',{bold:true}),dT('  ให้นักเรียนเลือกคำตอบที่ถูกต้องที่สุดเพียงคำตอบเดียว แล้วฝนคำตอบลงในกระดาษคำตอบให้เต็มวง ข้อ ถูก/ผิด ให้ฝน ก = ถูก , ข = ผิด')]}),
+    new Paragraph({spacing:{after:120},border:{bottom:{style:BorderStyle.SINGLE,size:6,color:'999999',space:4}},children:[]})
+  ];
+  items.forEach((it,i)=>{
+    const q=it.q, opts=q.type==='tf'?(q.choices||['ถูก','ผิด']).slice(0,2):(q.choices||[]).slice(0,4);
+    ch.push(new Paragraph({...keep,alignment:L,spacing:{before:i?140:0},indent:{left:454,hanging:454},children:[dT(`${i+1}.`,{bold:true}),dTab(q.word)],tabStops:[{type:TabStopType.LEFT,position:454}]}));
+    const short=opts.every(o=>String(o).length<=22);
+    if(short && opts.length===4){
+      [[0,1],[2,3]].forEach((pr,k)=>ch.push(new Paragraph({keepNext:k===0,keepLines:true,alignment:L,indent:{left:454},tabStops:[{type:TabStopType.LEFT,position:454+4200}],
+        children:[dT(`${thNum[pr[0]]}. ${opts[pr[0]]}`),dTab(`${thNum[pr[1]]}. ${opts[pr[1]]}`)]})));
+    } else if(q.type==='tf'){
+      ch.push(new Paragraph({keepLines:true,alignment:L,indent:{left:454},tabStops:[{type:TabStopType.LEFT,position:454+4200}],children:[dT(`ก. ${opts[0]}`),dTab(`ข. ${opts[1]}`)]}));
+    } else opts.forEach((o,j)=>ch.push(dP(`${thNum[j]}. ${o}`,{keepNext:j<opts.length-1,keepLines:true,alignment:L,indent:{left:794,hanging:340}})));
+  });
+  ch.push(dP('— หมดข้อสอบ —',{...C,spacing:{before:300},run:{bold:true}}));
+  const headers={default:new Header({children:[dP(`${title}${a.setName?' · '+a.setName:''}`,{alignment:AlignmentType.RIGHT,run:{size:24,color:'666666'}})]})};
+  const footers={default:new Footer({children:[new Paragraph({alignment:AlignmentType.CENTER,children:[dT('- ',{size:28}),new (DX().TextRun)({children:[PageNumber.CURRENT],size:28,sizeComplexScript:28}),dT(' -',{size:28})]})]})};
+  return {ch,extra:{headers,footers,margin:{top:1134,bottom:1134,left:1418,right:1134,header:567,footer:567}}};
+}
+$('#ppBook').onclick=async()=>{
+  const b=$('#ppBook'); b.disabled=true;
+  try{ toast('กำลังสร้างไฟล์ Word...');
+    await loadLib('https://cdn.jsdelivr.net/npm/jszip@3/dist/jszip.min.js',()=>window.JSZip);
+    await loadLib('https://cdn.jsdelivr.net/npm/docx@9/dist/index.iife.js',()=>window.docx);
+    const {ch,extra}=bookDocx(); const blob=await addThaiCs(await DX().Packer.toBlob(dBuild(ch,extra)));
+    const x=document.createElement('a'); x.href=URL.createObjectURL(blob);
+    x.download=('ข้อสอบ-'+(PP.a.title||'KrunonQuizz')).replace(/[\\/:*?"<>|]/g,'_')+'.docx'; x.click(); setTimeout(()=>URL.revokeObjectURL(x.href),2000); toast('ดาวน์โหลดข้อสอบแล้ว ✅');
+  }catch(e){ console.error(e); toast('สร้างไฟล์ไม่สำเร็จ: '+e.message); }
+  b.disabled=false;
+};
+
+/* ---------- camera ---------- */
+async function startCam(){
+  try{ PP.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false}); }
+  catch(e){ return toast('เปิดกล้องไม่ได้ — อนุญาตการใช้กล้อง (ต้องเปิดผ่าน https)'); }
+  const v=$('#ppVid'); v.srcObject=PP.stream; await v.play();
+  $('#ppMenu').classList.add('hide'); $('#ppRes').classList.add('hide'); $('#ppCam').classList.remove('hide'); camLoop();
+}
+function stopCam(){ cancelAnimationFrame(PP.raf); PP.raf=null; PP.stream?.getTracks().forEach(t=>t.stop()); PP.stream=null; }
+$('#ppScan').onclick=()=>startCam();
+$('#ppStop').onclick=()=>{ stopCam(); $('#ppCam').classList.add('hide'); $('#ppMenu').classList.remove('hide'); };
+$('#ppAgain').onclick=()=>nextOrCam();
+function nextOrCam(){ if(PP.q.length){ PP.qi++; return showQueued(); } $('#ppQ').textContent=''; startCam(); }
+
+/* ===== อัปโหลด PDF / รูปสแกน หลายแผ่น ===== */
+$('#ppPdf').onclick=()=>$('#ppFile').click();
+function canvasFrame(c){ return {c,g:c.getContext('2d',{willReadFrequently:true}),W:c.width,H:c.height}; }
+async function fileFrames(f){
+  const out=[];
+  if(/pdf$/i.test(f.type)||/\.pdf$/i.test(f.name)){
+    await loadLib('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',()=>window.pdfjsLib);
+    const lib=window.pdfjsLib; if(!lib) throw new Error('โหลดตัวอ่าน PDF ไม่สำเร็จ');
+    lib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf=await lib.getDocument({data:await f.arrayBuffer()}).promise;
+    for(let i=1;i<=pdf.numPages;i++){ const pg=await pdf.getPage(i), v0=pg.getViewport({scale:1}), sc=Math.min(3,1800/Math.max(v0.width,v0.height)), vp=pg.getViewport({scale:sc});
+      const c=document.createElement('canvas'); c.width=Math.round(vp.width); c.height=Math.round(vp.height); const g=c.getContext('2d',{willReadFrequently:true});
+      g.fillStyle='#fff'; g.fillRect(0,0,c.width,c.height); await pg.render({canvasContext:g,viewport:vp}).promise; out.push({c,label:`${f.name} หน้า ${i}`}); }
+  } else {
+    const img=await createImageBitmap(f), sc=Math.min(1,2200/Math.max(img.width,img.height)); const c=document.createElement('canvas'); c.width=Math.round(img.width*sc); c.height=Math.round(img.height*sc);
+    c.getContext('2d',{willReadFrequently:true}).drawImage(img,0,0,c.width,c.height); out.push({c,label:f.name});
+  }
+  return out;
+}
+$('#ppFile').onchange=async e=>{ const files=[...e.target.files]; e.target.value=''; if(!files.length) return;
+  stopCam(); toast('กำลังอ่านไฟล์...'); const q=[];
+  try{ for(const f of files) q.push(...await fileFrames(f)); }catch(err){ console.error(err); return toast('อ่านไฟล์ไม่สำเร็จ: '+err.message); }
+  if(!q.length) return toast('ไม่พบหน้าในไฟล์');
+  PP.q=q; PP.qi=0; PP.saved=0; PP.skip=[]; showQueued(); };
+function showQueued(){
+  while(PP.qi<PP.q.length){ const it=PP.q[PP.qi], f=canvasFrame(it.c), pts=findFiducials(f);
+    if(pts){ readSheet(f,pts); $('#ppMenu').classList.add('hide');
+      $('#ppQ').textContent=`📄 แผ่นที่ ${PP.qi+1}/${PP.q.length} · ${it.label}`; $('#ppAgain').textContent=PP.qi+1<PP.q.length?'⏭ ข้ามแผ่นนี้':'⏹ ข้ามแผ่นนี้ (แผ่นสุดท้าย)'; return; }
+    PP.skip.push(it.label); PP.qi++; }
+  const sk=PP.skip||[]; PP.q=[]; $('#ppQ').textContent=''; $('#ppAgain').textContent='📷 สแกนใหม่';
+  $('#ppRes').classList.add('hide'); $('#ppCam').classList.add('hide'); $('#ppMenu').classList.remove('hide');
+  toast(`ตรวจไฟล์ครบแล้ว — บันทึก ${PP.saved||0} แผ่น`+(sk.length?` · หา 4 มุมไม่เจอ ${sk.length} แผ่น`:''));
+  if(sk.length) alert('แผ่นที่หาสี่เหลี่ยม 4 มุมไม่พบ (ตรวจไม่ได้)\n\n'+sk.join('\n')+'\n\nแนะนำ: สแกนใหม่ให้เห็นสี่เหลี่ยมดำครบ 4 มุม ความละเอียด 200 dpi ขึ้นไป');
+}
+function grabFrame(){ const v=$('#ppVid'), c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight; const g=c.getContext('2d',{willReadFrequently:true}); g.drawImage(v,0,0); return {c,g,W:c.width,H:c.height}; }
+function toGray(data,W,H){ const g=new Uint8ClampedArray(W*H); for(let i=0,j=0;i<g.length;i++,j+=4) g[i]=(data[j]*299+data[j+1]*587+data[j+2]*114)/1000; return g; }
+function otsu(g){ const h=new Array(256).fill(0); g.forEach(v=>h[v]++); let s=0; for(let i=0;i<256;i++) s+=i*h[i];
+  let sb=0,wb=0,best=0,t=128; for(let i=0;i<256;i++){ wb+=h[i]; if(!wb) continue; const wf=g.length-wb; if(!wf) break; sb+=i*h[i]; const mb=sb/wb, mf=(s-sb)/wf, v=wb*wf*(mb-mf)**2; if(v>best){best=v;t=i;} } return t; }
+/* หา 4 มุม: component สีดำ ทรงสี่เหลี่ยมทึบ ที่อยู่ใกล้มุมภาพที่สุดในแต่ละด้าน */
+function findFiducials(frame){
+  const sc=Math.min(1,640/frame.W), w=Math.round(frame.W*sc), h=Math.round(frame.H*sc);
+  const c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d',{willReadFrequently:true}); g.drawImage(frame.c,0,0,w,h);
+  const gray=toGray(g.getImageData(0,0,w,h).data,w,h), T=otsu(gray)*0.8, lab=new Int32Array(w*h), comps=[];
+  const S=Math.min(w,h), minSide=S*0.012, maxSide=S*0.11, st=[];
+  for(let p=0;p<w*h;p++){ if(lab[p]||gray[p]>=T) continue; const id=comps.length+1; lab[p]=id; st.push(p);
+    let a=0,sx=0,sy=0,x0=1e9,y0=1e9,x1=-1,y1=-1;
+    while(st.length){ const q=st.pop(), x=q%w, y=(q-x)/w; a++; sx+=x; sy+=y; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;
+      const nb=[q-1,q+1,q-w,q+w]; for(const r of nb){ if(r<0||r>=w*h||lab[r]||gray[r]>=T) continue; if((r===q-1&&x===0)||(r===q+1&&x===w-1)) continue; lab[r]=id; st.push(r); } }
+    const bw=x1-x0+1, bh=y1-y0+1; comps.push({a,cx:sx/a,cy:sy/a,bw,bh,ok: bw>=minSide&&bh>=minSide&&bw<=maxSide&&bh<=maxSide&&bw/bh>0.6&&bw/bh<1.6&&a/(bw*bh)>0.84}); }
+  const C=comps.filter(k=>k.ok), corners=[[0,0],[w,0],[0,h],[w,h]], out=[];
+  for(const [X,Y] of corners){ let best=null,bd=1e18; for(const k of C){ if((X?k.cx<w*0.5:k.cx>w*0.5)||(Y?k.cy<h*0.5:k.cy>h*0.5)) continue; const d=(k.cx-X)**2+(k.cy-Y)**2; if(d<bd){bd=d;best=k;} } if(!best) return null; out.push([best.cx/sc,best.cy/sc]); }
+  return out;
+}
+function homography(src,dst){ const A=[],B=[];
+  for(let i=0;i<4;i++){ const [x,y]=src[i],[u,v]=dst[i]; A.push([x,y,1,0,0,0,-u*x,-u*y]); B.push(u); A.push([0,0,0,x,y,1,-v*x,-v*y]); B.push(v); }
+  for(let c=0;c<8;c++){ let p=c; for(let r=c+1;r<8;r++) if(Math.abs(A[r][c])>Math.abs(A[p][c])) p=r; [A[c],A[p]]=[A[p],A[c]]; [B[c],B[p]]=[B[p],B[c]];
+    for(let r=0;r<8;r++){ if(r===c) continue; const f=A[r][c]/A[c][c]; for(let k=c;k<8;k++) A[r][k]-=f*A[c][k]; B[r]-=f*B[c]; } }
+  const h=B.map((b,i)=>b/A[i][i]); return ([x,y])=>{ const d=h[6]*x+h[7]*y+1; return [(h[0]*x+h[1]*y+h[2])/d,(h[3]*x+h[4]*y+h[5])/d]; };
+}
+function camLoop(){
+  let t=0; const ov=$('#ppOv'), v=$('#ppVid');
+  const step=ts=>{ if(!PP.stream) return; PP.raf=requestAnimationFrame(step); if(ts-t<350||!v.videoWidth) return; t=ts;
+    const f=grabFrame(), pts=findFiducials(f); PP.last=pts;
+    ov.width=v.clientWidth; ov.height=v.clientHeight; const g=ov.getContext('2d'); g.clearRect(0,0,ov.width,ov.height);
+    const s=Math.min(ov.width/f.W,ov.height/f.H), ox=(ov.width-f.W*s)/2, oy=(ov.height-f.H*s)/2;
+    $('#ppHint').textContent=pts?'✅ พบครบ 4 มุม — กด “ตรวจแผ่นนี้”':'กำลังค้นหาสี่เหลี่ยม 4 มุม...';
+    if(pts){ g.strokeStyle='#22c55e'; g.lineWidth=4; g.beginPath(); [0,1,3,2,0].forEach((k,i)=>{ const [x,y]=pts[k]; i?g.lineTo(ox+x*s,oy+y*s):g.moveTo(ox+x*s,oy+y*s); }); g.stroke(); } };
+  PP.raf=requestAnimationFrame(step);
+}
+$('#ppShot').onclick=()=>{
+  const f=grabFrame(), pts=findFiducials(f); if(!pts) return toast('ยังหาสี่เหลี่ยมไม่ครบ 4 มุม ขยับกล้องให้เห็นทั้งแผ่น');
+  stopCam(); readSheet(f,pts);
+};
+function readSheet(f,pts){
+  const items=PP.items, map=homography(OMR.fid,pts), data=f.g.getImageData(0,0,f.W,f.H).data, gray=toGray(data,f.W,f.H);
+  const [ax,ay]=map([100,150]),[bx,by]=map([110,150]); const pxmm=Math.hypot(bx-ax,by-ay)/10;
+  // วัด "ความเข้ม" ภายในวงเทียบกับกระดาษรอบ ๆ วงนั้น (ทนแสงไม่สม่ำเสมอ/ดินสอสีอ่อน)
+  const L=omrLayout(items.length), sens=+$('#ppSens').value/100;
+  const px=(u,v)=>{ u=Math.round(u); v=Math.round(v); return (u<0||v<0||u>=f.W||v>=f.H)?255:gray[v*f.W+u]; };
+  const meanDisc=(u,v,r)=>{ let n=0,sum=0; for(let yy=Math.floor(v-r);yy<=v+r;yy++) for(let xx=Math.floor(u-r);xx<=u+r;xx++){ if((xx-u)**2+(yy-v)**2>r*r) continue; n++; sum+=px(xx,yy); } return n?sum/n:255; };
+  const fill=(x,y)=>{ const [u,v]=map([x,y]); const m=meanDisc(u,v,Math.max(2,1.5*pxmm));
+    const ref=[[3.7,0],[-3.7,0],[0,3.7],[0,-3.7]].map(([dx,dy])=>{ const [a,b]=map([x+dx,y+dy]); return meanDisc(a,b,Math.max(1,0.6*pxmm)); }).sort((a,b)=>b-a);
+    const paper=(ref[0]+ref[1])/2||255; return Math.max(0,(paper-m)/paper); };
+  const pick=arr=>{ const fr=arr.map(([x,y])=>fill(x,y)); const s=[...fr].map((v,i)=>[v,i]).sort((a,b)=>b[0]-a[0]);
+    if(s[0][0]<sens) return {v:null,fr};
+    if(s[1] && s[1][0]>=sens && s[0][0]-s[1][0]<0.08) return {v:null,multi:true,fr};
+    return {v:s[0][1],fr}; };
+  const ans={}, flags=[];
+  L.q.forEach(q=>{ const r=pick(q.b.slice(0,nOpt(items[q.i]))); if(r.v!==null) ans[q.i]=r.v; if(r.multi) flags.push(q.i+1); });
+  const d1=pick(L.num[0]), d2=pick(L.num[1]); const no=(d1.v??0)*10+(d2.v??0);
+  PP.res={ans,flags}; $('#ppNo').value=(d1.v===null&&d2.v===null)?'':no; $('#ppCls2').value=$('#ppCls').value; $('#ppName').value='';
+  // ภาพผลตรวจ
+  const cv=$('#ppImg'), k=Math.min(1,900/f.W); cv.width=f.W*k; cv.height=f.H*k; const g=cv.getContext('2d'); g.drawImage(f.c,0,0,cv.width,cv.height);
+  L.q.forEach(q=>{ const n=nOpt(items[q.i]), key=items[q.i].k; q.b.forEach(([x,y],j)=>{ if(j>=n) return; const [u,v]=map([x,y]);
+    if(ans[q.i]===j||j===key){ g.strokeStyle=ans[q.i]===j?(j===key?'#16a34a':'#dc2626'):'#f59e0b'; g.lineWidth=2.5; g.beginPath(); g.arc(u*k,v*k,2.8*pxmm*k,0,7); g.stroke(); } }); });
+  renderPaperAns(); $('#ppCam').classList.add('hide'); $('#ppRes').classList.remove('hide');
+  $('#ppWarn').textContent=(flags.length?`⚠️ ฝนเกิน 1 ช่อง: ข้อ ${flags.join(', ')} · `:'')+(items.length>OMR.maxQ?'ข้อที่เกิน 100 ไม่ได้ตรวจ · ':'')+((d1.v===null||d2.v===null)?'ตรวจเลขที่ให้ถูกต้อง':'');
+}
+function renderPaperAns(){
+  const items=PP.items, a=PP.res.ans, n=Math.min(items.length,OMR.maxQ); let score=0;
+  $('#ppAns').innerHTML=[...Array(n).keys()].map(i=>{ const it=items[i], ok=a[i]!==undefined&&a[i]===it.k; if(ok) score++;
+    const lab=it.q.type==='tf'?['ก','ข']:thNum.slice(0,nOpt(it));
+    return `<label class="sm" style="display:flex;gap:4px;align-items:center;background:${a[i]===undefined?'rgba(255,255,255,.12)':ok?'rgba(34,197,94,.35)':'rgba(239,68,68,.35)'};border-radius:8px;padding:3px 6px"><b style="width:22px">${i+1}</b>
+      <select data-pi="${i}" style="padding:2px 4px;border-radius:6px;width:auto"><option value="">-</option>${lab.map((t,j)=>`<option value="${j}" ${a[i]===j?'selected':''}>${t}</option>`).join('')}</select></label>`; }).join('');
+  $$('#ppAns select').forEach(s=>s.onchange=()=>{ const i=+s.dataset.pi; s.value===''?delete PP.res.ans[i]:PP.res.ans[i]=+s.value; renderPaperAns(); });
+  const tot=(PP.a.qs||[]).length; $('#ppScore').textContent=`${score}/${tot}`;
+}
+$('#ppSave').onclick=async()=>{
+  const cls=$('#ppCls2').value.trim(), no=$('#ppNo').value.trim(), name=$('#ppName').value.trim()||`นักเรียน ${cls} เลขที่ ${no}`;
+  if(!cls||!no) return toast('กรอกชั้นและเลขที่');
+  const id=('paper_'+cls+'_'+no+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)).replace(/[\/\s.#$\[\]]/g,'-'); $('#ppCls').value=cls;
+  const ans={}; PP.items.forEach((it,i)=>{ if(PP.res.ans[i]!==undefined) ans[it.ai]=PP.res.ans[i]; });   // เก็บตามเลขข้อของแบบทดสอบ
+  const b=$('#ppSave'); b.disabled=true;
+  try{ await setDoc(doc(db,'assigns',PP.aid,'subs',id),{ uid:id, pre:'', fn:name, ln:'', cls, no, status:'done', paper:true, ans, sw:0, endAt:serverTimestamp() });
+    toast(`บันทึก ${name} แล้ว ✅`); PP.saved=(PP.saved||0)+1; nextOrCam();
+  }catch(e){ console.error(e); toast(isDenied(e)?'ไม่มีสิทธิ์ — ต้องเผยแพร่ firestore.rules ฉบับใหม่ (ดู README)':'บันทึกไม่สำเร็จ: '+(e.code||e.message)); }
+  b.disabled=false;
+};
+}
 
 const taskExName = ext => `ผลแบบทดสอบ_${String((TR.a&&TR.a.title)||'KrunonQuizz').replace(/[\\/:*?"<>|]/g,'_')}_${stamp()}.${ext}`;
 function taskTable(){
